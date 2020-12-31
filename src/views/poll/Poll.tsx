@@ -140,37 +140,39 @@ export const Poll = ({ UserID }: PollProps) => {
             >
               New Poll
             </Button>
-            <Button
-              Color="grayTwo"
-              type="button"
-              disabled={!params.p}
-              onClick={() => {
-                if (params.p) {
-                  const textArea = document.createElement("textarea");
-                  textArea.value = window.location.href;
+            {params.p && (
+              <Button
+                Color="grayTwo"
+                type="button"
+                disabled={!params.p}
+                onClick={() => {
+                  if (params.p) {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = window.location.href;
 
-                  textArea.id = "temp-textarea";
-                  textArea.style.top = "0";
-                  textArea.style.left = "0";
-                  textArea.style.position = "fixed";
-                  textArea.style.opacity = "0";
+                    textArea.id = "temp-textarea";
+                    textArea.style.top = "0";
+                    textArea.style.left = "0";
+                    textArea.style.position = "fixed";
+                    textArea.style.opacity = "0";
 
-                  document.body.appendChild(textArea);
-                  textArea.focus();
-                  textArea.select();
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
 
-                  try {
-                    document.execCommand("copy");
-                  } catch (err) {
-                    console.error("Unable to copy text to clipboard.", err);
+                    try {
+                      document.execCommand("copy");
+                    } catch (err) {
+                      console.error("Unable to copy text to clipboard.", err);
+                    }
+
+                    document.getElementById("temp-textarea")?.remove();
                   }
-
-                  document.getElementById("temp-textarea")?.remove();
-                }
-              }}
-            >
-              Copy Poll Link
-            </Button>
+                }}
+              >
+                Copy Poll Link
+              </Button>
+            )}
           </ButtonContainer>
         </GridArea>
         {params.p ? (

@@ -57,6 +57,7 @@ export const Poll = () => {
           }
         });
     }
+    // eslint-disable-next-line
   }, [airtable]);
 
   useEffect(() => {

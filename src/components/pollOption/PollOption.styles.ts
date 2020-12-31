@@ -42,4 +42,12 @@ export const OptionText = styled.div`
   top: 0;
   left: 0;
   height: 100%;
+  width: 100%;
+`;
+
+export const OptionVoteCount = styled.span`
+  font-size: 20px;
+  background-color: ${(props) => props.theme.getColor("blue")};
+  border-radius: 100%;
+  padding: 5px;
 `;

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   OptionText,
+  OptionVoteCount
   PollOptionBar,
   PollOptionContainer,
 } from "./PollOption.styles";
@@ -48,7 +49,7 @@ export const PollOption = ({
       <PollOptionBar Percentage={percentWidth} UserVoted={UserVoted} />
       <OptionText>
         <span>{Text}</span>
-        <span>{Votes}</span>
+        <OptionVoteCount>{Votes}</OptionVoteCount>
       </OptionText>
     </PollOptionContainer>
   );

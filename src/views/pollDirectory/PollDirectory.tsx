@@ -60,6 +60,7 @@ export const PollDirectory = ({ UserID }: PollDirectoryProps) => {
           }
         });
     }
+    // eslint-disable-next-line
   }, [airtable]);
 
   return (

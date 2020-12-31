@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { BrowserRouter } from "react-router-dom";
 import firebase from "firebase";
 import { AirtableProvider, getTheme } from "./utilities";

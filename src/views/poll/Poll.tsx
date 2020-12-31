@@ -214,6 +214,40 @@ export const Poll = () => {
             </GridArea>
             <GridArea Area="poll">
               <PollOptionContainer>
+                {!!user?.uid ? (
+                  <PollInput
+                    ButtonText="Add Option"
+                    Placeholder="Your New Option"
+                    OnSubmit={(newOption: string) => {
+                      // Add the new option to the poll and have the user vote for it
+                      const thePoll: PollType = JSON.parse(
+                        JSON.stringify(pollState)
+                      );
+                      thePoll.PollOptions.push({
+                        OptionID: v4().toString(),
+                        OptionText: newOption,
+                        Votes: [user?.uid],
+                      });
+
+                      // Update our own state optimistically
+                      updatePollState(thePoll);
+
+                      // Update Airtable
+                      updateAirtable(thePoll);
+                    }}
+                  />
+                ) : (
+                  <Button
+                    type="button"
+                    Color="grayTwo"
+                    onClick={() => {
+                      const provider = new firebase.auth.GoogleAuthProvider();
+                      firebase.auth().signInWithPopup(provider);
+                    }}
+                  >
+                    Sign In with Google
+                  </Button>
+                )}
                 {pollState.PollOptions.sort((a, b) => {
                   // Sort by the items with the most votes first
                   return b.Votes.length - a.Votes.length;
@@ -254,40 +288,6 @@ export const Poll = () => {
                     />
                   );
                 })}
-                {!!user?.uid ? (
-                  <PollInput
-                    ButtonText="Add Option"
-                    Placeholder="Your New Option"
-                    OnSubmit={(newOption: string) => {
-                      // Add the new option to the poll and have the user vote for it
-                      const thePoll: PollType = JSON.parse(
-                        JSON.stringify(pollState)
-                      );
-                      thePoll.PollOptions.push({
-                        OptionID: v4().toString(),
-                        OptionText: newOption,
-                        Votes: [user?.uid],
-                      });
-
-                      // Update our own state optimistically
-                      updatePollState(thePoll);
-
-                      // Update Airtable
-                      updateAirtable(thePoll);
-                    }}
-                  />
-                ) : (
-                  <Button
-                    type="button"
-                    Color="grayTwo"
-                    onClick={() => {
-                      const provider = new firebase.auth.GoogleAuthProvider();
-                      firebase.auth().signInWithPopup(provider);
-                    }}
-                  >
-                    Sign In with Google
-                  </Button>
-                )}
               </PollOptionContainer>
             </GridArea>
           </>

@@ -28,6 +28,8 @@ export const PollContainer = styled.main`
   color: white;
   padding: 15px;
   box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 30px;
 `;
 
 export const GridArea = styled.div<{ Area: string }>`

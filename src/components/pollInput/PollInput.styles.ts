@@ -3,6 +3,7 @@ import styled from "styled-components";
 export const PollInputContainer = styled.form`
   display: flex;
   flex-direction: column;
+  margin-bottom: 25px;
 `;
 
 export const InputControl = styled.input`

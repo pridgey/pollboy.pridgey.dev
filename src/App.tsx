@@ -1,26 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { lazy, Suspense } from "react";
+import { BrowserRouter } from "react-router-dom";
+import firebase from "firebase";
+import { AirtableProvider, getTheme } from "./utilities";
+import { ThemeProvider } from "styled-components";
+import { Poll } from "./views";
 
-function App() {
+firebase.initializeApp({
+  apiKey: process.env.REACT_APP_FIREBASE_KEY,
+  authDomain: "pridgey-poll.firebaseapp.com",
+  projectId: "pridgey-poll",
+  storageBucket: "pridgey-poll.appspot.com",
+  messagingSenderId: "1085093590247",
+  appId: "1:1085093590247:web:ccc7c0aededa8c13599e42",
+});
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AirtableProvider>
+      <ThemeProvider theme={getTheme()}>
+        <BrowserRouter>
+          <Suspense fallback={<div>loading</div>}>
+            <Poll />
+          </Suspense>
+        </BrowserRouter>
+      </ThemeProvider>
+    </AirtableProvider>
   );
-}
+};
 
 export default App;

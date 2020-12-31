@@ -9,6 +9,7 @@ type PollOptionProps = {
   Percentage: number;
   Text: string;
   UserVoted?: boolean;
+  Votes: number;
   OnClick: () => void;
 };
 
@@ -16,6 +17,7 @@ export const PollOption = ({
   Percentage,
   Text,
   UserVoted = false,
+  Votes,
   OnClick,
 }: PollOptionProps) => {
   const containerRef = useRef<HTMLButtonElement>(
@@ -44,7 +46,10 @@ export const PollOption = ({
       }}
     >
       <PollOptionBar Percentage={percentWidth} UserVoted={UserVoted} />
-      <OptionText>{Text}</OptionText>
+      <OptionText>
+        <span>{Text}</span>
+        <span>{Votes}</span>
+      </OptionText>
     </PollOptionContainer>
   );
 };

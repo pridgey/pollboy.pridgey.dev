@@ -33,6 +33,7 @@ export const OptionText = styled.div`
   position: absolute;
   color: white;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   font-size: 25px;
   font-family: "Montserrat", sans-serif;

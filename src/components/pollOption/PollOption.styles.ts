@@ -46,8 +46,15 @@ export const OptionText = styled.div`
 `;
 
 export const OptionVoteCount = styled.span`
-  font-size: 20px;
-  background-color: ${(props) => props.theme.getColor("blue")};
+  font-size: 16px;
   border-radius: 100%;
   padding: 5px;
+  box-sizing: border-box;
+  width: 25px;
+  height: 25px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${(props) => props.theme.getColor("black")};
 `;

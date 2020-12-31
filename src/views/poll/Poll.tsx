@@ -242,6 +242,7 @@ export const Poll = ({ UserID }: PollProps) => {
                       key={`polloption-${index}`}
                       UserVoted={option.Votes.includes(UserID)}
                       Percentage={option.Votes.length / totalVotes}
+                      Votes={option.Votes.length}
                       Text={option.OptionText}
                       OnClick={() => {
                         const thePoll: PollType = JSON.parse(

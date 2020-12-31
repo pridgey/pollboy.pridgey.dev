@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   OptionText,
-  OptionVoteCount
+  OptionVoteCount,
   PollOptionBar,
   PollOptionContainer,
 } from "./PollOption.styles";

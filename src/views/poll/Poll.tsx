@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import firebase from "firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
 import {
   Button,
   ButtonContainer,
@@ -16,6 +14,7 @@ import { useAirtable } from "./../../utilities";
 import queryString from "query-string";
 import { PollType, generateEmptyPoll } from "./Poll.types";
 import { v4 } from "uuid";
+import { PollDirectory } from "./../pollDirectory";
 
 type PollProps = {
   UserID: string;
@@ -277,7 +276,7 @@ export const Poll = ({ UserID }: PollProps) => {
           </>
         ) : (
           <GridArea Area="poll">
-            <Title>Create a New Poll Above</Title>
+            <PollDirectory UserID={UserID} />
           </GridArea>
         )}
       </PollContainer>

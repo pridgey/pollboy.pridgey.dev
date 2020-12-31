@@ -17,9 +17,11 @@ import queryString from "query-string";
 import { PollType, generateEmptyPoll } from "./Poll.types";
 import { v4 } from "uuid";
 
-export const Poll = () => {
-  // Grab the user (if logged in)
-  const [user] = useAuthState(firebase.auth());
+type PollProps = {
+  UserID: string;
+};
+
+export const Poll = ({ UserID }: PollProps) => {
   // Initialize db connection
   const airtable = useAirtable();
   // Grab any query string params
@@ -27,7 +29,7 @@ export const Poll = () => {
 
   // State for the poll overall
   const [pollState, updatePollState] = useState<PollType>(
-    generateEmptyPoll(user?.uid)
+    generateEmptyPoll(UserID)
   );
   const [pollID, setPollID] = useState("");
   const [totalVotes, updateTotalVotes] = useState(0);
@@ -113,36 +115,31 @@ export const Poll = () => {
               Color="green"
               type="button"
               onClick={() => {
-                if (user) {
-                  // Create new poll and show
-                  if (airtable) {
-                    const newID = v4();
+                // Create new poll and show
+                if (airtable) {
+                  const newID = v4();
 
-                    const newPoll = generateEmptyPoll(user.uid);
+                  const newPoll = generateEmptyPoll(UserID);
 
-                    newPoll.PollName = "Your brand new poll";
+                  newPoll.PollName = "Your brand new poll";
 
-                    airtable("Polls")
-                      .create([
-                        {
-                          fields: {
-                            PollID: newID,
-                            PollPayload: JSON.stringify(newPoll),
-                          },
+                  airtable("Polls")
+                    .create([
+                      {
+                        fields: {
+                          PollID: newID,
+                          PollPayload: JSON.stringify(newPoll),
                         },
-                      ])
-                      .catch((e) => console.error(e))
-                      .finally(() => {
-                        window.open(`${window.location.origin}?p=${newID}`);
-                      });
-                  }
-                } else {
-                  const provider = new firebase.auth.GoogleAuthProvider();
-                  firebase.auth().signInWithPopup(provider);
+                      },
+                    ])
+                    .catch((e) => console.error(e))
+                    .finally(() => {
+                      window.open(`${window.location.origin}?p=${newID}`);
+                    });
                 }
               }}
             >
-              {user ? "New Poll" : "Sign In"}
+              New Poll
             </Button>
             <Button
               Color="grayTwo"
@@ -182,7 +179,7 @@ export const Poll = () => {
             <GridArea Area="title">
               <Title>
                 {pollState.PollName}{" "}
-                {!editPollName && pollState.CreatedBy === user?.uid && (
+                {!editPollName && pollState.CreatedBy === UserID && (
                   <EditIcon
                     Height="0,5em"
                     Width="0.5em"
@@ -214,40 +211,27 @@ export const Poll = () => {
             </GridArea>
             <GridArea Area="poll">
               <PollOptionContainer>
-                {!!user?.uid ? (
-                  <PollInput
-                    ButtonText="Add Option"
-                    Placeholder="Your New Option"
-                    OnSubmit={(newOption: string) => {
-                      // Add the new option to the poll and have the user vote for it
-                      const thePoll: PollType = JSON.parse(
-                        JSON.stringify(pollState)
-                      );
-                      thePoll.PollOptions.push({
-                        OptionID: v4().toString(),
-                        OptionText: newOption,
-                        Votes: [user?.uid],
-                      });
+                <PollInput
+                  ButtonText="Add Option"
+                  Placeholder="Your New Option"
+                  OnSubmit={(newOption: string) => {
+                    // Add the new option to the poll and have the user vote for it
+                    const thePoll: PollType = JSON.parse(
+                      JSON.stringify(pollState)
+                    );
+                    thePoll.PollOptions.push({
+                      OptionID: v4().toString(),
+                      OptionText: newOption,
+                      Votes: [UserID],
+                    });
 
-                      // Update our own state optimistically
-                      updatePollState(thePoll);
+                    // Update our own state optimistically
+                    updatePollState(thePoll);
 
-                      // Update Airtable
-                      updateAirtable(thePoll);
-                    }}
-                  />
-                ) : (
-                  <Button
-                    type="button"
-                    Color="grayTwo"
-                    onClick={() => {
-                      const provider = new firebase.auth.GoogleAuthProvider();
-                      firebase.auth().signInWithPopup(provider);
-                    }}
-                  >
-                    Sign In with Google
-                  </Button>
-                )}
+                    // Update Airtable
+                    updateAirtable(thePoll);
+                  }}
+                />
                 {pollState.PollOptions.sort((a, b) => {
                   // Sort by the items with the most votes first
                   return b.Votes.length - a.Votes.length;
@@ -255,7 +239,7 @@ export const Poll = () => {
                   return (
                     <PollOption
                       key={`polloption-${index}`}
-                      Editable={!!user?.uid}
+                      UserVoted={option.Votes.includes(UserID)}
                       Percentage={option.Votes.length / totalVotes}
                       Text={option.OptionText}
                       OnClick={() => {
@@ -263,11 +247,11 @@ export const Poll = () => {
                           JSON.stringify(pollState)
                         );
                         // Add or remove this user from the votes
-                        if (option.Votes.includes(user?.uid)) {
+                        if (option.Votes.includes(UserID)) {
                           // You voted for this one already bud
                           const voteIndex = thePoll.PollOptions.find(
                             (options) => options.OptionID === option.OptionID
-                          )?.Votes.findIndex((vote) => vote === user.uid);
+                          )?.Votes.findIndex((vote) => vote === UserID);
 
                           if (typeof voteIndex === "number") {
                             // Splice the vote from the array
@@ -279,7 +263,7 @@ export const Poll = () => {
                           // Count the vote!
                           thePoll.PollOptions.find(
                             (options) => options.OptionID === option.OptionID
-                          )?.Votes.push(user.uid);
+                          )?.Votes.push(UserID);
                         }
 
                         updatePollState(thePoll);

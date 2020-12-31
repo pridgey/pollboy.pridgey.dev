@@ -6,16 +6,16 @@ import {
 } from "./PollOption.styles";
 
 type PollOptionProps = {
-  Editable?: boolean;
   Percentage: number;
   Text: string;
+  UserVoted?: boolean;
   OnClick: () => void;
 };
 
 export const PollOption = ({
-  Editable = false,
   Percentage,
   Text,
+  UserVoted = false,
   OnClick,
 }: PollOptionProps) => {
   const containerRef = useRef<HTMLButtonElement>(
@@ -39,14 +39,11 @@ export const PollOption = ({
   return (
     <PollOptionContainer
       ref={containerRef}
-      Editable={Editable}
       onClick={() => {
-        if (Editable) {
-          OnClick();
-        }
+        OnClick();
       }}
     >
-      <PollOptionBar Percentage={percentWidth} />
+      <PollOptionBar Percentage={percentWidth} UserVoted={UserVoted} />
       <OptionText>{Text}</OptionText>
     </PollOptionContainer>
   );

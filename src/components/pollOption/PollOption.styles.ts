@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const PollOptionContainer = styled.button<{ Editable: boolean }>`
+export const PollOptionContainer = styled.button`
   border-radius: 12px;
   background-color: ${(props) => props.theme.getColor("white", 0.5)};
   width: 100%;
@@ -9,16 +9,22 @@ export const PollOptionContainer = styled.button<{ Editable: boolean }>`
   border: 0px;
   margin: 10px 0px;
   position: relative;
-  cursor: ${(props) => (props.Editable ? "pointer" : "default")};
+  cursor: pointer;
 `;
 
-export const PollOptionBar = styled.div<{ Percentage: number }>`
+export const PollOptionBar = styled.div<{
+  Percentage: number;
+  UserVoted: boolean;
+}>`
   position: absolute;
-  background-color: ${(props) => props.theme.getColor("green", 0.5)};
+  background-color: ${(props) =>
+    props.UserVoted
+      ? props.theme.getColor("green", 0.75)
+      : props.theme.getColor("yellow", 0.5)};
   border-radius: 12px;
   width: ${(props) => `${props.Percentage}px`};
   height: 100%;
-  transition: width 0.5s;
+  transition: all 0.5s;
   top: 0;
   left: 0;
 `;

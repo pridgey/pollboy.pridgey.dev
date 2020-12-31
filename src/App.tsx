@@ -1,9 +1,10 @@
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import firebase from "firebase";
 import { AirtableProvider, getTheme } from "./utilities";
 import { ThemeProvider } from "styled-components";
 import { Poll } from "./views";
+import { v4 } from "uuid";
 
 firebase.initializeApp({
   apiKey: process.env.REACT_APP_FIREBASE_KEY,
@@ -15,12 +16,25 @@ firebase.initializeApp({
 });
 
 const App = () => {
+  const [userID, setUserID] = useState("");
+
+  useEffect(() => {
+    const storageUserID = localStorage.getItem("pbid");
+    if (storageUserID) {
+      setUserID(storageUserID);
+    } else {
+      const newUserID = v4();
+      setUserID(newUserID);
+      localStorage.setItem("pbid", newUserID);
+    }
+  }, []);
+
   return (
     <AirtableProvider>
       <ThemeProvider theme={getTheme()}>
         <BrowserRouter>
           <Suspense fallback={<div>loading</div>}>
-            <Poll />
+            <Poll UserID={userID} />
           </Suspense>
         </BrowserRouter>
       </ThemeProvider>

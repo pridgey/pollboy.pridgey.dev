@@ -113,31 +113,36 @@ export const Poll = () => {
               Color="green"
               type="button"
               onClick={() => {
-                // Create new poll and show
-                if (airtable) {
-                  const newID = v4();
+                if (user) {
+                  // Create new poll and show
+                  if (airtable) {
+                    const newID = v4();
 
-                  const newPoll = generateEmptyPoll(user.uid);
+                    const newPoll = generateEmptyPoll(user.uid);
 
-                  newPoll.PollName = "Your brand new poll";
+                    newPoll.PollName = "Your brand new poll";
 
-                  airtable("Polls")
-                    .create([
-                      {
-                        fields: {
-                          PollID: newID,
-                          PollPayload: JSON.stringify(newPoll),
+                    airtable("Polls")
+                      .create([
+                        {
+                          fields: {
+                            PollID: newID,
+                            PollPayload: JSON.stringify(newPoll),
+                          },
                         },
-                      },
-                    ])
-                    .catch((e) => console.error(e))
-                    .finally(() => {
-                      window.open(`${window.location.origin}?p=${newID}`);
-                    });
+                      ])
+                      .catch((e) => console.error(e))
+                      .finally(() => {
+                        window.open(`${window.location.origin}?p=${newID}`);
+                      });
+                  }
+                } else {
+                  const provider = new firebase.auth.GoogleAuthProvider();
+                  firebase.auth().signInWithPopup(provider);
                 }
               }}
             >
-              New Poll
+              {user ? "New Poll" : "Sign In"}
             </Button>
             <Button
               Color="grayTwo"

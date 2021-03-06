@@ -12,7 +12,7 @@ import {
   ConfirmDeleteModal,
   EditOptionModal,
 } from "./../../components";
-import { useAirtable, JSONToState, StateToJSON } from "./../../utilities";
+import { useAirtable } from "./../../utilities";
 import queryString from "query-string";
 import { PollType, generateEmptyPoll } from "./Poll.types";
 import { v4 } from "uuid";

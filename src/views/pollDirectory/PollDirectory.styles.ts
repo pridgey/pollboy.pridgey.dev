@@ -33,7 +33,7 @@ export const PollImage = styled.img`
   border-radius: 12px;
   width: 150px;
   height: 150px;
-  background-color: ${(props) => props.theme.getColor("blue")};
+  background-color: var(--blue)};
 `;
 
 export const PollTitle = styled.div`

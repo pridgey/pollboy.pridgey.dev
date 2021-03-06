@@ -2,9 +2,9 @@ import { Suspense, useEffect, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import firebase from "firebase";
 import { AirtableProvider, getTheme } from "./utilities";
-import { ThemeProvider } from "styled-components";
 import { Poll } from "./views";
 import { v4 } from "uuid";
+import { StyleWrapper } from "@pridgey/afterburner";
 
 firebase.initializeApp({
   apiKey: process.env.REACT_APP_FIREBASE_KEY,
@@ -31,13 +31,13 @@ const App = () => {
 
   return (
     <AirtableProvider>
-      <ThemeProvider theme={getTheme()}>
+      <StyleWrapper Theme={getTheme()}>
         <BrowserRouter>
           <Suspense fallback={<div>loading</div>}>
             <Poll UserID={userID} />
           </Suspense>
         </BrowserRouter>
-      </ThemeProvider>
+      </StyleWrapper>
     </AirtableProvider>
   );
 };

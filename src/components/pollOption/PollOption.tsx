@@ -1,56 +1,71 @@
-import { useEffect, useRef, useState } from "react";
+import { StyledElement } from "@pridgey/afterburner";
 import {
-  OptionText,
-  OptionVoteCount,
-  PollOptionBar,
-  PollOptionContainer,
-} from "./PollOption.styles";
+  Button,
+  Card,
+  Checkbox,
+  GridArea,
+  PollTitle,
+  FlexContainer,
+} from "./../";
+import { HiTrash } from "react-icons/hi";
+import { AiFillEdit } from "react-icons/ai";
 
 type PollOptionProps = {
-  Percentage: number;
   Text: string;
   UserVoted?: boolean;
+  UsersPoll?: boolean;
   Votes: number;
   OnClick: () => void;
+  OnDeleteClick: () => void;
+  OnEditClick: () => void;
 };
 
 export const PollOption = ({
-  Percentage,
   Text,
   UserVoted = false,
+  UsersPoll = false,
   Votes,
   OnClick,
+  OnDeleteClick,
+  OnEditClick,
 }: PollOptionProps) => {
-  const containerRef = useRef<HTMLButtonElement>(
-    document.createElement("button")
-  );
-  const [percentWidth, setPercentWidth] = useState(0);
-
-  useEffect(() => {
-    if (containerRef) {
-      let perc = Percentage;
-      if (Percentage > 1) {
-        // If percentage isn't 0.5, but instead 50, do this:
-        perc = Percentage / 100;
-      }
-      // Calculate the width
-      const containerWidth = containerRef.current.getBoundingClientRect().width;
-      setPercentWidth(containerWidth * perc);
-    }
-  }, [containerRef, Percentage]);
+  const StyledPollOption = StyledElement("div", {
+    borderRadius: "20px",
+    display: "grid",
+    gridTemplateColumns: "min-content auto min-content",
+    gridTemplateRows: "min-content min-content",
+    gridTemplateAreas: `"check title options" "check subtitle options"`,
+    gap: "0px 15px",
+    fontFamily: "'Mukta', sans-serif",
+  });
 
   return (
-    <PollOptionContainer
-      ref={containerRef}
-      onClick={() => {
-        OnClick();
-      }}
-    >
-      <PollOptionBar Percentage={percentWidth} UserVoted={UserVoted} />
-      <OptionText>
-        <span>{Text}</span>
-        <OptionVoteCount>{Votes}</OptionVoteCount>
-      </OptionText>
-    </PollOptionContainer>
+    <Card Margin="10px">
+      <StyledPollOption>
+        <GridArea Area="check">
+          <Checkbox OnClick={() => OnClick()} IsSelected={UserVoted} />
+        </GridArea>
+        <GridArea Area="title">
+          <PollTitle FontSize="30px" FontWeight={400} Margin="0px">
+            {Text}
+          </PollTitle>
+        </GridArea>
+        <GridArea Area="subtitle">Votes: {Votes}</GridArea>
+        <GridArea Area="options">
+          <FlexContainer Direction="column">
+            {UsersPoll && (
+              <>
+                <Button HoverColor="--red" OnClick={() => OnDeleteClick()}>
+                  <HiTrash />
+                </Button>
+                <Button HoverColor="--green" OnClick={() => OnEditClick()}>
+                  <AiFillEdit />
+                </Button>
+              </>
+            )}
+          </FlexContainer>
+        </GridArea>
+      </StyledPollOption>
+    </Card>
   );
 };

@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 import {
   Button,
-  ButtonContainer,
-  GridArea,
-  LogoContainer,
-  PollContainer,
-  PollOptionContainer,
-  Title,
-  YoutubeBackground,
-} from "./Poll.styles";
-import { EditIcon, PollIcon, PollInput, PollOption } from "./../../components";
-import { useAirtable } from "./../../utilities";
+  Background,
+  Header,
+  PollOption,
+  PollInput,
+  PollBoyLogo,
+  PollLayout,
+  TitleEdit,
+  FlexContainer,
+  ConfirmDeleteModal,
+  EditOptionModal,
+} from "./../../components";
+import { useAirtable, JSONToState, StateToJSON } from "./../../utilities";
 import queryString from "query-string";
 import { PollType, generateEmptyPoll } from "./Poll.types";
 import { v4 } from "uuid";
@@ -31,10 +33,11 @@ export const Poll = ({ UserID }: PollProps) => {
     generateEmptyPoll(UserID)
   );
   const [pollID, setPollID] = useState("");
-  const [totalVotes, updateTotalVotes] = useState(0);
-  const [editPollName, setEditPollName] = useState(false);
+  const [optionIDToDelete, setOptionIDToDelete] = useState("");
+  const [optionIDToEdit, setOptionIDToEdit] = useState("");
 
   useEffect(() => {
+    // Once airtable is ready, grab data for this pollid
     if (airtable && params) {
       airtable("Polls")
         .select({
@@ -61,15 +64,7 @@ export const Poll = ({ UserID }: PollProps) => {
     // eslint-disable-next-line
   }, [airtable]);
 
-  useEffect(() => {
-    let total = 0;
-    pollState.PollOptions.forEach((option) => {
-      total += option.Votes.length;
-    });
-
-    updateTotalVotes(total);
-  }, [pollState]);
-
+  // Function for updating Airtable
   const updateAirtable = (updatedPoll: PollType) => {
     if (airtable) {
       airtable("Polls")
@@ -87,202 +82,223 @@ export const Poll = ({ UserID }: PollProps) => {
 
   return (
     <>
-      <YoutubeBackground
-        videoId="gdJjc6l6iII"
-        opts={{
-          playerVars: {
-            autoplay: 1,
-            controls: 0,
-            disablekb: 1,
-            loop: 1,
-            modestbranding: 1,
-            mute: 1,
-            start: 4,
-          },
-        }}
-      />
-      <PollContainer>
-        <GridArea Area="logo">
-          <LogoContainer>
-            <PollIcon Height="1.3em" Width="1.3em" />
-            <span>PollBoy</span>
-          </LogoContainer>
-        </GridArea>
-        <GridArea Area="buttons">
-          <ButtonContainer>
-            <Button
-              Color="green"
-              type="button"
-              onClick={() => {
-                // Create new poll and show
-                if (airtable) {
-                  const newID = v4();
+      <Background>
+        <PollLayout
+          Header={
+            <Header
+              Title={
+                <FlexContainer JustifyContent="flex-start">
+                  <PollBoyLogo Height="100" />
+                  <TitleEdit
+                    Text={params.p ? pollState.PollName : "PollBoy"}
+                    UsersPoll={!!params.p && pollState.CreatedBy === UserID}
+                    OnChange={(newTitle: string) => {
+                      // Convert to string and back to get unique JS object
+                      const thePoll: PollType = JSON.parse(
+                        JSON.stringify(pollState)
+                      );
 
-                  const newPoll = generateEmptyPoll(UserID);
-
-                  newPoll.PollName = "Your brand new poll";
-
-                  airtable("Polls")
-                    .create([
-                      {
-                        fields: {
-                          PollID: newID,
-                          PollPayload: JSON.stringify(newPoll),
-                        },
-                      },
-                    ])
-                    .catch((e) => console.error(e))
-                    .finally(() => {
-                      window.open(`${window.location.origin}?p=${newID}`);
-                    });
-                }
-              }}
-            >
-              New Poll
-            </Button>
-            {params.p && (
-              <Button
-                Color="grayTwo"
-                type="button"
-                disabled={!params.p}
-                onClick={() => {
-                  if (params.p) {
-                    const textArea = document.createElement("textarea");
-                    textArea.value = window.location.href;
-
-                    textArea.id = "temp-textarea";
-                    textArea.style.top = "0";
-                    textArea.style.left = "0";
-                    textArea.style.position = "fixed";
-                    textArea.style.opacity = "0";
-
-                    document.body.appendChild(textArea);
-                    textArea.focus();
-                    textArea.select();
-
-                    try {
-                      document.execCommand("copy");
-                    } catch (err) {
-                      console.error("Unable to copy text to clipboard.", err);
-                    }
-
-                    document.getElementById("temp-textarea")?.remove();
-                  }
-                }}
-              >
-                Copy Poll Link
-              </Button>
-            )}
-          </ButtonContainer>
-        </GridArea>
-        {params.p ? (
-          <>
-            <GridArea Area="title">
-              <Title>
-                {pollState.PollName}{" "}
-                {!editPollName && pollState.CreatedBy === UserID && (
-                  <EditIcon
-                    Height="0,5em"
-                    Width="0.5em"
-                    OnClick={() => setEditPollName(true)}
+                      thePoll.PollName = newTitle;
+                      updatePollState(thePoll);
+                      updateAirtable(thePoll);
+                    }}
                   />
-                )}
-              </Title>
-              {editPollName && (
-                <PollInput
-                  ButtonText="Update Poll Name"
-                  Placeholder="New Poll Name"
-                  OnSubmit={(newOption: string) => {
-                    // Add the new option to the poll and have the user vote for it
-                    const thePoll: PollType = JSON.parse(
-                      JSON.stringify(pollState)
-                    );
-                    // Set new name
-                    thePoll.PollName = newOption;
+                </FlexContainer>
+              }
+              Actions={
+                <FlexContainer JustifyContent="flex-start">
+                  {params.p ? (
+                    <Button
+                      OnClick={() => {
+                        if (params.p) {
+                          // Create textarea to paste thing into and copy it to clipboard
+                          const textArea = document.createElement("textarea");
+                          textArea.value = window.location.href;
 
-                    // Update our own state optimistically
-                    updatePollState(thePoll);
+                          textArea.id = "temp-textarea";
+                          textArea.style.top = "0";
+                          textArea.style.left = "0";
+                          textArea.style.position = "fixed";
+                          textArea.style.opacity = "0";
 
-                    // Update Airtable
-                    updateAirtable(thePoll);
-                    setEditPollName(false);
-                  }}
-                />
-              )}
-            </GridArea>
-            <GridArea Area="poll">
-              <PollOptionContainer>
-                <PollInput
-                  ButtonText="Add Option"
-                  Placeholder="Your New Option"
-                  OnSubmit={(newOption: string) => {
-                    // Add the new option to the poll and have the user vote for it
-                    const thePoll: PollType = JSON.parse(
-                      JSON.stringify(pollState)
-                    );
-                    thePoll.PollOptions.push({
-                      OptionID: v4().toString(),
-                      OptionText: newOption,
-                      Votes: [UserID],
-                    });
+                          document.body.appendChild(textArea);
+                          textArea.focus();
+                          textArea.select();
 
-                    // Update our own state optimistically
-                    updatePollState(thePoll);
+                          try {
+                            document.execCommand("copy");
+                          } catch (err) {
+                            console.error(
+                              "Unable to copy text to clipboard.",
+                              err
+                            );
+                          }
 
-                    // Update Airtable
-                    updateAirtable(thePoll);
-                  }}
-                />
+                          document.getElementById("temp-textarea")?.remove();
+                        }
+                      }}
+                    >
+                      copy poll link
+                    </Button>
+                  ) : undefined}
+                  <Button
+                    OnClick={() => {
+                      // Create new poll and show
+                      if (airtable) {
+                        const newID = v4();
+
+                        const newPoll = generateEmptyPoll(UserID);
+
+                        newPoll.PollName = "Your brand new poll";
+
+                        airtable("Polls")
+                          .create([
+                            {
+                              fields: {
+                                PollID: newID,
+                                PollPayload: JSON.stringify(newPoll),
+                              },
+                            },
+                          ])
+                          .catch((e) => console.error(e))
+                          .finally(() => {
+                            window.open(
+                              `${window.location.origin}?p=${newID}`,
+                              params.p ? "_blank" : "_self"
+                            );
+                          });
+                      }
+                    }}
+                  >
+                    create new poll
+                  </Button>
+                </FlexContainer>
+              }
+            />
+          }
+          Input={
+            params.p && (
+              <PollInput
+                Placeholder="Add a new Poll Item"
+                OnSubmit={(newItem: string) => {
+                  // Convert to string and back to get unique JS object
+                  const thePoll: PollType = JSON.parse(
+                    JSON.stringify(pollState)
+                  );
+
+                  thePoll.PollOptions.push({
+                    OptionID: v4(),
+                    OptionText: newItem,
+                    Votes: [],
+                  });
+
+                  updatePollState(thePoll);
+                  updateAirtable(thePoll);
+                }}
+              />
+            )
+          }
+          Options={
+            params.p ? (
+              <FlexContainer
+                JustifyContent="flex-start"
+                AlignItems="flex-start"
+                Wrap="wrap"
+              >
                 {pollState.PollOptions.sort((a, b) => {
                   // Sort by the items with the most votes first
                   return b.Votes.length - a.Votes.length;
-                }).map((option, index) => {
-                  return (
-                    <PollOption
-                      key={`polloption-${index}`}
-                      UserVoted={option.Votes.includes(UserID)}
-                      Percentage={option.Votes.length / totalVotes}
-                      Votes={option.Votes.length}
-                      Text={option.OptionText}
-                      OnClick={() => {
-                        const thePoll: PollType = JSON.parse(
-                          JSON.stringify(pollState)
-                        );
-                        // Add or remove this user from the votes
-                        if (option.Votes.includes(UserID)) {
-                          // You voted for this one already bud
-                          const voteIndex = thePoll.PollOptions.find(
-                            (options) => options.OptionID === option.OptionID
-                          )?.Votes.findIndex((vote) => vote === UserID);
+                }).map((option) => (
+                  <PollOption
+                    UsersPoll={pollState.CreatedBy === UserID}
+                    OnDeleteClick={() => setOptionIDToDelete(option.OptionID)}
+                    OnEditClick={() => setOptionIDToEdit(option.OptionID)}
+                    OnClick={() => {
+                      // Convert to string and back to get unique JS object
+                      const thePoll: PollType = JSON.parse(
+                        JSON.stringify(pollState)
+                      );
 
-                          if (typeof voteIndex === "number") {
-                            // Splice the vote from the array
-                            thePoll.PollOptions.find(
-                              (options) => options.OptionID === option.OptionID
-                            )?.Votes.splice(voteIndex!, 1);
-                          }
-                        } else {
-                          // Count the vote!
+                      // Add or remove this user from the votes
+                      if (option.Votes.includes(UserID)) {
+                        // You voted for this one already bud
+                        const voteIndex = thePoll.PollOptions.find(
+                          (options) => options.OptionID === option.OptionID
+                        )?.Votes.findIndex((vote) => vote === UserID);
+
+                        if (typeof voteIndex === "number") {
+                          // Splice the vote from the array
                           thePoll.PollOptions.find(
                             (options) => options.OptionID === option.OptionID
-                          )?.Votes.push(UserID);
+                          )?.Votes.splice(voteIndex!, 1);
                         }
+                      } else {
+                        // Count the vote!
+                        thePoll.PollOptions.find(
+                          (options) => options.OptionID === option.OptionID
+                        )?.Votes.push(UserID);
+                      }
 
-                        updatePollState(thePoll);
-                        updateAirtable(thePoll);
-                      }}
-                    />
-                  );
-                })}
-              </PollOptionContainer>
-            </GridArea>
-          </>
-        ) : (
-          <GridArea Area="poll">
-            <PollDirectory UserID={UserID} />
-          </GridArea>
+                      updatePollState(thePoll);
+                      updateAirtable(thePoll);
+                    }}
+                    key={option.OptionID}
+                    UserVoted={option.Votes.includes(UserID)}
+                    Text={option.OptionText}
+                    Votes={option.Votes.length}
+                  />
+                ))}
+              </FlexContainer>
+            ) : (
+              <PollDirectory UserID={UserID} />
+            )
+          }
+        />
+        {optionIDToDelete && (
+          <ConfirmDeleteModal
+            OnCancel={() => setOptionIDToDelete("")}
+            OnConfirm={() => {
+              // Convert to string and back to get unique JS object
+              const thePoll: PollType = JSON.parse(JSON.stringify(pollState));
+
+              thePoll.PollOptions.splice(
+                thePoll.PollOptions.findIndex(
+                  (option) => option.OptionID === optionIDToDelete
+                ),
+                1
+              );
+
+              updatePollState(thePoll);
+              updateAirtable(thePoll);
+              setOptionIDToDelete("");
+            }}
+          />
         )}
-      </PollContainer>
+        {optionIDToEdit && (
+          <EditOptionModal
+            OnCancel={() => setOptionIDToEdit("")}
+            OnConfirm={(newText: string) => {
+              // Convert to string and back to get unique JS object
+              const thePoll: PollType = JSON.parse(JSON.stringify(pollState));
+
+              const option = thePoll.PollOptions.find(
+                (option) => option.OptionID === optionIDToEdit
+              );
+
+              console.log("option:", option);
+              console.log("newText:", newText);
+
+              if (option) {
+                option.OptionText = newText;
+              }
+
+              updatePollState(thePoll);
+              updateAirtable(thePoll);
+              setOptionIDToEdit("");
+            }}
+          />
+        )}
+      </Background>
     </>
   );
 };

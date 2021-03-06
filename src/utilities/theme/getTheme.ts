@@ -4,9 +4,9 @@ export const getTheme = () => {
   let resultingTheme;
 
   if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    resultingTheme = new DarkTheme();
+    resultingTheme = DarkTheme;
   } else {
-    resultingTheme = new LightTheme();
+    resultingTheme = LightTheme;
   }
 
   return resultingTheme;

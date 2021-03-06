@@ -1,46 +1,51 @@
-import { ChangeEvent, FormEvent, useState } from "react";
-import {
-  InputControl,
-  PollInputContainer,
-  PollInputSubmit,
-} from "./PollInput.styles";
+import { ChangeEvent, KeyboardEvent, useState, useEffect } from "react";
+import { InputControl } from "./PollInput.styles";
 
 type PollInputProps = {
-  ButtonText: string;
+  AutoFocus?: boolean;
+  Default?: string;
   Placeholder: string;
+  Value?: string;
   OnSubmit: (newOption: string) => void;
+  OnChange?: (newOption: string) => void;
 };
 
 export const PollInput = ({
-  ButtonText,
+  AutoFocus,
+  Default,
   Placeholder,
+  Value,
   OnSubmit,
+  OnChange,
 }: PollInputProps) => {
   const [inputValue, updateInputValue] = useState("");
 
+  useEffect(() => {
+    if (Value) {
+      updateInputValue(Value);
+    }
+  }, [Value]);
+
   return (
-    <PollInputContainer onSubmit={(e: FormEvent) => e.preventDefault()}>
-      <InputControl
-        type="text"
-        placeholder={Placeholder}
-        value={inputValue}
-        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-          updateInputValue(e.currentTarget.value)
+    <InputControl
+      type="text"
+      defaultValue={Default}
+      placeholder={Placeholder}
+      value={inputValue}
+      autoFocus={AutoFocus || (Value !== null && !!OnChange)}
+      onKeyUp={(e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          OnSubmit(inputValue);
+          updateInputValue("");
         }
-      />
-      {!!inputValue.length && (
-        <PollInputSubmit
-          type="submit"
-          onClick={() => {
-            if (inputValue) {
-              OnSubmit(inputValue);
-              updateInputValue("");
-            }
-          }}
-        >
-          {ButtonText}
-        </PollInputSubmit>
-      )}
-    </PollInputContainer>
+      }}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+        updateInputValue(e.currentTarget.value);
+        if (Value !== null && OnChange) {
+          OnChange(e.currentTarget.value);
+        }
+      }}
+    />
   );
 };

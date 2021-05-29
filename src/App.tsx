@@ -1,11 +1,12 @@
-import { Suspense, useEffect, useState } from "react";
-import { BrowserRouter } from "react-router-dom";
+import { Suspense, useEffect, useState, lazy } from "react";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import firebase from "firebase";
-import { AirtableProvider, getTheme } from "./utilities";
+import { AirtableProvider, PollAPIProvider, getTheme } from "./utilities";
 import { Poll } from "./views";
 import { v4 } from "uuid";
 import { StyleWrapper } from "@pridgey/afterburner";
 
+// Do we still need this if people aren't logging in?
 firebase.initializeApp({
   apiKey: process.env.REACT_APP_FIREBASE_KEY,
   authDomain: "pridgey-poll.firebaseapp.com",
@@ -14,6 +15,8 @@ firebase.initializeApp({
   messagingSenderId: "1085093590247",
   appId: "1:1085093590247:web:ccc7c0aededa8c13599e42",
 });
+
+const Home = lazy(() => import("./views/home"));
 
 const App = () => {
   const [userID, setUserID] = useState("");
@@ -31,13 +34,17 @@ const App = () => {
 
   return (
     <AirtableProvider>
-      <StyleWrapper Theme={getTheme()}>
-        <BrowserRouter>
-          <Suspense fallback={<div>loading</div>}>
-            <Poll UserID={userID} />
-          </Suspense>
-        </BrowserRouter>
-      </StyleWrapper>
+      <PollAPIProvider>
+        <StyleWrapper Theme={getTheme()}>
+          <BrowserRouter>
+            <Suspense fallback={<div>loading</div>}>
+              <Switch>
+                <Route path="/" component={Home} />
+              </Switch>
+            </Suspense>
+          </BrowserRouter>
+        </StyleWrapper>
+      </PollAPIProvider>
     </AirtableProvider>
   );
 };

@@ -1,21 +1,31 @@
 import React, { createContext, useContext } from "react";
 import { useAirtable } from "./../useAirtable";
-import { Poll } from "./../../types";
+import { Poll, PollOption, PollVote } from "./../../types";
 import { CallAPI } from "./PollAPI.functions";
 import Airtable from "airtable";
 
 // Defines the functions that come out of the PollAPI
 type PollAPI = {
   createPoll: (NewPoll: Poll) => Promise<boolean>;
-  listPolls: (UserID: string) => Promise<{}[]>;
-  updatePoll: (UpdatedPoll: Poll) => Promise<void>;
-  deletePoll: (PollID: string) => Promise<void>;
-  selectPoll: (PollID: string) => Promise<{}[]>;
+  listPolls: (UserID: string) => Promise<Poll[]>;
+  updatePoll: (UpdatedPoll: Poll) => Promise<boolean>;
+  deletePoll: (PollID: string) => Promise<boolean>;
+  selectPoll: (PollID: string) => Promise<Poll[]>;
+  createPollOption: (NewPollOption: PollOption) => Promise<boolean>;
+  listPollOptions: (PollID: string) => Promise<PollOption[]>;
+  selectPollOption: (
+    PollOptionID: string,
+    PollID: string
+  ) => Promise<PollOption[]>;
+  deletePollOption: (PollOptionID: string, PollID: string) => Promise<boolean>;
+  updatePollOption: (UpdatedPollOption: PollOption) => Promise<boolean>;
+  vote: (PollVote: PollVote) => Promise<boolean>;
+  listPollVotes: (PollID: string) => Promise<PollVote[]>;
 };
 
 // The Context
 export const PollAPIContext = createContext<PollAPI>(
-  CallAPI(new Airtable({ apiKey: "awf" }).base(""))
+  CallAPI(new Airtable({ apiKey: "Fake" }).base(""))
 );
 
 // The hook

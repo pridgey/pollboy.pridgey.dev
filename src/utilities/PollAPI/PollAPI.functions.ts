@@ -1,5 +1,4 @@
-import Airtable from "airtable";
-import { Poll, PollVote } from "./../../types";
+import { Poll, PollOption, PollVote } from "./../../types";
 import { v4 } from "uuid";
 
 export const CallAPI = (Base: Airtable.Base) => ({
@@ -16,6 +15,10 @@ export const CallAPI = (Base: Airtable.Base) => ({
       ])
       .then(() => {
         return true;
+      })
+      .catch((err) => {
+        console.error(err);
+        return false;
       }),
   // Update an existing Poll
   updatePoll: (UpdatedPoll: Poll) =>
@@ -25,7 +28,7 @@ export const CallAPI = (Base: Airtable.Base) => ({
       })
       .all()
       .then((result) => result.map((result) => result.id))
-      .then((result) => {
+      .then((result) =>
         Base("Polls")
           .update([
             {
@@ -35,7 +38,11 @@ export const CallAPI = (Base: Airtable.Base) => ({
               },
             },
           ])
-          .then(() => true);
+          .then(() => true)
+      )
+      .catch((err) => {
+        console.error(err);
+        return false;
       }),
   // List all Polls the user has made, or has voted in
   listPolls: (UserID: string) =>
@@ -57,8 +64,12 @@ export const CallAPI = (Base: Airtable.Base) => ({
               : `UserID="${UserID}"`,
           })
           .all()
-          .then((results) => results.map((result) => result.fields))
-      ),
+          .then((results) => results.map((result) => result.fields as Poll))
+      )
+      .catch((err) => {
+        console.error(err);
+        return [] as Poll[];
+      }),
   // Select a single poll
   selectPoll: (PollID: string) =>
     Base("Polls")
@@ -66,7 +77,11 @@ export const CallAPI = (Base: Airtable.Base) => ({
         filterByFormula: `Slug = "${PollID}"`,
       })
       .all()
-      .then((result) => result.map((result) => result.fields)),
+      .then((result) => result.map((result) => result.fields as Poll))
+      .catch((err) => {
+        console.error(err);
+        return [] as Poll[];
+      }),
   // Delete Poll
   deletePoll: (PollID: string) =>
     Base("Polls")
@@ -75,9 +90,164 @@ export const CallAPI = (Base: Airtable.Base) => ({
       })
       .all()
       .then((result) => result.map((result) => result.id))
-      .then((result) => {
+      .then((result) =>
         Base("Polls")
           .destroy(result)
-          .then(() => true);
+          .then(() =>
+            Base("PollOptions")
+              .select({
+                filterByFormula: `PollID = "${PollID}"`,
+              })
+              .all()
+              .then((results) => results.map((result) => result.id))
+              .then((results) =>
+                Base("PollOptions")
+                  .destroy(results)
+                  .then(() =>
+                    Base("PollVotes")
+                      .select({
+                        filterByFormula: `PollID = "${PollID}"`,
+                      })
+                      .all()
+                      .then((results) => results.map((result) => result.id))
+                      .then((results) =>
+                        Base("PollVotes")
+                          .destroy(results)
+                          .then(() => true)
+                      )
+                  )
+              )
+          )
+      )
+      .catch((err) => {
+        console.error(err);
+        return false;
+      }),
+  // Create a new Poll Option for a Poll
+  createPollOption: (NewPollOption: PollOption) =>
+    Base("PollOptions")
+      ?.create([
+        {
+          fields: {
+            ...{ ...NewPollOption },
+            PollOptionID: v4(),
+          },
+        },
+      ])
+      .then(() => {
+        return true;
+      })
+      .catch((err) => {
+        console.error(err);
+        return false;
+      }),
+  // List all poll options for a specific poll
+  listPollOptions: (PollID: string) =>
+    Base("PollOptions")
+      ?.select({
+        filterByFormula: `PollID = "${PollID}"`,
+      })
+      .all()
+      .then((results) => results.map((result) => result.fields as PollOption))
+      .catch((err) => {
+        console.error(err);
+        return [] as PollOption[];
+      }),
+  // Select a single poll option for a poll
+  selectPollOption: (PollOptionID: string, PollID: string) =>
+    Base("PollOptions")
+      ?.select({
+        filterByFormula: `AND(PollID = "${PollID}", PollOptionID = "${PollOptionID}")`,
+      })
+      .all()
+      .then((result) => result.map((result) => result.fields as PollOption))
+      .catch((err) => {
+        console.error(err);
+        return [] as PollOption[];
+      }),
+  // Delete PollOption from Poll
+  deletePollOption: (PollOptionID: string, PollID: string) =>
+    Base("PollOptions")
+      ?.select({
+        filterByFormula: `AND(PollID = "${PollID}", PollOptionID = "${PollOptionID}")`,
+      })
+      .all()
+      .then((result) => result.map((result) => result.id))
+      .then((result) =>
+        Base("PollOptions")
+          .destroy(result)
+          .then(() => true)
+      )
+      .catch((err) => {
+        console.error(err);
+        return false;
+      }),
+  // Update an existing Poll Option
+  updatePollOption: (UpdatedPollOption: PollOption) =>
+    Base("PollOptions")
+      ?.select({
+        filterByFormula: `PollOptionID = "${UpdatedPollOption.PollOptionID}"`,
+      })
+      .all()
+      .then((result) => result.map((result) => result.id))
+      .then((result) =>
+        Base("PollOptions")
+          .update([
+            {
+              id: result[0],
+              fields: {
+                ...UpdatedPollOption,
+              },
+            },
+          ])
+          .then(() => true)
+      )
+      .catch((err) => {
+        console.error(err);
+        return false;
+      }),
+  // Creates a vote for a poll option for a user
+  vote: (PollVote: PollVote) =>
+    Base("PollVotes")
+      ?.select({
+        filterByFormula: `AND(PollID = "${PollVote.PollID}", PollOptionID = "${PollVote.PollOptionID}", UserID = "${PollVote.UserID}")`,
+      })
+      .all()
+      .then((result) => result.map((result) => result))
+      .then((results) => {
+        if (results.length) {
+          // User has already vote, so remove the vote
+          return Base("PollVotes")
+            ?.destroy([results[0].id])
+            .then(() => true);
+        } else {
+          // User hasn't voted for this one, add the vote
+          return Base("PollVotes")
+            ?.create([
+              {
+                fields: {
+                  ...{ ...PollVote },
+                  PollVoteID: v4(),
+                },
+              },
+            ])
+            .then(() => true);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        return false;
+      }),
+  // List all PollVotes for a Poll
+  listPollVotes: (PollID: string) =>
+    Base("PollVotes")
+      ?.select({
+        filterByFormula: `PollID = "${PollID}"`,
+      })
+      .all()
+      .then((results) => results.map((result) => result.fields as PollVote))
+      .catch((err) => {
+        console.error(err);
+        return [] as PollVote[];
       }),
 });

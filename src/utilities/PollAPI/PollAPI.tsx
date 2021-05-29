@@ -7,9 +7,10 @@ import Airtable from "airtable";
 // Defines the functions that come out of the PollAPI
 type PollAPI = {
   createPoll: (NewPoll: Poll) => Promise<boolean>;
-  listPolls: (UserID: string) => Promise<void>;
+  listPolls: (UserID: string) => Promise<{}[]>;
   updatePoll: (UpdatedPoll: Poll) => Promise<void>;
   deletePoll: (PollID: string) => Promise<void>;
+  selectPoll: (PollID: string) => Promise<{}[]>;
 };
 
 // The Context

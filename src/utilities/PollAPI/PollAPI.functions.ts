@@ -47,18 +47,26 @@ export const CallAPI = (Base: Airtable.Base) => ({
       .then((results) =>
         results.map((result) => (result.fields as PollVote).PollID)
       )
-      .then((VotedPollIDs: string[]) => {
+      .then((VotedPollIDs: string[]) =>
         Base("Polls")
           ?.select({
             filterByFormula: VotedPollIDs.length
               ? `OR(UserID = "${UserID}"${VotedPollIDs.map(
                   (PollID) => `, Slug = "${PollID}"`
                 ).join("")})`
-              : `UserID = "${UserID}"`,
+              : `UserID="${UserID}"`,
           })
           .all()
-          .then((result) => result.map((result) => result.fields));
-      }),
+          .then((results) => results.map((result) => result.fields))
+      ),
+  // Select a single poll
+  selectPoll: (PollID: string) =>
+    Base("Polls")
+      ?.select({
+        filterByFormula: `Slug = "${PollID}"`,
+      })
+      .all()
+      .then((result) => result.map((result) => result.fields)),
   // Delete Poll
   deletePoll: (PollID: string) =>
     Base("Polls")

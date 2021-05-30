@@ -1,11 +1,27 @@
 import { ReactNode, useState, useEffect } from "react";
-import { StyledBackground, StyledMain } from "./Background.styles";
+import {
+  BackgroundGradient,
+  LayoutContainer,
+  LayoutOverlay,
+  LayoutHeader,
+  ContentContainer,
+  LayoutNav,
+  Content,
+  HeaderLogo,
+  MenuButton,
+  Navbutton,
+  NavBreaker,
+} from "./Layout.styles";
+import { CgMenuLeftAlt, CgClose } from "react-icons/cg";
 
-type BackgroundProps = {
+type LayoutProps = {
   children: ReactNode;
 };
 
-export const Background = ({ children }: BackgroundProps) => {
+export const Layout = ({ children }: LayoutProps) => {
+  // Nav slider state
+  const [showNav, setShowNav] = useState(false);
+
   // State contains all the randomized values for the background
   const [backgroundConfig, setBackgroundConfig] = useState<{
     angle: number;
@@ -60,8 +76,24 @@ export const Background = ({ children }: BackgroundProps) => {
   }, []);
 
   return (
-    <StyledBackground {...backgroundConfig}>
-      <StyledMain>{children}</StyledMain>
-    </StyledBackground>
+    <LayoutContainer>
+      <BackgroundGradient {...backgroundConfig} />
+      <LayoutOverlay>
+        <LayoutHeader>
+          <MenuButton onClick={() => setShowNav(!showNav)}>
+            {showNav ? <CgClose /> : <CgMenuLeftAlt />}
+          </MenuButton>
+          <HeaderLogo>Pollboy</HeaderLogo>
+        </LayoutHeader>
+        <ContentContainer ShowNav={showNav}>
+          <LayoutNav>
+            <Navbutton onClick={() => alert("List")}>List My Polls</Navbutton>
+            <Navbutton onClick={() => alert("Make")}>Create New Poll</Navbutton>
+            <NavBreaker />
+          </LayoutNav>
+          <Content>Hello world</Content>
+        </ContentContainer>
+      </LayoutOverlay>
+    </LayoutContainer>
   );
 };

@@ -7,6 +7,7 @@ import {
   getTheme,
 } from "./utilities";
 import { StyleWrapper } from "@pridgey/afterburner";
+import { Layout } from "./components";
 
 // Lazy load components
 const Home = lazy(() => import("./views/home"));
@@ -18,9 +19,11 @@ const App = () => (
         <StyleWrapper Theme={getTheme()}>
           <BrowserRouter>
             <Suspense fallback={<div>loading</div>}>
-              <Switch>
-                <Route path="/" component={Home} />
-              </Switch>
+              <Layout>
+                <Switch>
+                  <Route path="/" component={Home} />
+                </Switch>
+              </Layout>
             </Suspense>
           </BrowserRouter>
         </StyleWrapper>

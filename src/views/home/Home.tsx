@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { usePollAPI, useUserID } from "./../../utilities";
+import { PollBoyLogo, Button } from "./../../components";
 import { StyledHome } from "./Home.styles";
-import Avatar from "boring-avatars";
 
 export const Home = () => {
   const { listPollVotes } = usePollAPI();
@@ -15,8 +15,9 @@ export const Home = () => {
 
   return (
     <StyledHome>
-      <span>Welcome to Pollboy</span>
-      <Avatar size={80} name={userID} variant="beam" />
+      <PollBoyLogo Height="50vw" Width="50vw" />
+      <Button OnClick={() => alert("one")}>Create New Poll</Button>
+      <Button OnClick={() => alert("one")}>View My Polls</Button>
     </StyledHome>
   );
 };

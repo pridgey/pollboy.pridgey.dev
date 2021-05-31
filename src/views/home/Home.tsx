@@ -16,6 +16,8 @@ export const Home = () => {
   // State to store polls
   const [userPolls, setUserPolls] = useState<Poll[]>([]);
 
+  console.log(userPolls);
+
   useEffect(() => {
     listPolls(userID).then((results: Poll[]) => setUserPolls(results));
   }, [userID, listPolls]);

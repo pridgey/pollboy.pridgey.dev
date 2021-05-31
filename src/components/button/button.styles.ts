@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
-export const StyledButton = styled.button`
+export const StyledButton = styled.button<{ FontSize: number }>`
   border: 0px;
   background-color: transparent;
-  font-size: 24px;
+  font-size: ${(p) => p.FontSize}rem;
   font-weight: 800;
   cursor: pointer;
   color: #5bc0eb;

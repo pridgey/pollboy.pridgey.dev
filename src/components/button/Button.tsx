@@ -4,9 +4,11 @@ import { StyledButton } from "./button.styles";
 type ButtonProps = {
   OnClick: () => void;
   children: ReactNode;
-  HoverColor?: string;
+  FontSize?: number;
 };
 
-export const Button = ({ OnClick, children }: ButtonProps) => (
-  <StyledButton onClick={() => OnClick()}>{children}</StyledButton>
+export const Button = ({ OnClick, FontSize = 20, children }: ButtonProps) => (
+  <StyledButton onClick={() => OnClick()} FontSize={FontSize}>
+    {children}
+  </StyledButton>
 );

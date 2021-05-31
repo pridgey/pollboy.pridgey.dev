@@ -11,6 +11,7 @@ import { Layout } from "./components";
 
 // Lazy load components
 const Home = lazy(() => import("./views/home"));
+const CreatePoll = lazy(() => import("./views/createPoll"));
 
 const App = () => (
   <UserIDProvider>
@@ -21,6 +22,7 @@ const App = () => (
             <Suspense fallback={<div>loading</div>}>
               <Layout>
                 <Switch>
+                  <Route path="/create" component={CreatePoll} />
                   <Route path="/" component={Home} />
                 </Switch>
               </Layout>

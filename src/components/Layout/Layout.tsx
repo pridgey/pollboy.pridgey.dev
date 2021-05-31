@@ -91,7 +91,7 @@ export const Layout = ({ children }: LayoutProps) => {
             <Navbutton onClick={() => alert("Make")}>Create New Poll</Navbutton>
             <NavBreaker />
           </LayoutNav>
-          <Content>Hello world</Content>
+          <Content>{children}</Content>
         </ContentContainer>
       </LayoutOverlay>
     </LayoutContainer>

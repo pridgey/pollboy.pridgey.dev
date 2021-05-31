@@ -1,22 +1,34 @@
-import { useEffect } from "react";
-import { usePollAPI } from "./../../utilities";
-import { PollBoyLogo, Button } from "./../../components";
+import { useState, useEffect } from "react";
+import { usePollAPI, useUserID } from "./../../utilities";
 import { StyledHome } from "./Home.styles";
+import { Poll } from "./../../types";
+import { Button, Text, WalkOutsideSVG } from "./../../components";
+import { useHistory } from "react-router-dom";
 
 export const Home = () => {
-  const { listPollVotes } = usePollAPI();
+  // Get the user id
+  const userID = useUserID();
+  // Grab API Functions
+  const { listPolls } = usePollAPI();
+  // React-router history
+  const routerHistory = useHistory();
+
+  // State to store polls
+  const [userPolls, setUserPolls] = useState<Poll[]>([]);
 
   useEffect(() => {
-    listPollVotes("4421c5fc-9f7f-4309-b26f-6023295ba742").then((result) =>
-      console.log(result)
-    );
-  }, []);
+    listPolls(userID).then((results: Poll[]) => setUserPolls(results));
+  }, [userID, listPolls]);
 
   return (
     <StyledHome>
-      <PollBoyLogo Height="50vw" Width="50vw" />
-      <Button OnClick={() => alert("one")}>Create New Poll</Button>
-      <Button OnClick={() => alert("one")}>View My Polls</Button>
+      <WalkOutsideSVG Width="50vw" Height="50vw" />
+      <Text FontSize={20} TextAlign="center">
+        We took a walk and a look around but couldn't find any of your polls...
+      </Text>
+      <Button FontSize={20} OnClick={() => routerHistory.push("/create")}>
+        create a new one
+      </Button>
     </StyledHome>
   );
 };

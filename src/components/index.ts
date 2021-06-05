@@ -6,3 +6,4 @@ export * from "./Logo";
 export * from "./WalkOutsideSVG";
 export * from "./Text";
 export * from "./Input";
+export * from "./SandwichCard";

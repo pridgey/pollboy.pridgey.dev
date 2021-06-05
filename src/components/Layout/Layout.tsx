@@ -13,6 +13,7 @@ import {
   NavBreaker,
 } from "./Layout.styles";
 import { CgMenuLeftAlt, CgClose } from "react-icons/cg";
+import { useHistory } from "react-router-dom";
 
 type LayoutProps = {
   children: ReactNode;
@@ -75,6 +76,8 @@ export const Layout = ({ children }: LayoutProps) => {
     });
   }, []);
 
+  const routerHistory = useHistory();
+
   return (
     <LayoutContainer>
       <BackgroundGradient {...backgroundConfig} />
@@ -87,8 +90,12 @@ export const Layout = ({ children }: LayoutProps) => {
         </LayoutHeader>
         <ContentContainer ShowNav={showNav}>
           <LayoutNav>
-            <Navbutton onClick={() => alert("List")}>List My Polls</Navbutton>
-            <Navbutton onClick={() => alert("Make")}>Create New Poll</Navbutton>
+            <Navbutton onClick={() => routerHistory.push("/")}>
+              List My Polls
+            </Navbutton>
+            <Navbutton onClick={() => routerHistory.push("/create")}>
+              Create New Poll
+            </Navbutton>
             <NavBreaker />
           </LayoutNav>
           <Content>{children}</Content>

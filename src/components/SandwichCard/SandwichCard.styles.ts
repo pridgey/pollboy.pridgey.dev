@@ -19,6 +19,7 @@ export const SandwichStripesContainer = styled.div<{ Angle: string }>`
   flex-direction: column;
   transform: rotate(${(p) => p.Angle}deg);
   opacity: 0.6;
+  transition: all 0.3s;
 `;
 
 export const ContentContainer = styled.div`
@@ -53,4 +54,5 @@ export const SandwichStripe = styled.div<{ Height: number; Color: string }>`
   height: ${(p) => p.Height}%;
   background-color: ${(p) => p.Color};
   width: 100%;
+  transition: all 0.3s;
 `;

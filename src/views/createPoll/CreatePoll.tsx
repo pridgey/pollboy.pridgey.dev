@@ -21,8 +21,6 @@ export const CreatePoll = () => {
     DateCreated: new Date(),
   });
 
-  console.log(newPoll);
-
   return (
     <StyledCreatePoll>
       <SandwichCard Poll={newPoll} />

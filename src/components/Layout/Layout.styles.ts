@@ -40,7 +40,7 @@ export const LayoutOverlay = styled.div`
   right: 0;
   display: grid;
   grid-template-columns: 100vw;
-  grid-template-rows: min-content 1fr;
+  grid-template-rows: min-content minmax(0, 1fr);
 `;
 
 export const LayoutHeader = styled.header`
@@ -72,12 +72,14 @@ export const HeaderLogo = styled.div`
 `;
 
 export const ContentContainer = styled.div<{ ShowNav: boolean }>`
+  position: relative;
   height: 100%;
   left: ${(p) => (p.ShowNav ? "0px" : "-20vw")};
   position: relative;
   width: 120vw;
   display: flex;
   transition: left 0.5s;
+  pointer-events: ${(p) => (p.ShowNav ? "none" : "auto")};
 
   @media screen and (max-width: 992px) {
     left: ${(p) => (p.ShowNav ? "0px" : "-60vw")};
@@ -101,6 +103,7 @@ export const LayoutNav = styled.nav`
   display: flex;
   flex-direction: column;
   align-items: baseline;
+  pointer-events: auto;
 
   @media screen and (max-width: 992px) {
     width: 60vw;
@@ -123,4 +126,5 @@ export const Content = styled.main`
   height: 100%;
   width: 100vw;
   background-color: #fff;
+  overflow-y: auto;
 `;

@@ -3,7 +3,7 @@ export type Poll = {
   PollName: string;
   PollDescription: string;
   UserID: string;
-  DateCreated?: Date;
+  DateCreated?: string;
   DateExpire: string;
   PublicCanAdd: boolean;
 };

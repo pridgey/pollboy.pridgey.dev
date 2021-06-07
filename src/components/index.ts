@@ -7,3 +7,6 @@ export * from "./WalkOutsideSVG";
 export * from "./Text";
 export * from "./Input";
 export * from "./SandwichCard";
+export * from "./MessageBoolean";
+export * from "./FormFooter";
+export * from "./Loader";

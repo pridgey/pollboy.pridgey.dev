@@ -1,8 +1,8 @@
 import { ReactNode, useState, useEffect } from "react";
-import { StyledBackground, StyledMain } from "./Background.styles";
+import { BackgroundGradient } from "./Background.styles";
 
 type BackgroundProps = {
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 export const Background = ({ children }: BackgroundProps) => {
@@ -59,9 +59,13 @@ export const Background = ({ children }: BackgroundProps) => {
     });
   }, []);
 
+  console.log("-------------------------");
+  console.log("Children?:", !!children);
+  console.log("children:", children);
+
   return (
-    <StyledBackground {...backgroundConfig}>
-      <StyledMain>{children}</StyledMain>
-    </StyledBackground>
+    <BackgroundGradient HasChildren={!!children} {...backgroundConfig}>
+      {children}
+    </BackgroundGradient>
   );
 };

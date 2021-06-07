@@ -13,9 +13,10 @@ export const CallAPI = (Base: Airtable.Base) => ({
           },
         },
       ])
-      .then(() => {
-        return true;
-      })
+      .then(
+        (result) =>
+          (result as unknown as any[]).map((result) => result.fields)[0].Slug
+      )
       .catch((err) => {
         console.error(err);
         return false;

@@ -4,6 +4,11 @@ export const StyledCreatePoll = styled.div`
   width: 100%;
   padding: 15px;
   box-sizing: border-box;
-  direction: flex;
+  display: flex;
   flex-direction: column;
+
+  @media screen and (max-width: 992px) {
+    height: 100%;
+    justify-content: space-between;
+  }
 `;

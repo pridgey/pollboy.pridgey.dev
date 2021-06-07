@@ -8,6 +8,7 @@ import {
 } from "./utilities";
 import { StyleWrapper } from "@pridgey/afterburner";
 import { Layout } from "./components";
+import { Toaster } from "react-hot-toast";
 
 // Lazy load components
 const Home = lazy(() => import("./views/home"));
@@ -18,6 +19,7 @@ const App = () => (
     <AirtableProvider>
       <PollAPIProvider>
         <StyleWrapper Theme={getTheme()}>
+          <Toaster containerClassName="toast" />
           <BrowserRouter>
             <Suspense fallback={<div>loading</div>}>
               <Layout>

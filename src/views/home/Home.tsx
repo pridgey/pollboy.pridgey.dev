@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { usePollAPI, useUserID } from "./../../utilities";
 import { StyledHome } from "./Home.styles";
 import { Poll } from "./../../types";
-import { Button, Text, WalkOutsideSVG } from "./../../components";
+import { Button, Loader, SandwichCard, Text } from "./../../components";
 import { useHistory } from "react-router-dom";
 
 export const Home = () => {
@@ -15,22 +15,35 @@ export const Home = () => {
 
   // State to store polls
   const [userPolls, setUserPolls] = useState<Poll[]>([]);
-
-  console.log(userPolls);
+  // State for initial load
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    listPolls(userID).then((results: Poll[]) => setUserPolls(results));
+    listPolls(userID)
+      .then((results: Poll[]) => setUserPolls(results))
+      .then(() => setLoading(false));
   }, [userID, listPolls]);
 
   return (
     <StyledHome>
-      <WalkOutsideSVG Width="50vw" Height="50vw" />
-      <Text FontSize={20} TextAlign="center">
-        We took a walk and a look around but couldn't find any of your polls...
-      </Text>
-      <Button FontSize={20} OnClick={() => routerHistory.push("/create")}>
-        create a new one
-      </Button>
+      {loading ? (
+        <Loader />
+      ) : userPolls.length ? (
+        userPolls.map((poll, index) => (
+          <SandwichCard Poll={poll} key={`sandwich-${index}`} />
+        ))
+      ) : (
+        <>
+          <Loader />
+          <Text FontSize={20} TextAlign="center">
+            Looked around but found no polls you have created or participated
+            in.
+          </Text>
+          <Button FontSize={20} OnClick={() => routerHistory.push("/create")}>
+            create a new one
+          </Button>
+        </>
+      )}
     </StyledHome>
   );
 };

@@ -29,9 +29,22 @@ export const Home = () => {
       {loading ? (
         <Loader />
       ) : userPolls.length ? (
-        userPolls.map((poll, index) => (
-          <SandwichCard Poll={poll} key={`sandwich-${index}`} />
-        ))
+        <>
+          <Text FontSize={50} FontWeight={800} TextAlign="left">
+            Your Polls
+          </Text>
+          {userPolls.map((poll, index) => (
+            <SandwichCard
+              Poll={poll}
+              key={`sandwich-${index}`}
+              OnDelete={() => {
+                const thePolls = [...userPolls];
+                thePolls.splice(index, 1);
+                setUserPolls([...thePolls]);
+              }}
+            />
+          ))}
+        </>
       ) : (
         <>
           <Loader />

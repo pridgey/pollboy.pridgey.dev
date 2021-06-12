@@ -10,3 +10,5 @@ export * from "./SandwichCard";
 export * from "./MessageBoolean";
 export * from "./FormFooter";
 export * from "./Loader";
+export * from "./GridArea";
+export * from "./Modal";

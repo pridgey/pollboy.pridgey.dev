@@ -3,16 +3,23 @@ import { Poll } from "./../../types";
 import {
   ContentContainer,
   ContentText,
-  GridArea,
+  DeleteModalContent,
+  Icons,
   SandwichCardContainer,
   SandwichStripe,
   SandwichStripesContainer,
 } from "./SandwichCard.styles";
 import { Text } from "./../Text";
 import { getCharSum } from "./SandwichCard.functions";
+import { Button, GridArea, Modal } from "./../";
+import { RiDeleteBin6Line, RiEditBoxFill } from "react-icons/ri";
+import { usePollAPI } from "./../../utilities";
+import toast from "react-hot-toast";
 
 type SandwichCardProps = {
+  DisplayMode?: boolean;
   Poll: Poll;
+  OnDelete?: () => void;
 };
 
 type CardStripe = {
@@ -25,11 +32,22 @@ type CardConfig = {
   Stripes: CardStripe[];
 };
 
-export const SandwichCard = ({ Poll }: SandwichCardProps) => {
+export const SandwichCard = ({
+  DisplayMode = false,
+  Poll,
+  OnDelete,
+}: SandwichCardProps) => {
+  // Config for the card config
   const [cardConfig, setCardConfig] = useState<CardConfig>({
     Angle: "0",
     Stripes: [],
   });
+
+  // State for deleting a poll
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Poll API functions
+  const { deletePoll } = usePollAPI();
 
   useEffect(() => {
     if (Poll?.PollName && Poll?.PollDescription) {
@@ -99,22 +117,56 @@ export const SandwichCard = ({ Poll }: SandwichCardProps) => {
             </Text>
           </ContentText>
         </GridArea>
+        <GridArea Area="icons" JustifySelf="flex-end">
+          {!DisplayMode && (
+            <Icons>
+              <Button
+                OnClick={() => alert("edit coming soon")}
+                Padding={0}
+                Margin={0}
+              >
+                <RiEditBoxFill />
+              </Button>
+              <Button
+                OnClick={() => setShowDeleteModal(true)}
+                Padding={0}
+                Margin={0}
+                Color="#d00000"
+              >
+                <RiDeleteBin6Line />
+              </Button>
+            </Icons>
+          )}
+        </GridArea>
       </ContentContainer>
+      {showDeleteModal && (
+        <Modal
+          OnSubmit={() => {
+            setShowDeleteModal(false);
+            toast
+              .promise(deletePoll(Poll.Slug), {
+                loading: "Deleting The Poll...",
+                success: "Poll was deleted :(",
+                error: "An error has occurred with this poll.",
+              })
+              .then(() => {
+                OnDelete && OnDelete();
+              });
+          }}
+          OnCancel={() => setShowDeleteModal(false)}
+          SubmitButtonColor="#d00000"
+          SubmitLabel="Delete"
+        >
+          <DeleteModalContent>
+            <Text FontSize={25} FontWeight={800}>
+              Delete this Poll?
+            </Text>
+            <Text FontSize={19}>
+              Are you sure you want to delete this poll? It is irreversible.
+            </Text>
+          </DeleteModalContent>
+        </Modal>
+      )}
     </SandwichCardContainer>
   );
 };
-
-/* 
-
-1. Concat the Poll Name + Description
--- "June Statham Movie Month:Come vote on which movies we should watch this month featuring Jason Statham!"
-2. Determine angle of sandwich by number of letters % 10 
--- Above has 102 characters, % 10 is 2. That many steps away from -5, so in this case -3deg
-3. Determine number of ingredients 
--- Math.round a division of Title and Description character counts. Higher Count / Lower Count
-4. For each ingredient determine a percentage height, and a color 
--- Split concat string by number of ingredients
--- Height is percentage of charcode sum compared to total charcode sum
--- Color is charcode sum % pallet options
-
-*/

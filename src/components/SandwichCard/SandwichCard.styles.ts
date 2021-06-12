@@ -31,13 +31,19 @@ export const ContentContainer = styled.div`
   display: grid;
   grid-template-columns: 3fr 1fr;
   grid-template-rows: min-content 1fr;
-  grid-template-areas: "title empty" "desc desc";
+  grid-template-areas: "title icons" "desc desc";
   grid-gap: 15px;
   padding: 15px;
 `;
 
-export const GridArea = styled.div<{ Area: string }>`
+export const GridArea = styled.div<{
+  Area: string;
+  AlignSelf?: string;
+  JustifySelf?: string;
+}>`
   grid-area: ${(p) => p.Area};
+  align-self: ${(p) => p.AlignSelf};
+  justify-self: ${(p) => p.JustifySelf};
 `;
 
 export const ContentText = styled.div`
@@ -49,10 +55,29 @@ export const ContentText = styled.div`
   justify-content: flex-start;
 `;
 
+export const Icons = styled.div`
+  border-radius: 13px;
+  background-color: #fff;
+  padding: 10px;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 0px 15px;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
 export const SandwichStripe = styled.div<{ Height: number; Color: string }>`
   border-radius: 5px;
   height: ${(p) => p.Height}%;
   background-color: ${(p) => p.Color};
   width: 100%;
   transition: all 0.3s;
+`;
+
+export const DeleteModalContent = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: min-content min-content;
+  grid-gap: 15px 0px;
 `;

@@ -36,7 +36,7 @@ export const CreatePoll = () => {
 
   return (
     <StyledCreatePoll>
-      <SandwichCard Poll={newPoll} />
+      <SandwichCard Poll={newPoll} DisplayMode={true} />
       <Input
         Label="Poll Name"
         Type="text"

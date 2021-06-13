@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BooleanButton,
   ComponentWrapper,
@@ -12,6 +12,7 @@ type MessageBooleanProps = {
   BooleanLabels: [string, string];
   Label: string;
   Message: string;
+  Value: boolean;
   OnChange: (bool: boolean) => void;
 };
 
@@ -19,9 +20,14 @@ export const MessageBoolean = ({
   BooleanLabels,
   Label,
   Message,
+  Value,
   OnChange,
 }: MessageBooleanProps) => {
-  const [bool, setBool] = useState(false);
+  const [bool, setBool] = useState(Value);
+
+  useEffect(() => {
+    setBool(Value);
+  }, [Value]);
 
   return (
     <ComponentWrapper>

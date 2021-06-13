@@ -13,6 +13,7 @@ import { Toaster } from "react-hot-toast";
 // Lazy load components
 const Home = lazy(() => import("./views/home"));
 const CreatePoll = lazy(() => import("./views/createPoll"));
+const EditPoll = lazy(() => import("./views/EditPoll"));
 
 const App = () => (
   <UserIDProvider>
@@ -25,6 +26,7 @@ const App = () => (
               <Layout>
                 <Switch>
                   <Route path="/create" component={CreatePoll} />
+                  <Route path="/edit" component={EditPoll} />
                   <Route path="/" component={Home} />
                 </Switch>
               </Layout>

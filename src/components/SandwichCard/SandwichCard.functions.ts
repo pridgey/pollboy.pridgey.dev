@@ -5,3 +5,20 @@ export const getCharSum = (text: string) => {
   });
   return sum;
 };
+
+export const clampNumber = (
+  num: number,
+  limit: { max?: number; min?: number }
+): number => {
+  const { max, min } = limit;
+
+  if (max && num > max) {
+    return max;
+  }
+
+  if (min && num < min) {
+    return min;
+  }
+
+  return num;
+};

@@ -10,6 +10,7 @@ import { StyledCreatePoll } from "./CreatePoll.styles";
 import { useHistory } from "react-router-dom";
 import { usePollAPI, useUserID } from "./../../utilities";
 import toast from "react-hot-toast";
+import queryString from "query-string";
 
 export const CreatePoll = () => {
   const today = new Date();
@@ -20,6 +21,7 @@ export const CreatePoll = () => {
 
   const userID = useUserID();
 
+  // The state of the poll
   const [newPoll, updateNewPoll] = useState<Poll>({
     DateExpire: "",
     PollDescription:
@@ -30,9 +32,14 @@ export const CreatePoll = () => {
     UserID: userID,
   });
 
+  // Grab router history for route updates
   const routerHistory = useHistory();
 
+  // Get the functions for communicating with the api
   const { createPoll } = usePollAPI();
+
+  // Check for any url params
+  const { slug } = queryString.parse(window.location.search);
 
   return (
     <StyledCreatePoll>
@@ -70,6 +77,7 @@ export const CreatePoll = () => {
         }}
       />
       <MessageBoolean
+        Value={newPoll.PublicCanAdd}
         BooleanLabels={["Yes", "No"]}
         Label="Public Can Add Options"
         Message="Can any user add an option to this poll?"

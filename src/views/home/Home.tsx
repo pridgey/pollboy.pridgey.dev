@@ -35,8 +35,10 @@ export const Home = () => {
           </Text>
           {userPolls.map((poll, index) => (
             <SandwichCard
+              OnClick={() => routerHistory.push(`/poll?s=${poll.Slug}`)}
               Poll={poll}
               key={`sandwich-${index}`}
+              DisplayMode={poll.UserID !== userID}
               OnDelete={() => {
                 const thePolls = [...userPolls];
                 thePolls.splice(index, 1);

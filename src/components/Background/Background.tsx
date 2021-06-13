@@ -59,10 +59,6 @@ export const Background = ({ children }: BackgroundProps) => {
     });
   }, []);
 
-  console.log("-------------------------");
-  console.log("Children?:", !!children);
-  console.log("children:", children);
-
   return (
     <BackgroundGradient HasChildren={!!children} {...backgroundConfig}>
       {children}

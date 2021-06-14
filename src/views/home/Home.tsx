@@ -35,7 +35,7 @@ export const Home = () => {
           </Text>
           {userPolls.map((poll, index) => (
             <SandwichCard
-              OnClick={() => routerHistory.push(`/poll?s=${poll.Slug}`)}
+              OnClick={() => routerHistory.push(`/poll?slug=${poll.Slug}`)}
               Poll={poll}
               key={`sandwich-${index}`}
               DisplayMode={poll.UserID !== userID}

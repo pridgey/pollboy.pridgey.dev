@@ -89,7 +89,7 @@ export const ContentContainer = styled.div<{ ShowNav: boolean }>`
 
 export const NavBreaker = styled.div`
   width: 90%;
-  margin: 0 auto;
+  margin: 10px auto;
   height: 2px;
   background-color: #000;
   border-radius: 100%;
@@ -117,7 +117,7 @@ export const Navbutton = styled.button`
   text-transform: uppercase;
   font-size: 15rem;
   font-weight: 800;
-  margin-bottom: 25px;
+  margin: 10px 0px;
   text-align: left;
   cursor: pointer;
 `;

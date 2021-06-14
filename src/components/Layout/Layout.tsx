@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { Background } from "./../Background";
 import {
   LayoutContainer,
@@ -22,9 +22,20 @@ type LayoutProps = {
 export const Layout = ({ children }: LayoutProps) => {
   // Nav slider state
   const [showNav, setShowNav] = useState(false);
+  // Recent polls
+  const [recentPolls, setRecentPolls] = useState<any[]>([]);
 
   // React router history for redirecting
   const routerHistory = useHistory();
+
+  // Grab the recently visited polls
+  useEffect(() => {
+    // Grab the recent polls from local storage
+    const recentPollsStorage = localStorage.getItem("pb-recent-polls");
+    const recentPollsResults: any[] = JSON.parse(recentPollsStorage ?? "[]");
+
+    setRecentPolls(recentPollsResults);
+  }, []);
 
   return (
     <LayoutContainer>
@@ -55,6 +66,17 @@ export const Layout = ({ children }: LayoutProps) => {
               Create New Poll
             </Navbutton>
             <NavBreaker />
+            {recentPolls.map((Poll, index) => (
+              <Navbutton
+                key={`recent-poll-${index}`}
+                onClick={() => {
+                  setShowNav(false);
+                  routerHistory.push(`/poll?slug=${Poll.Slug}`);
+                }}
+              >
+                {Poll.Name}
+              </Navbutton>
+            ))}
           </LayoutNav>
           <Content>{children}</Content>
         </ContentContainer>

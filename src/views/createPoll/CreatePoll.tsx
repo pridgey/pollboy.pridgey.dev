@@ -10,7 +10,6 @@ import { StyledCreatePoll } from "./CreatePoll.styles";
 import { useHistory } from "react-router-dom";
 import { usePollAPI, useUserID } from "./../../utilities";
 import toast from "react-hot-toast";
-import queryString from "query-string";
 
 export const CreatePoll = () => {
   const today = new Date();
@@ -37,9 +36,6 @@ export const CreatePoll = () => {
 
   // Get the functions for communicating with the api
   const { createPoll } = usePollAPI();
-
-  // Check for any url params
-  const { slug } = queryString.parse(window.location.search);
 
   return (
     <StyledCreatePoll>

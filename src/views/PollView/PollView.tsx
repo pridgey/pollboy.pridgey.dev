@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Poll } from "../../types";
+import { Poll, PollOption } from "../../types";
 import { Input, GridArea, Text, Loader } from "../../components";
 import { StyledPollView } from "./PollView.styles";
 import { usePollAPI, useUserID, useRecentPolls } from "../../utilities";
 import queryString from "query-string";
+import { v4 } from "uuid";
 
 export const PollView = () => {
   // User ID
@@ -16,7 +17,7 @@ export const PollView = () => {
   const { slug } = queryString.parse(window.location.search);
 
   // Get poll API
-  const { selectPoll } = usePollAPI();
+  const { selectPoll, createPollOption, listPollOptions } = usePollAPI();
 
   // Loading state
   const [loading, setLoading] = useState(true);
@@ -31,6 +32,9 @@ export const PollView = () => {
     Slug: "",
     UserID: userID,
   });
+
+  // Poll Options
+  const [pollOptionsState, setPollOptionsState] = useState<PollOption[]>([]);
 
   // Add this poll to recent polls
   useEffect(() => {
@@ -67,8 +71,14 @@ export const PollView = () => {
           updatePollState(results[0]);
         }
       });
+
+      listPollOptions(slug.toString()).then((results) => {
+        if (results) {
+          setPollOptionsState(results);
+        }
+      });
     }
-  }, [slug, selectPoll]);
+  }, [slug, selectPoll, listPollOptions]);
 
   return (
     <StyledPollView>
@@ -91,12 +101,24 @@ export const PollView = () => {
               <Input
                 Type="text"
                 Label="Add New Option"
-                OnChange={(newValue: string) => console.log(newValue)}
+                OnChange={() => undefined}
+                OnEnter={(newValue: string) => {
+                  const newOption: PollOption = {
+                    PollID: slug?.toString() ?? "",
+                    PollOptionDescription: newValue,
+                    PollOptionID: v4(),
+                    PollOptionName: newValue,
+                  };
+
+                  setPollOptionsState([...pollOptionsState, newOption]);
+                  createPollOption(newOption);
+                  return true;
+                }}
               />
             )}
           </GridArea>
           <GridArea Area="options">
-            {["one", "two", "three", "four", "five"].map((item, index) => (
+            {pollOptionsState.map((item, index) => (
               <div
                 style={{
                   fontSize: "20rem",
@@ -109,7 +131,7 @@ export const PollView = () => {
                 }}
                 key={index}
               >
-                {item}
+                {item.PollOptionName}
               </div>
             ))}
           </GridArea>

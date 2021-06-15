@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { Poll } from "../../types";
 import { Input, GridArea, Text, Loader } from "../../components";
 import { StyledPollView } from "./PollView.styles";
-import { usePollAPI, useUserID } from "../../utilities";
+import { usePollAPI, useUserID, useRecentPolls } from "../../utilities";
 import queryString from "query-string";
 
 export const PollView = () => {
   // User ID
   const userID = useUserID();
+
+  // Recent polls
+  const { setRecentPolls } = useRecentPolls();
 
   // Grab poll params
   const { slug } = queryString.parse(window.location.search);
@@ -34,11 +37,11 @@ export const PollView = () => {
     if (pollState.Slug) {
       // Grab the recent polls from local storage
       const recentPollsStorage = localStorage.getItem("pb-recent-polls");
-      const recentPolls: any[] = JSON.parse(recentPollsStorage ?? "[]");
+      const recentPollsItems: any[] = JSON.parse(recentPollsStorage ?? "[]");
 
       // Apply this poll to the front of the array if it doesn't exist
-      if (!recentPolls.map((x) => x.Slug).includes(pollState.Slug)) {
-        recentPolls.unshift({
+      if (!recentPollsItems.map((x) => x.Slug).includes(pollState.Slug)) {
+        recentPollsItems.unshift({
           Slug: pollState.Slug,
           Name: pollState.PollName,
         });
@@ -47,12 +50,13 @@ export const PollView = () => {
       // Reset storage with the first 5 items
       localStorage.setItem(
         "pb-recent-polls",
-        JSON.stringify(recentPolls.slice(0, 5))
+        JSON.stringify(recentPollsItems.slice(0, 5))
       );
-    }
 
-    // This needs to be in contextual state so it updates without the need for refreshing
-  }, [pollState]);
+      // Set the state
+      setRecentPolls(recentPollsItems.slice(0, 5));
+    }
+  }, [pollState, setRecentPolls]);
 
   // Grab the poll
   useEffect(() => {

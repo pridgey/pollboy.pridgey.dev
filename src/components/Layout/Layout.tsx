@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState } from "react";
 import { Background } from "./../Background";
 import {
   LayoutContainer,
@@ -14,6 +14,7 @@ import {
 } from "./Layout.styles";
 import { CgMenuLeftAlt, CgClose } from "react-icons/cg";
 import { useHistory } from "react-router-dom";
+import { useRecentPolls } from "./../../utilities";
 
 type LayoutProps = {
   children: ReactNode;
@@ -22,20 +23,12 @@ type LayoutProps = {
 export const Layout = ({ children }: LayoutProps) => {
   // Nav slider state
   const [showNav, setShowNav] = useState(false);
-  // Recent polls
-  const [recentPolls, setRecentPolls] = useState<any[]>([]);
+
+  // Reducer state for recent polls visited by the user
+  const { recentPollsState } = useRecentPolls();
 
   // React router history for redirecting
   const routerHistory = useHistory();
-
-  // Grab the recently visited polls
-  useEffect(() => {
-    // Grab the recent polls from local storage
-    const recentPollsStorage = localStorage.getItem("pb-recent-polls");
-    const recentPollsResults: any[] = JSON.parse(recentPollsStorage ?? "[]");
-
-    setRecentPolls(recentPollsResults);
-  }, []);
 
   return (
     <LayoutContainer>
@@ -66,7 +59,7 @@ export const Layout = ({ children }: LayoutProps) => {
               Create New Poll
             </Navbutton>
             <NavBreaker />
-            {recentPolls.map((Poll, index) => (
+            {recentPollsState?.map((Poll, index) => (
               <Navbutton
                 key={`recent-poll-${index}`}
                 onClick={() => {

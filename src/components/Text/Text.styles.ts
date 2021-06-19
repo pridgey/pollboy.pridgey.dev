@@ -8,4 +8,8 @@ export const StyledText = styled.div<{
   font-size: ${(p) => p.FontSize}rem;
   font-weight: ${(p) => p.FontWeight};
   text-align: ${(p) => p.TextAlign};
+
+  & svg {
+    font-size: ${(p) => p.FontSize}rem;
+  }
 `;

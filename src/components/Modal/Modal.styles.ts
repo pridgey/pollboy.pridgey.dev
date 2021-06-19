@@ -20,7 +20,7 @@ export const ModalContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr min-content;
   grid-template-rows: 1fr min-content;
-  grid-template-areas: "body body" "empty buttons";
+  grid-template-areas: "body body" "buttons buttons";
   box-sizing: border-box;
 
   @media screen and (max-width: 992px) {
@@ -29,7 +29,9 @@ export const ModalContainer = styled.div`
 `;
 
 export const ButtonsContainer = styled.div`
+  width: 100%;
   display: grid;
   grid-template-columns: min-content min-content;
   grid-template-rows: min-content;
+  justify-content: flex-end;
 `;

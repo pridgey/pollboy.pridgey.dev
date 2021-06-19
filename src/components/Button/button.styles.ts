@@ -21,6 +21,7 @@ export const StyledButton = styled.button<{
   box-sizing: border-box;
   border-radius: 16px;
   line-height: 0px;
+  white-space: nowrap;
 
   &:hover {
     border: 2px solid ${(p) => p.Color};

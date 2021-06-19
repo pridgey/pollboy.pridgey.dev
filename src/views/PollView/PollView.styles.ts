@@ -6,8 +6,8 @@ export const StyledPollView = styled.div`
   box-sizing: border-box;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: min-content min-content min-content 1fr;
-  grid-template-areas: "title" "description" "add" "options";
+  grid-template-rows: min-content min-content 1fr;
+  grid-template-areas: "title" "add" "options";
   grid-gap: 15px 0px;
 
   @media screen and (max-width: 992px) {

@@ -12,3 +12,7 @@ export * from "./FormFooter";
 export * from "./Loader";
 export * from "./GridArea";
 export * from "./Modal";
+export * from "./PollViewTitle";
+export * from "./AddOptionForm";
+export * from "./TextArea";
+export * from "./PollOptionCard";

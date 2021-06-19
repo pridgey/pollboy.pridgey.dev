@@ -1,10 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Poll, PollOption } from "../../types";
-import { Input, GridArea, Text, Loader } from "../../components";
+import {
+  AddOptionForm,
+  Button,
+  GridArea,
+  PollViewTitle,
+  Loader,
+  SandwichCard,
+  PollOptionCard,
+} from "../../components";
 import { StyledPollView } from "./PollView.styles";
 import { usePollAPI, useUserID, useRecentPolls } from "../../utilities";
 import queryString from "query-string";
 import { v4 } from "uuid";
+import Toast from "react-hot-toast";
 
 export const PollView = () => {
   // User ID
@@ -35,6 +44,9 @@ export const PollView = () => {
 
   // Poll Options
   const [pollOptionsState, setPollOptionsState] = useState<PollOption[]>([]);
+
+  // Show Poll Option form
+  const [showPollOptionForm, setShowPollOptionForm] = useState(false);
 
   // Add this poll to recent polls
   useEffect(() => {
@@ -80,6 +92,25 @@ export const PollView = () => {
     }
   }, [slug, selectPoll, listPollOptions]);
 
+  // Function to add an option
+  const handleNewOption = useCallback(
+    (optionTitle, optionDescription) => {
+      if (optionTitle) {
+        const newOption: PollOption = {
+          PollID: slug?.toString() ?? "",
+          PollOptionDescription: optionDescription,
+          PollOptionID: v4(),
+          PollOptionName: optionTitle,
+        };
+
+        setPollOptionsState([...pollOptionsState, newOption]);
+        createPollOption(newOption);
+        Toast.success("Created New Poll Option");
+      }
+    },
+    [setPollOptionsState, createPollOption, pollOptionsState, slug]
+  );
+
   return (
     <StyledPollView>
       {loading ? (
@@ -87,52 +118,44 @@ export const PollView = () => {
       ) : (
         <>
           <GridArea Area="title">
-            <Text FontSize={50} FontWeight={800} TextAlign="left">
-              {pollState.PollName}
-            </Text>
+            <PollViewTitle
+              Title={pollState.PollName}
+              Description={pollState.PollDescription}
+            />
           </GridArea>
-          <GridArea Area="description">
-            <Text FontSize={35} FontWeight={400} TextAlign="left">
-              {pollState.PollDescription}
-            </Text>
-          </GridArea>
+          <GridArea Area="description"></GridArea>
           <GridArea Area="add">
-            {pollState.UserID === userID && (
-              <Input
-                Type="text"
-                Label="Add New Option"
-                OnChange={() => undefined}
-                OnEnter={(newValue: string) => {
-                  const newOption: PollOption = {
-                    PollID: slug?.toString() ?? "",
-                    PollOptionDescription: newValue,
-                    PollOptionID: v4(),
-                    PollOptionName: newValue,
-                  };
-
-                  setPollOptionsState([...pollOptionsState, newOption]);
-                  createPollOption(newOption);
-                  return true;
-                }}
-              />
+            {(pollState.UserID === userID || pollState.PublicCanAdd) && (
+              <>
+                <Button OnClick={() => setShowPollOptionForm(true)}>
+                  Create New Poll Option
+                </Button>
+                {showPollOptionForm && (
+                  <AddOptionForm
+                    OnSaveAndClose={(title: string, description: string) => {
+                      handleNewOption(title, description);
+                      setShowPollOptionForm(false);
+                    }}
+                    OnSaveAndMore={(title: string, description: string) => {
+                      handleNewOption(title, description);
+                    }}
+                  />
+                )}
+              </>
             )}
           </GridArea>
           <GridArea Area="options">
             {pollOptionsState.map((item, index) => (
-              <div
-                style={{
-                  fontSize: "20rem",
-                  width: "100%",
-                  backgroundColor: "#0000e0",
-                  margin: "15rem 0px",
-                  padding: "15px",
-                  boxSizing: "border-box",
-                  color: "#fff",
+              <PollOptionCard
+                key={`pollOption-${item.PollOptionID}`}
+                IsChecked={false}
+                OnChange={() => {
+                  alert("vote");
                 }}
-                key={index}
-              >
-                {item.PollOptionName}
-              </div>
+                OptionDescription={item.PollOptionDescription}
+                OptionName={item.PollOptionName}
+                Place={index}
+              />
             ))}
           </GridArea>
         </>

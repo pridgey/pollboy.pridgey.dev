@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { Poll, PollOption } from "../../types";
+import { Poll, PollOption, PollVote } from "../../types";
 import {
   AddOptionForm,
   Button,
   GridArea,
   PollViewTitle,
   Loader,
-  SandwichCard,
   PollOptionCard,
 } from "../../components";
 import { StyledPollView } from "./PollView.styles";
@@ -14,6 +13,7 @@ import { usePollAPI, useUserID, useRecentPolls } from "../../utilities";
 import queryString from "query-string";
 import { v4 } from "uuid";
 import Toast from "react-hot-toast";
+import { sortBy } from "lodash";
 
 export const PollView = () => {
   // User ID
@@ -26,7 +26,8 @@ export const PollView = () => {
   const { slug } = queryString.parse(window.location.search);
 
   // Get poll API
-  const { selectPoll, createPollOption, listPollOptions } = usePollAPI();
+  const { selectPoll, createPollOption, listPollOptions, listPollVotes, vote } =
+    usePollAPI();
 
   // Loading state
   const [loading, setLoading] = useState(true);
@@ -44,6 +45,9 @@ export const PollView = () => {
 
   // Poll Options
   const [pollOptionsState, setPollOptionsState] = useState<PollOption[]>([]);
+
+  // Poll Votes
+  const [pollVotesState, setPollVotesState] = useState<PollVote[]>([]);
 
   // Show Poll Option form
   const [showPollOptionForm, setShowPollOptionForm] = useState(false);
@@ -89,8 +93,55 @@ export const PollView = () => {
           setPollOptionsState(results);
         }
       });
+
+      listPollVotes(slug.toString()).then((results) => {
+        if (results) {
+          setPollVotesState(results);
+        }
+      });
     }
-  }, [slug, selectPoll, listPollOptions]);
+  }, [slug, selectPoll, listPollOptions, listPollVotes]);
+
+  // Reorder poll options by votes
+  const rankPollOptions = () => {
+    const optionRanking: {
+      Option: string;
+      Votes: number;
+    }[] = [];
+
+    // Count the votes per option
+    pollOptionsState.forEach((option) => {
+      const numOfVotes = pollVotesState.filter(
+        (vote) => vote.PollOptionID === option.PollOptionID
+      ).length;
+      optionRanking.push({
+        Option: option.PollOptionID,
+        Votes: numOfVotes,
+      });
+    });
+
+    // Sort the options by vote
+    sortBy(optionRanking, ["Votes"]);
+
+    // Remake options
+    const rankedOptions: PollOption[] = [];
+
+    optionRanking.forEach((rank) => {
+      rankedOptions.push(
+        pollOptionsState.filter(
+          (option) => option.PollOptionID === rank.Option
+        )[0]
+      );
+    });
+
+    console.log("------------------------------");
+    console.log("optionRanking", optionRanking);
+    console.log("Ranked", rankedOptions);
+    setPollOptionsState([...rankedOptions]);
+
+    // Probably need to unify state here. Make a new type for this view that combines votes and options
+    // Calculate it all at the beginning with the api pull, and then optimistically update it all via state after
+  };
 
   // Function to add an option
   const handleNewOption = useCallback(
@@ -101,6 +152,7 @@ export const PollView = () => {
           PollOptionDescription: optionDescription,
           PollOptionID: v4(),
           PollOptionName: optionTitle,
+          UserID: userID,
         };
 
         setPollOptionsState([...pollOptionsState, newOption]);
@@ -108,7 +160,7 @@ export const PollView = () => {
         Toast.success("Created New Poll Option");
       }
     },
-    [setPollOptionsState, createPollOption, pollOptionsState, slug]
+    [setPollOptionsState, createPollOption, pollOptionsState, slug, userID]
   );
 
   return (
@@ -148,13 +200,36 @@ export const PollView = () => {
             {pollOptionsState.map((item, index) => (
               <PollOptionCard
                 key={`pollOption-${item.PollOptionID}`}
-                IsChecked={false}
+                IsChecked={pollVotesState.some(
+                  (option) =>
+                    option.PollOptionID === item.PollOptionID &&
+                    option.UserID === userID
+                )}
                 OnChange={() => {
-                  alert("vote");
+                  const pollVoteID = `${userID}-${item.PollOptionID}`;
+                  const newVote = {
+                    PollID: item.PollID,
+                    PollOptionID: item.PollOptionID,
+                    PollVoteID: pollVoteID,
+                    UserID: userID,
+                  };
+                  // Update state
+                  const pollIndex = pollVotesState.findIndex(
+                    (vote) => vote.PollVoteID === pollVoteID
+                  );
+                  if (pollIndex === -1) {
+                    // Doesn't exist
+                    pollVotesState.push(newVote);
+                  } else {
+                    pollVotesState.splice(pollIndex, 1);
+                  }
+                  vote(newVote);
+                  rankPollOptions();
                 }}
                 OptionDescription={item.PollOptionDescription}
                 OptionName={item.PollOptionName}
                 Place={index}
+                CanEdit={[item.UserID, pollState.UserID].includes(userID)}
               />
             ))}
           </GridArea>

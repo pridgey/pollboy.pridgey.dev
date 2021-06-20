@@ -3,4 +3,5 @@ export type PollOption = {
   PollID: string;
   PollOptionName: string;
   PollOptionDescription: string;
+  UserID: string;
 };

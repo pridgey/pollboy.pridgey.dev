@@ -131,7 +131,7 @@ export const CallAPI = (Base: Airtable.Base) => ({
         {
           fields: {
             ...{ ...NewPollOption },
-            PollOptionID: v4(),
+            PollOptionID: NewPollOption.PollOptionID ?? v4(),
           },
         },
       ])

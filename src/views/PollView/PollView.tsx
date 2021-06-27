@@ -9,11 +9,15 @@ import {
   PollOptionCard,
 } from "../../components";
 import { StyledPollView } from "./PollView.styles";
-import { usePollAPI, useUserID, useRecentPolls } from "../../utilities";
+import {
+  usePollAPI,
+  useUserID,
+  useRecentPolls,
+  useSocket,
+} from "../../utilities";
 import queryString from "query-string";
 import { v4 } from "uuid";
 import Toast from "react-hot-toast";
-import { sortBy } from "lodash";
 
 export const PollView = () => {
   // User ID
@@ -21,6 +25,9 @@ export const PollView = () => {
 
   // Recent polls
   const { setRecentPolls } = useRecentPolls();
+
+  const socket = useSocket();
+  socket.send("test");
 
   // Grab poll params
   const { slug } = queryString.parse(window.location.search);

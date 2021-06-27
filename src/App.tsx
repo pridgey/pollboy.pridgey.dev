@@ -6,6 +6,7 @@ import {
   UserIDProvider,
   getTheme,
   RecentPollProvider,
+  SocketProvider,
 } from "./utilities";
 import { StyleWrapper } from "@pridgey/afterburner";
 import { Layout } from "./components";
@@ -22,21 +23,23 @@ const App = () => (
     <AirtableProvider>
       <PollAPIProvider>
         <RecentPollProvider>
-          <StyleWrapper Theme={getTheme()}>
-            <Toaster containerClassName="toast" />
-            <BrowserRouter>
-              <Suspense fallback={<div>loading</div>}>
-                <Layout>
-                  <Switch>
-                    <Route path="/create" component={CreatePoll} />
-                    <Route path="/edit" component={EditPoll} />
-                    <Route path="/poll" component={PollView} />
-                    <Route path="/" component={Home} />
-                  </Switch>
-                </Layout>
-              </Suspense>
-            </BrowserRouter>
-          </StyleWrapper>
+          <SocketProvider>
+            <StyleWrapper Theme={getTheme()}>
+              <Toaster containerClassName="toast" />
+              <BrowserRouter>
+                <Suspense fallback={<div>loading</div>}>
+                  <Layout>
+                    <Switch>
+                      <Route path="/create" component={CreatePoll} />
+                      <Route path="/edit" component={EditPoll} />
+                      <Route path="/poll" component={PollView} />
+                      <Route path="/" component={Home} />
+                    </Switch>
+                  </Layout>
+                </Suspense>
+              </BrowserRouter>
+            </StyleWrapper>
+          </SocketProvider>
         </RecentPollProvider>
       </PollAPIProvider>
     </AirtableProvider>

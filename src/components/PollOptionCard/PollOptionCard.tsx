@@ -7,29 +7,43 @@ import {
   RiEditBoxFill,
 } from "react-icons/ri";
 import {
+  DeleteModalContent,
   PollOptionCardContainer,
   StyledPollOptionCard,
 } from "./PollOptionCard.styles";
-import { Button, GridArea, Text } from "./../";
+import { Button, GridArea, Modal, Text } from "./../";
+import toast from "react-hot-toast";
+import { usePollAPI } from "./../../utilities";
 
 type PollOptionCardProps = {
   CanEdit: boolean;
+  ID: string;
   IsChecked: boolean;
   OptionName: string;
   OptionDescription: string;
   Place: number;
+  PollID: string;
   OnChange: () => void;
+  OnDelete: () => void;
 };
 
 export const PollOptionCard = ({
   CanEdit,
+  ID,
   IsChecked,
   OptionName,
   OptionDescription,
   Place,
+  PollID,
   OnChange,
+  OnDelete,
 }: PollOptionCardProps) => {
   const [isChecked, setIsChecked] = useState(IsChecked);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Poll API functions
+  const { deletePollOption } = usePollAPI();
 
   return (
     <PollOptionCardContainer>
@@ -78,7 +92,7 @@ export const PollOptionCard = ({
             </GridArea>
             <GridArea Area="delete" AlignSelf="center" JustifySelf="center">
               <Button
-                OnClick={() => alert("delete")}
+                OnClick={() => setShowDeleteModal(true)}
                 Padding={0}
                 Margin={0}
                 Color="#d00000"
@@ -87,6 +101,36 @@ export const PollOptionCard = ({
               </Button>
             </GridArea>
           </>
+        )}
+        {showDeleteModal && (
+          <Modal
+            OnSubmit={() => {
+              setShowDeleteModal(false);
+              toast
+                .promise(deletePollOption(ID, PollID), {
+                  loading: "Deleting The Poll Option...",
+                  success: "Poll Option was deleted :(",
+                  error:
+                    "An error has occurred trying to delete this Poll Option.",
+                })
+                .then(() => {
+                  OnDelete();
+                });
+            }}
+            OnCancel={() => setShowDeleteModal(false)}
+            SubmitButtonColor="#d00000"
+            SubmitLabel="Delete"
+          >
+            <DeleteModalContent>
+              <Text FontSize={25} FontWeight={800}>
+                Delete this Poll Option?
+              </Text>
+              <Text FontSize={19}>
+                Are you sure you want to delete this poll option? You cannot
+                undo this action.
+              </Text>
+            </DeleteModalContent>
+          </Modal>
         )}
       </>
     </PollOptionCardContainer>

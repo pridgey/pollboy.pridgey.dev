@@ -19,6 +19,13 @@ import queryString from "query-string";
 import { v4 } from "uuid";
 import Toast from "react-hot-toast";
 
+type SocketMessage = {
+  Task: "add" | "delete" | "edit";
+  PollID: string;
+  UserID: string;
+  Payload: { [key: string]: number | string | Date };
+};
+
 export const PollView = () => {
   // User ID
   const userID = useUserID();
@@ -26,8 +33,8 @@ export const PollView = () => {
   // Recent polls
   const { setRecentPolls } = useRecentPolls();
 
+  // Grab socket connection to send messages and receive updates from other users
   const socket = useSocket();
-  socket.send("test");
 
   // Grab poll params
   const { slug } = queryString.parse(window.location.search);
@@ -54,6 +61,64 @@ export const PollView = () => {
   const [pollOptionsMap, setPollOptionsMap] = useState<
     Map<PollOption, PollVote[]>
   >(new Map());
+
+  // Function for adding new Options to state
+  const addPollOptionToState = useCallback(
+    (newOption: PollOption) => {
+      const currentOptions = new Map(pollOptionsMap);
+
+      // Add to state unless it's already there
+      if (!currentOptions.has(newOption)) {
+        currentOptions.set(newOption, []);
+        setPollOptionsMap(currentOptions);
+      }
+    },
+    [pollOptionsMap]
+  );
+
+  const removePollOptionFromState = useCallback(
+    (option: PollOption) => {
+      const currentOptions = new Map(pollOptionsMap);
+
+      currentOptions.forEach((val, key) => {
+        if (key.PollOptionID === option.PollOptionID) {
+          // Ladies and gentlemen, we got it
+          currentOptions.delete(key);
+        }
+      });
+
+      setPollOptionsMap(currentOptions);
+    },
+    [pollOptionsMap]
+  );
+
+  // Listen to socket updates
+  useEffect(() => {
+    socket.on("message", (msg: string) => {
+      // Grab the data
+      const parsedMessage: SocketMessage = JSON.parse(msg);
+
+      if (
+        parsedMessage?.PollID === slug?.toString() && // Is this the right poll?
+        parsedMessage?.UserID !== userID // Comes from another user
+      ) {
+        // Run an action based on the task
+        const messageAction: {
+          [key in "add" | "delete" | "edit"]: () => void;
+        } = {
+          add: () => addPollOptionToState(parsedMessage?.Payload as PollOption),
+          delete: () =>
+            removePollOptionFromState(parsedMessage?.Payload as PollOption),
+          edit: () => {
+            // do stuff
+          },
+        };
+
+        const action = messageAction[parsedMessage?.Task];
+        action();
+      }
+    });
+  }, [socket, slug, userID, addPollOptionToState, removePollOptionFromState]);
 
   // Show Poll Option form
   const [showPollOptionForm, setShowPollOptionForm] = useState(false);
@@ -134,16 +199,22 @@ export const PollView = () => {
         };
 
         // Update local state
-        const updatedMap = new Map(pollOptionsMap);
-        updatedMap.set(newOption, []);
-        setPollOptionsMap(updatedMap);
+        addPollOptionToState(newOption);
 
         // Update API
         createPollOption(newOption);
         Toast.success("Created New Poll Option");
+        // Alert other users
+        const newMessage: SocketMessage = {
+          Task: "add",
+          PollID: slug?.toString() ?? "",
+          UserID: userID ?? "",
+          Payload: newOption,
+        };
+        socket.send(JSON.stringify(newMessage));
       }
     },
-    [createPollOption, slug, userID, pollOptionsMap]
+    [createPollOption, slug, userID, socket, addPollOptionToState]
   );
 
   return (
@@ -184,6 +255,20 @@ export const PollView = () => {
               const [pollOption, pollVotes] = item;
               return (
                 <PollOptionCard
+                  ID={pollOption.PollOptionID}
+                  PollID={pollOption.PollID}
+                  OnDelete={() => {
+                    // Remove from state
+                    removePollOptionFromState(pollOption);
+                    // Inform  others
+                    const deleteMessage: SocketMessage = {
+                      Task: "delete",
+                      PollID: slug?.toString() ?? "",
+                      UserID: userID,
+                      Payload: pollOption,
+                    };
+                    socket.send(JSON.stringify(deleteMessage));
+                  }}
                   key={`pollOption-${pollOption.PollOptionID}`}
                   IsChecked={pollVotes.some(
                     (option) =>

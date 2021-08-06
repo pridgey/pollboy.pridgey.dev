@@ -16,3 +16,4 @@ export * from "./PollViewTitle";
 export * from "./AddOptionForm";
 export * from "./TextArea";
 export * from "./PollOptionCard";
+export * from "./EditOptionForm";

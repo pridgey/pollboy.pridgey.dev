@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Poll, PollOption, PollVote } from "../../types";
+import { Poll, PollOption } from "../../types";
 import {
   AddOptionForm,
   Button,
@@ -18,12 +18,13 @@ import {
 import queryString from "query-string";
 import { v4 } from "uuid";
 import Toast from "react-hot-toast";
+import { sortBy } from "lodash";
 
 type SocketMessage = {
   Task: "add" | "delete" | "edit";
   PollID: string;
   UserID: string;
-  Payload: { [key: string]: number | string | Date };
+  Payload: PollOption;
 };
 
 export const PollView = () => {
@@ -58,38 +59,78 @@ export const PollView = () => {
   });
 
   // Poll Option State
-  const [pollOptionsMap, setPollOptionsMap] = useState<
-    Map<PollOption, PollVote[]>
-  >(new Map());
+  const [pollOptions, setPollOptions] = useState<PollOption[]>([]);
 
   // Function for adding new Options to state
   const addPollOptionToState = useCallback(
     (newOption: PollOption) => {
-      const currentOptions = new Map(pollOptionsMap);
+      const currentOptions = [...pollOptions];
 
       // Add to state unless it's already there
-      if (!currentOptions.has(newOption)) {
-        currentOptions.set(newOption, []);
-        setPollOptionsMap(currentOptions);
+      if (
+        !currentOptions.some(
+          (option) => option.PollOptionID === newOption.PollOptionID
+        )
+      ) {
+        currentOptions.push(newOption);
+        setPollOptions([...currentOptions]);
       }
     },
-    [pollOptionsMap]
+    [pollOptions]
   );
 
+  // Function to remove options from state
   const removePollOptionFromState = useCallback(
-    (option: PollOption) => {
-      const currentOptions = new Map(pollOptionsMap);
+    (optionToDelete: PollOption) => {
+      const currentOptions = [...pollOptions];
 
-      currentOptions.forEach((val, key) => {
-        if (key.PollOptionID === option.PollOptionID) {
-          // Ladies and gentlemen, we got it
-          currentOptions.delete(key);
-        }
-      });
-
-      setPollOptionsMap(currentOptions);
+      currentOptions.splice(
+        currentOptions.findIndex(
+          (option) => option.PollOptionID === optionToDelete.PollOptionID
+        ),
+        1
+      );
+      setPollOptions([...currentOptions]);
     },
-    [pollOptionsMap]
+    [pollOptions]
+  );
+
+  // Reorder poll options by votes
+  const rankPollOptions = useCallback(
+    (options?: PollOption[]) => {
+      const currentOptions = options ?? [...pollOptions];
+
+      console.log("Before:", currentOptions);
+      const sortedOptions = sortBy(
+        currentOptions,
+        (option) => -option.UserVotes.length
+      );
+      console.log("After:", sortedOptions);
+
+      setPollOptions([...sortedOptions]);
+    },
+    [pollOptions]
+  );
+
+  // Function to update option in state
+  const updatePollOptionInState = useCallback(
+    (optionID: string, Title: string, Desc: string) => {
+      const currentOptions = [...pollOptions];
+
+      const optionToUpdate = currentOptions.find(
+        (option) => option.PollOptionID === optionID
+      );
+      if (optionToUpdate) {
+        const updatedOption = { ...optionToUpdate };
+        updatedOption.PollOptionName = Title;
+        updatedOption.PollOptionDescription = Desc;
+
+        currentOptions.splice(currentOptions.indexOf(optionToUpdate), 1);
+        currentOptions.push(updatedOption);
+        setPollOptions([...currentOptions]);
+      }
+    },
+    [pollOptions]
   );
 
   // Listen to socket updates
@@ -106,11 +147,16 @@ export const PollView = () => {
         const messageAction: {
           [key in "add" | "delete" | "edit"]: () => void;
         } = {
-          add: () => addPollOptionToState(parsedMessage?.Payload as PollOption),
-          delete: () =>
-            removePollOptionFromState(parsedMessage?.Payload as PollOption),
+          add: () => addPollOptionToState(parsedMessage?.Payload),
+          delete: () => removePollOptionFromState(parsedMessage?.Payload),
           edit: () => {
-            // do stuff
+            const { PollOptionID, PollOptionName, PollOptionDescription } =
+              parsedMessage?.Payload;
+            updatePollOptionInState(
+              PollOptionID,
+              PollOptionName,
+              PollOptionDescription
+            );
           },
         };
 
@@ -118,7 +164,14 @@ export const PollView = () => {
         action();
       }
     });
-  }, [socket, slug, userID, addPollOptionToState, removePollOptionFromState]);
+  }, [
+    socket,
+    slug,
+    userID,
+    addPollOptionToState,
+    removePollOptionFromState,
+    updatePollOptionInState,
+  ]);
 
   // Show Poll Option form
   const [showPollOptionForm, setShowPollOptionForm] = useState(false);
@@ -155,36 +208,21 @@ export const PollView = () => {
       // Grab all the data we need from the api
       const getPoll = selectPoll(slug.toString());
       const getOptions = listPollOptions(slug.toString());
-      const getVotes = listPollVotes(slug.toString());
 
-      Promise.all([getPoll, getOptions, getVotes])
-        .then(([pollResults, optionsResults, votesResults]) => {
+      Promise.all([getPoll, getOptions])
+        .then(([pollResults, optionsResults]) => {
           if (pollResults) {
             updatePollState(pollResults[0]);
           }
 
           if (optionsResults) {
-            const pollOptions: Map<PollOption, PollVote[]> = new Map();
-            optionsResults.forEach((option: PollOption) => {
-              // Grab all votes for this option
-              const optionVotes: PollVote[] = votesResults.filter(
-                (vote: PollVote) => vote.PollOptionID === option.PollOptionID
-              );
-              pollOptions.set(option, optionVotes);
-            });
-
-            // Set state
-            setPollOptionsMap(pollOptions);
+            rankPollOptions(optionsResults);
           }
         })
         .finally(() => setLoading(false));
     }
+    // eslint-disable-next-line
   }, [slug, selectPoll, listPollOptions, listPollVotes]);
-
-  // Reorder poll options by votes
-  const rankPollOptions = () => {
-    // Needs to rank shit
-  };
 
   // Function to add an option
   const handleNewOption = useCallback(
@@ -196,6 +234,7 @@ export const PollView = () => {
           PollOptionID: v4(),
           PollOptionName: optionTitle,
           UserID: userID,
+          UserVotes: [],
         };
 
         // Update local state
@@ -251,12 +290,10 @@ export const PollView = () => {
             )}
           </GridArea>
           <GridArea Area="options">
-            {Array.from(pollOptionsMap).map((item, index) => {
-              const [pollOption, pollVotes] = item;
+            {pollOptions.map((pollOption, index) => {
               return (
                 <PollOptionCard
-                  ID={pollOption.PollOptionID}
-                  PollID={pollOption.PollID}
+                  PollOption={pollOption}
                   OnDelete={() => {
                     // Remove from state
                     removePollOptionFromState(pollOption);
@@ -270,28 +307,46 @@ export const PollView = () => {
                     socket.send(JSON.stringify(deleteMessage));
                   }}
                   key={`pollOption-${pollOption.PollOptionID}`}
-                  IsChecked={pollVotes.some(
-                    (option) =>
-                      option.PollOptionID === pollOption.PollOptionID &&
-                      option.UserID === userID
-                  )}
-                  OnChange={() => {
-                    const pollVoteID = `${userID}-${pollOption.PollOptionID}`;
-                    const newVote = {
-                      PollID: pollOption.PollID,
-                      PollOptionID: pollOption.PollOptionID,
-                      PollVoteID: pollVoteID,
+                  IsChecked={pollOption.UserVotes.includes(userID)}
+                  OnEdit={(EditedPollOption: PollOption) => {
+                    // Edit the state
+                    updatePollOptionInState(
+                      EditedPollOption.PollOptionID,
+                      EditedPollOption.PollOptionName,
+                      EditedPollOption.PollOptionDescription
+                    );
+                    // Inform others
+                    const updateMessage: SocketMessage = {
+                      Task: "edit",
+                      PollID: slug?.toString() ?? "",
                       UserID: userID,
+                      Payload: EditedPollOption,
                     };
-                    // Update state locally
-                    // -- do stuff --
-                    // Update API
-                    vote(newVote);
-                    // Rerank state
-                    rankPollOptions();
+                    socket.send(JSON.stringify(updateMessage));
                   }}
-                  OptionDescription={pollOption.PollOptionDescription}
-                  OptionName={pollOption.PollOptionName}
+                  OnChange={() => {
+                    const currentOptions = [...pollOptions];
+                    const votedOption = currentOptions.find(
+                      (option) =>
+                        option.PollOptionID === pollOption.PollOptionID
+                    );
+                    if (votedOption) {
+                      if (votedOption.UserVotes.includes(userID)) {
+                        // Remove the vote
+                        votedOption.UserVotes.splice(
+                          votedOption.UserVotes.indexOf(userID),
+                          1
+                        );
+                      } else {
+                        // Add the vote
+                        votedOption.UserVotes.push(userID);
+                      }
+                      setPollOptions([...currentOptions]);
+                    }
+                    vote(pollOption, userID);
+                    // Rerank state
+                    rankPollOptions(currentOptions);
+                  }}
                   Place={index}
                   CanEdit={[pollOption.UserID, pollState.UserID].includes(
                     userID

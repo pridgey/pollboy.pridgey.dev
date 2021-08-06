@@ -19,7 +19,7 @@ type PollAPI = {
   ) => Promise<PollOption[]>;
   deletePollOption: (PollOptionID: string, PollID: string) => Promise<boolean>;
   updatePollOption: (UpdatedPollOption: PollOption) => Promise<boolean>;
-  vote: (PollVote: PollVote) => Promise<boolean>;
+  vote: (PollOption: PollOption, UserID: string) => Promise<boolean>;
   listPollVotes: (PollID: string) => Promise<PollVote[]>;
 };
 

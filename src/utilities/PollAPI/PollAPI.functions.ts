@@ -131,6 +131,7 @@ export const CallAPI = (Base: Airtable.Base) => ({
         {
           fields: {
             ...{ ...NewPollOption },
+            UserVotes: JSON.stringify(NewPollOption.UserVotes),
             PollOptionID: NewPollOption.PollOptionID ?? v4(),
           },
         },
@@ -149,7 +150,14 @@ export const CallAPI = (Base: Airtable.Base) => ({
         filterByFormula: `PollID = "${PollID}"`,
       })
       .all()
-      .then((results) => results.map((result) => result.fields as PollOption))
+      .then((results) =>
+        results.map((result) => {
+          return {
+            ...result.fields,
+            UserVotes: JSON.parse((result.fields as any).UserVotes),
+          } as PollOption;
+        })
+      )
       .catch((err) => {
         console.error(err);
         return [] as PollOption[];
@@ -161,7 +169,14 @@ export const CallAPI = (Base: Airtable.Base) => ({
         filterByFormula: `AND(PollID = "${PollID}", PollOptionID = "${PollOptionID}")`,
       })
       .all()
-      .then((result) => result.map((result) => result.fields as PollOption))
+      .then((result) =>
+        result.map((result) => {
+          return {
+            ...result.fields,
+            UserVotes: JSON.parse((result.fields as any).UserVotes),
+          } as PollOption;
+        })
+      )
       .catch((err) => {
         console.error(err);
         return [] as PollOption[];
@@ -198,6 +213,7 @@ export const CallAPI = (Base: Airtable.Base) => ({
               id: result[0],
               fields: {
                 ...UpdatedPollOption,
+                UserVotes: JSON.stringify(UpdatedPollOption.UserVotes),
               },
             },
           ])
@@ -208,32 +224,36 @@ export const CallAPI = (Base: Airtable.Base) => ({
         return false;
       }),
   // Creates a vote for a poll option for a user
-  vote: (PollVote: PollVote) =>
-    Base("PollVotes")
+  vote: (PollOption: PollOption, UserID: string) =>
+    Base("PollOptions")
       ?.select({
-        filterByFormula: `AND(PollID = "${PollVote.PollID}", PollOptionID = "${PollVote.PollOptionID}", UserID = "${PollVote.UserID}")`,
+        filterByFormula: `PollOptionID = "${PollOption.PollOptionID}"`,
       })
       .all()
       .then((result) => result.map((result) => result))
       .then((results) => {
-        if (results.length) {
-          // User has already vote, so remove the vote
-          return Base("PollVotes")
-            ?.destroy([results[0].id])
-            .then(() => true);
+        const record = results[0].fields;
+
+        const Votes: string[] = JSON.parse((record as any).UserVotes);
+        if (Votes.includes(UserID)) {
+          // Remove them!
+          Votes.splice(Votes.indexOf(UserID), 1);
         } else {
-          // User hasn't voted for this one, add the vote
-          return Base("PollVotes")
-            ?.create([
-              {
-                fields: {
-                  ...{ ...PollVote },
-                  PollVoteID: v4(),
-                },
-              },
-            ])
-            .then(() => true);
+          // Add them!
+          Votes.push(UserID);
         }
+
+        return Base("PollOptions")
+          .update([
+            {
+              id: results[0].id,
+              fields: {
+                ...PollOption,
+                UserVotes: JSON.stringify(Votes),
+              },
+            },
+          ])
+          .then(() => true);
       })
       .catch((err) => {
         console.error(err);

@@ -11,39 +11,37 @@ import {
   PollOptionCardContainer,
   StyledPollOptionCard,
 } from "./PollOptionCard.styles";
-import { Button, GridArea, Modal, Text } from "./../";
+import { Button, EditOptionForm, GridArea, Modal, Text } from "./../";
 import toast from "react-hot-toast";
 import { usePollAPI } from "./../../utilities";
+import { PollOption } from "./../../types";
 
 type PollOptionCardProps = {
   CanEdit: boolean;
-  ID: string;
   IsChecked: boolean;
-  OptionName: string;
-  OptionDescription: string;
+  PollOption: PollOption;
   Place: number;
-  PollID: string;
   OnChange: () => void;
   OnDelete: () => void;
+  OnEdit: (PollOption: PollOption) => void;
 };
 
 export const PollOptionCard = ({
   CanEdit,
-  ID,
   IsChecked,
-  OptionName,
-  OptionDescription,
   Place,
-  PollID,
+  PollOption,
   OnChange,
   OnDelete,
+  OnEdit,
 }: PollOptionCardProps) => {
   const [isChecked, setIsChecked] = useState(IsChecked);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Poll API functions
-  const { deletePollOption } = usePollAPI();
+  const { deletePollOption, updatePollOption } = usePollAPI();
 
   return (
     <PollOptionCardContainer>
@@ -73,12 +71,12 @@ export const PollOptionCard = ({
             </GridArea>
             <GridArea Area="title">
               <Text FontSize={30} FontWeight={800} TextAlign="left">
-                {OptionName}
+                {PollOption.PollOptionName}
               </Text>
             </GridArea>
             <GridArea Area="description">
               <Text FontSize={20} FontWeight={600} TextAlign="left">
-                {OptionDescription}
+                {PollOption.PollOptionDescription}
               </Text>
             </GridArea>
           </StyledPollOptionCard>
@@ -86,7 +84,11 @@ export const PollOptionCard = ({
         {CanEdit && (
           <>
             <GridArea Area="edit" AlignSelf="center" JustifySelf="center">
-              <Button OnClick={() => alert("edit")} Padding={0} Margin={0}>
+              <Button
+                OnClick={() => setShowEditModal(true)}
+                Padding={0}
+                Margin={0}
+              >
                 <RiEditBoxFill />
               </Button>
             </GridArea>
@@ -107,12 +109,15 @@ export const PollOptionCard = ({
             OnSubmit={() => {
               setShowDeleteModal(false);
               toast
-                .promise(deletePollOption(ID, PollID), {
-                  loading: "Deleting The Poll Option...",
-                  success: "Poll Option was deleted :(",
-                  error:
-                    "An error has occurred trying to delete this Poll Option.",
-                })
+                .promise(
+                  deletePollOption(PollOption.PollOptionID, PollOption.PollID),
+                  {
+                    loading: "Deleting The Poll Option...",
+                    success: "Poll Option was deleted :(",
+                    error:
+                      "An error has occurred trying to delete this Poll Option.",
+                  }
+                )
                 .then(() => {
                   OnDelete();
                 });
@@ -131,6 +136,22 @@ export const PollOptionCard = ({
               </Text>
             </DeleteModalContent>
           </Modal>
+        )}
+        {showEditModal && (
+          <EditOptionForm
+            PollOption={PollOption}
+            OnCancel={() => setShowEditModal(false)}
+            OnSave={(EditedPollOption: PollOption) => {
+              toast.promise(updatePollOption(EditedPollOption), {
+                loading: "Updating the Poll Option...",
+                success: "Option successfully updated",
+                error:
+                  "An error has occurred trying to update this Poll Option",
+              });
+              OnEdit(EditedPollOption);
+              setShowEditModal(false);
+            }}
+          />
         )}
       </>
     </PollOptionCardContainer>

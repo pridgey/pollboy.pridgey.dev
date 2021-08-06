@@ -47,14 +47,18 @@ export const CallAPI = (Base: Airtable.Base) => ({
       }),
   // List all Polls the user has made, or has voted in
   listPolls: (UserID: string) =>
-    Base("PollVotes")
-      ?.select({
-        filterByFormula: `UserID = "${UserID}"`,
-      })
+    Base("PollOptions")
+      ?.select()
       .all()
-      .then((results) =>
-        results.map((result) => (result.fields as PollVote).PollID)
-      )
+      .then((results) => {
+        const Options: PollOption[] = results.map(
+          (result) => result.fields as PollOption
+        );
+
+        return Options.filter((option) =>
+          option.UserVotes.includes(UserID)
+        ).map((option) => option.PollID);
+      })
       .then((VotedPollIDs: string[]) =>
         Base("Polls")
           ?.select({

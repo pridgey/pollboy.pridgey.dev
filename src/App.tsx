@@ -1,45 +1,49 @@
-import { Suspense, useEffect, useState } from "react";
-import { BrowserRouter } from "react-router-dom";
-import firebase from "firebase";
-import { AirtableProvider, getTheme } from "./utilities";
-import { Poll } from "./views";
-import { v4 } from "uuid";
+import { Suspense, lazy } from "react";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import {
+  AirtableProvider,
+  PollAPIProvider,
+  UserIDProvider,
+  getTheme,
+  RecentPollProvider,
+  SocketProvider,
+} from "./utilities";
 import { StyleWrapper } from "@pridgey/afterburner";
+import { Layout } from "./components";
+import { Toaster } from "react-hot-toast";
 
-firebase.initializeApp({
-  apiKey: process.env.REACT_APP_FIREBASE_KEY,
-  authDomain: "pridgey-poll.firebaseapp.com",
-  projectId: "pridgey-poll",
-  storageBucket: "pridgey-poll.appspot.com",
-  messagingSenderId: "1085093590247",
-  appId: "1:1085093590247:web:ccc7c0aededa8c13599e42",
-});
+// Lazy load components
+const Home = lazy(() => import("./views/home"));
+const CreatePoll = lazy(() => import("./views/createPoll"));
+const EditPoll = lazy(() => import("./views/EditPoll"));
+const PollView = lazy(() => import("./views/PollView"));
 
-const App = () => {
-  const [userID, setUserID] = useState("");
-
-  useEffect(() => {
-    const storageUserID = localStorage.getItem("pbid");
-    if (storageUserID) {
-      setUserID(storageUserID);
-    } else {
-      const newUserID = v4();
-      setUserID(newUserID);
-      localStorage.setItem("pbid", newUserID);
-    }
-  }, []);
-
-  return (
+const App = () => (
+  <UserIDProvider>
     <AirtableProvider>
-      <StyleWrapper Theme={getTheme()}>
-        <BrowserRouter>
-          <Suspense fallback={<div>loading</div>}>
-            <Poll UserID={userID} />
-          </Suspense>
-        </BrowserRouter>
-      </StyleWrapper>
+      <PollAPIProvider>
+        <RecentPollProvider>
+          <SocketProvider>
+            <StyleWrapper Theme={getTheme()}>
+              <Toaster containerClassName="toast" />
+              <BrowserRouter>
+                <Suspense fallback={<div>loading</div>}>
+                  <Layout>
+                    <Switch>
+                      <Route path="/create" component={CreatePoll} />
+                      <Route path="/edit" component={EditPoll} />
+                      <Route path="/poll" component={PollView} />
+                      <Route path="/" component={Home} />
+                    </Switch>
+                  </Layout>
+                </Suspense>
+              </BrowserRouter>
+            </StyleWrapper>
+          </SocketProvider>
+        </RecentPollProvider>
+      </PollAPIProvider>
     </AirtableProvider>
-  );
-};
+  </UserIDProvider>
+);
 
 export default App;

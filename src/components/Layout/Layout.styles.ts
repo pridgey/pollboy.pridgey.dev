@@ -41,6 +41,7 @@ export const LayoutOverlay = styled.div`
   display: grid;
   grid-template-columns: 100vw;
   grid-template-rows: min-content minmax(0, 1fr);
+  overflow-y: auto;
 `;
 
 export const LayoutHeader = styled.header`
@@ -126,5 +127,6 @@ export const Content = styled.main`
   height: 100%;
   width: 100vw;
   background-color: #fff;
-  overflow-y: auto;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 `;

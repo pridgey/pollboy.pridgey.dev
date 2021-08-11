@@ -127,4 +127,5 @@ export const Content = styled.main`
   width: 100vw;
   background-color: #fff;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
 `;

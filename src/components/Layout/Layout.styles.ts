@@ -126,5 +126,5 @@ export const Content = styled.main`
   height: 100%;
   width: 100vw;
   background-color: #fff;
-  overflow-y: auto;
+  overflow: auto;
 `;

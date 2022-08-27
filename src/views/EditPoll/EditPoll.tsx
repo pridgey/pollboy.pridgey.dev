@@ -26,13 +26,15 @@ export const EditPoll = () => {
 
   // The state of the poll
   const [pollState, updatePollState] = useState<Poll>({
-    DateExpire: "",
-    PollDescription:
+    expire_at: "",
+    poll_desc:
       "Put something here that will really blow the pants off everybody",
-    PollName: "Your Brand New Poll",
-    PublicCanAdd: false,
-    Slug: "",
-    UserID: userID,
+    poll_name: "Your Brand New Poll",
+    public_can_add: false,
+    slug: "",
+    user_id: userID,
+    created_at: "",
+    multivote: true,
   });
 
   // Loading state
@@ -42,21 +44,24 @@ export const EditPoll = () => {
   const routerHistory = useHistory();
 
   // Get the functions for communicating with the api
-  const { updatePoll, selectPoll } = usePollAPI();
+  const { updatePoll, selectPollBySlug } = usePollAPI();
 
   // Check for any url params
   const { slug } = queryString.parse(window.location.search);
 
   useEffect(() => {
+    const getPollInfo = async () => {
+      const pollResponse = await selectPollBySlug(slug!.toString());
+
+      if (pollResponse?.data) {
+        updatePollState(pollResponse.data);
+      }
+    };
+
     if (slug) {
-      selectPoll(slug.toString()).then((results) => {
-        setLoading(false);
-        if (results) {
-          updatePollState(results[0]);
-        }
-      });
+      getPollInfo();
     }
-  }, [slug, selectPoll]);
+  }, [slug]);
 
   return (
     <StyledEditPoll>
@@ -66,29 +71,29 @@ export const EditPoll = () => {
         <>
           <SandwichCard Poll={pollState} DisplayMode={true} />
           <Input
-            Value={pollState.PollName}
+            Value={pollState.poll_name}
             Label="Poll Name"
             Type="text"
             OnChange={(newValue) => {
               updatePollState({
                 ...pollState,
-                PollName: newValue,
+                poll_name: newValue,
               });
             }}
           />
           <Input
-            Value={pollState.PollDescription}
+            Value={pollState.poll_desc}
             Label="Poll Description"
             Type="text"
             OnChange={(newValue) => {
               updatePollState({
                 ...pollState,
-                PollDescription: newValue,
+                poll_desc: newValue,
               });
             }}
           />
           <Input
-            Value={pollState.DateExpire}
+            Value={pollState.expire_at}
             Label="Date To Expire"
             Type="date"
             Min={tomorrow}
@@ -96,41 +101,51 @@ export const EditPoll = () => {
             OnChange={(newValue) => {
               updatePollState({
                 ...pollState,
-                DateExpire: newValue,
+                expire_at: newValue,
               });
             }}
           />
           <MessageBoolean
-            Value={pollState.PublicCanAdd}
+            Value={pollState.public_can_add}
             BooleanLabels={["Yes", "No"]}
             Label="Public Can Add Options"
             Message="Can any user add an option to this poll?"
             OnChange={(newValue) => {
               updatePollState({
                 ...pollState,
-                PublicCanAdd: newValue,
+                public_can_add: newValue,
+              });
+            }}
+          />
+          <MessageBoolean
+            Value={pollState.multivote}
+            BooleanLabels={["Multi Vote", "Single Vote"]}
+            Label="Multi Vote"
+            Message="Can Users vote for multiple options?"
+            OnChange={(newValue) => {
+              updatePollState({
+                ...pollState,
+                multivote: newValue,
               });
             }}
           />
           <FormFooter
             OnCancel={() => routerHistory.goBack()}
             OnSubmit={() => {
-              const { PollName, PollDescription, DateExpire } = pollState;
-              if (
-                PollName.length &&
-                PollDescription.length &&
-                DateExpire.length
-              ) {
+              const { poll_name, poll_desc, expire_at } = pollState;
+              if (poll_name.length && poll_desc.length && expire_at.length) {
                 // We are good to go
                 toast
                   .promise(
                     updatePoll({
-                      DateExpire: pollState.DateExpire,
-                      PollDescription: pollState.PollDescription,
-                      PollName: pollState.PollName,
-                      PublicCanAdd: pollState.PublicCanAdd,
-                      Slug: pollState.Slug,
-                      UserID: pollState.UserID,
+                      expire_at: pollState.expire_at,
+                      poll_desc: pollState.poll_desc,
+                      poll_name: pollState.poll_name,
+                      public_can_add: pollState.public_can_add,
+                      slug: pollState.slug,
+                      user_id: pollState.user_id,
+                      created_at: pollState.created_at,
+                      multivote: pollState.multivote,
                     }),
                     {
                       loading: "Editing The Poll...",
@@ -138,7 +153,7 @@ export const EditPoll = () => {
                       error: "An error has occurred with this poll.",
                     }
                   )
-                  .then(() => routerHistory.push(`/p?s=${pollState.Slug}`));
+                  .then(() => routerHistory.push(`/p?s=${pollState.slug}`));
               } else {
                 // Not quite right
                 toast.error(

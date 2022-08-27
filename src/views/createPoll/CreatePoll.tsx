@@ -8,7 +8,7 @@ import {
 } from "./../../components";
 import { StyledCreatePoll } from "./CreatePoll.styles";
 import { useHistory } from "react-router-dom";
-import { usePollAPI, useUserID } from "./../../utilities";
+import { useSupabase, generateSlug } from "./../../utilities";
 import toast from "react-hot-toast";
 
 export const CreatePoll = () => {
@@ -18,24 +18,26 @@ export const CreatePoll = () => {
   const hundred = new Date(today.valueOf());
   hundred.setDate(hundred.getDate() + 100);
 
-  const userID = useUserID();
+  const {
+    user: { id: userID },
+    supabase,
+  } = useSupabase();
 
   // The state of the poll
   const [newPoll, updateNewPoll] = useState<Poll>({
-    DateExpire: "",
-    PollDescription:
+    expire_at: "",
+    poll_desc:
       "Put something here that will really blow the pants off everybody",
-    PollName: "Your Brand New Poll",
-    PublicCanAdd: false,
-    Slug: "",
-    UserID: userID,
+    poll_name: "Your Brand New Poll",
+    public_can_add: false,
+    slug: "",
+    user_id: userID,
+    created_at: "",
+    multivote: true,
   });
 
   // Grab router history for route updates
   const routerHistory = useHistory();
-
-  // Get the functions for communicating with the api
-  const { createPoll } = usePollAPI();
 
   return (
     <StyledCreatePoll>
@@ -46,7 +48,7 @@ export const CreatePoll = () => {
         OnChange={(newValue) => {
           updateNewPoll({
             ...newPoll,
-            PollName: newValue,
+            poll_name: newValue,
           });
         }}
       />
@@ -56,7 +58,7 @@ export const CreatePoll = () => {
         OnChange={(newValue) => {
           updateNewPoll({
             ...newPoll,
-            PollDescription: newValue,
+            poll_desc: newValue,
           });
         }}
       />
@@ -68,35 +70,61 @@ export const CreatePoll = () => {
         OnChange={(newValue) => {
           updateNewPoll({
             ...newPoll,
-            DateExpire: newValue,
+            expire_at: new Date(newValue).toISOString(),
           });
         }}
       />
       <MessageBoolean
-        Value={newPoll.PublicCanAdd}
+        Value={newPoll.public_can_add}
         BooleanLabels={["Yes", "No"]}
         Label="Public Can Add Options"
         Message="Can any user add an option to this poll?"
         OnChange={(newValue) => {
           updateNewPoll({
             ...newPoll,
-            PublicCanAdd: newValue,
+            public_can_add: newValue,
+          });
+        }}
+      />
+      <MessageBoolean
+        Value={newPoll.multivote}
+        BooleanLabels={["Yes", "No"]}
+        Label="Multi Vote"
+        Message="Can Users vote for multiple options?"
+        OnChange={(newValue) => {
+          updateNewPoll({
+            ...newPoll,
+            multivote: newValue,
           });
         }}
       />
       <FormFooter
         OnCancel={() => routerHistory.goBack()}
         OnSubmit={() => {
-          const { PollName, PollDescription, DateExpire } = newPoll;
-          if (PollName.length && PollDescription.length && DateExpire.length) {
+          const { poll_name, poll_desc, expire_at } = newPoll;
+          if (poll_name.length && poll_desc.length && expire_at.length) {
             // We are good to go
+            const newSlug = generateSlug();
+            const pollToCreate = {
+              ...newPoll,
+              created_at: new Date().toISOString(),
+              slug: newSlug,
+            };
+
+            const createPoll = new Promise((resolve) =>
+              supabase
+                .from("poll")
+                .insert([pollToCreate])
+                .then(() => resolve(true))
+            );
+
             toast
-              .promise(createPoll(newPoll), {
+              .promise(createPoll, {
                 loading: "Creating The Poll...",
                 success: "Poll Created!",
                 error: "An error has occurred with this poll.",
               })
-              .then((slug) => routerHistory.push(`/p?s=${slug}`));
+              .then(() => routerHistory.push(`/p?s=${newSlug}`));
           } else {
             // Not quite right
             toast.error(

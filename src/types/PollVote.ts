@@ -1,6 +1,7 @@
 export type PollVote = {
-  PollVoteID: string;
-  PollID: string;
-  PollOptionID: string;
-  UserID: string;
+  id?: number;
+  created_at: string;
+  poll_id: number;
+  polloption_id: number;
+  user_id: string;
 };

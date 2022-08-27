@@ -71,12 +71,12 @@ export const PollOptionCard = ({
             </GridArea>
             <GridArea Area="title">
               <Text FontSize={30} FontWeight={800} TextAlign="left">
-                {PollOption.PollOptionName}
+                {PollOption.option_name}
               </Text>
             </GridArea>
             <GridArea Area="description">
               <Text FontSize={20} FontWeight={600} TextAlign="left">
-                {PollOption.PollOptionDescription}
+                {PollOption.option_desc}
               </Text>
             </GridArea>
           </StyledPollOptionCard>
@@ -108,19 +108,18 @@ export const PollOptionCard = ({
           <Modal
             OnSubmit={() => {
               setShowDeleteModal(false);
-              toast
-                .promise(
-                  deletePollOption(PollOption.PollOptionID, PollOption.PollID),
-                  {
+              if (PollOption.id) {
+                toast
+                  .promise(deletePollOption(PollOption.id), {
                     loading: "Deleting The Poll Option...",
                     success: "Poll Option was deleted :(",
                     error:
                       "An error has occurred trying to delete this Poll Option.",
-                  }
-                )
-                .then(() => {
-                  OnDelete();
-                });
+                  })
+                  .then(() => {
+                    OnDelete();
+                  });
+              }
             }}
             OnCancel={() => setShowDeleteModal(false)}
             SubmitButtonColor="#d00000"

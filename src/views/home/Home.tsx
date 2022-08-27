@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { usePollAPI, useUserID } from "./../../utilities";
+import { useSupabase } from "./../../utilities";
 import { StyledHome } from "./Home.styles";
 import { Poll } from "./../../types";
 import { Button, Loader, SandwichCard, Text } from "./../../components";
@@ -7,9 +7,11 @@ import { useHistory } from "react-router-dom";
 
 export const Home = () => {
   // Get the user id
-  const userID = useUserID();
-  // Grab API Functions
-  const { listPolls } = usePollAPI();
+  const {
+    user: { id: userID },
+    supabase,
+  } = useSupabase();
+
   // React-router history
   const routerHistory = useHistory();
 
@@ -19,10 +21,24 @@ export const Home = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    listPolls(userID)
-      .then((results: Poll[]) => setUserPolls(results))
-      .then(() => setLoading(false));
-  }, [userID, listPolls]);
+    const getPolls = async () => {
+      const { data: poll, error } = await supabase.from("poll").select();
+
+      if (poll) {
+        setUserPolls(poll);
+      }
+
+      if (error) {
+        console.error(error);
+      }
+
+      setLoading(false);
+    };
+    if (userID) {
+      console.log("run");
+      getPolls();
+    }
+  }, [userID]);
 
   return (
     <StyledHome>
@@ -35,10 +51,10 @@ export const Home = () => {
           </Text>
           {userPolls.map((poll, index) => (
             <SandwichCard
-              OnClick={() => routerHistory.push(`/poll?slug=${poll.Slug}`)}
+              OnClick={() => routerHistory.push(`/poll?slug=${poll.slug}`)}
               Poll={poll}
               key={`sandwich-${index}`}
-              DisplayMode={poll.UserID !== userID}
+              DisplayMode={poll.user_id !== userID}
               OnDelete={() => {
                 const thePolls = [...userPolls];
                 thePolls.splice(index, 1);

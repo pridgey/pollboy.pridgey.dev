@@ -48,9 +48,9 @@ export const SandwichCard = ({
   const routerHistory = useHistory();
 
   useEffect(() => {
-    if (Poll?.PollName && Poll?.PollDescription) {
+    if (Poll?.poll_name && Poll?.poll_desc) {
       // Concat the Name and Description together
-      const ConcatTitleDesc = `${Poll.PollName}:${Poll.PollDescription}`;
+      const ConcatTitleDesc = `${Poll.poll_name}:${Poll.poll_desc}`;
       // Get the charcode sum of the concat'd string
       const TotalCodeSum = getCharSum(ConcatTitleDesc);
       // Determine the num of vowels in the string
@@ -60,14 +60,8 @@ export const SandwichCard = ({
         (ConcatTitleDesc.length % 45) * (NumOfVowels % 2 === 0 ? 1 : -1);
 
       // Get the number of stripes by dividing the larger string by the smaller string
-      const FirstOp = Math.max(
-        Poll.PollName.length,
-        Poll.PollDescription.length
-      );
-      const SecondOp = Math.min(
-        Poll.PollName.length,
-        Poll.PollDescription.length
-      );
+      const FirstOp = Math.max(Poll.poll_name.length, Poll.poll_desc.length);
+      const SecondOp = Math.min(Poll.poll_name.length, Poll.poll_desc.length);
       // We add two to ensure a bit more variety
       const NumOfStripes = clampNumber(Math.round(FirstOp / SecondOp), {
         max: 10,
@@ -128,7 +122,7 @@ export const SandwichCard = ({
             }}
           >
             <Text FontSize={19} FontWeight={500}>
-              {Poll.PollName}
+              {Poll.poll_name}
             </Text>
           </ContentText>
         </GridArea>
@@ -139,7 +133,7 @@ export const SandwichCard = ({
             }}
           >
             <Text FontSize={19} FontWeight={300}>
-              {Poll.PollDescription}
+              {Poll.poll_desc}
             </Text>
           </ContentText>
         </GridArea>
@@ -147,7 +141,7 @@ export const SandwichCard = ({
           {!DisplayMode && (
             <Icons>
               <Button
-                OnClick={() => routerHistory.push(`/edit?slug=${Poll.Slug}`)}
+                OnClick={() => routerHistory.push(`/edit?slug=${Poll.slug}`)}
                 Padding={0}
                 Margin={0}
               >
@@ -168,15 +162,17 @@ export const SandwichCard = ({
           <Modal
             OnSubmit={() => {
               setShowDeleteModal(false);
-              toast
-                .promise(deletePoll(Poll.Slug), {
-                  loading: "Deleting The Poll...",
-                  success: "Poll was deleted :(",
-                  error: "An error has occurred with this poll.",
-                })
-                .then(() => {
-                  OnDelete && OnDelete();
-                });
+              if (Poll.id) {
+                toast
+                  .promise(deletePoll(Poll.id), {
+                    loading: "Deleting The Poll...",
+                    success: "Poll was deleted :(",
+                    error: "An error has occurred with this poll.",
+                  })
+                  .then(() => {
+                    OnDelete && OnDelete();
+                  });
+              }
             }}
             OnCancel={() => setShowDeleteModal(false)}
             SubmitButtonColor="#d00000"

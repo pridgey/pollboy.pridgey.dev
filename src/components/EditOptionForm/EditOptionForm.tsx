@@ -14,9 +14,9 @@ export const EditOptionForm = ({
   OnSave,
   OnCancel,
 }: EditOptionFormProps) => {
-  const [optionTitle, setOptionTitle] = useState(PollOption.PollOptionName);
+  const [optionTitle, setOptionTitle] = useState(PollOption.option_name);
   const [optionDescription, setOptionDescription] = useState(
-    PollOption.PollOptionDescription
+    PollOption.option_desc
   );
 
   const titleRef = useRef(document.createElement("input"));
@@ -28,8 +28,8 @@ export const EditOptionForm = ({
       OnSubmit={() =>
         OnSave({
           ...PollOption,
-          PollOptionName: optionTitle,
-          PollOptionDescription: optionDescription,
+          option_name: optionTitle,
+          option_desc: optionDescription,
         })
       }
       OnCancel={() => OnCancel()}

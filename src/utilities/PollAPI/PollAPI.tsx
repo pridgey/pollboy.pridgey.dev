@@ -1,44 +1,42 @@
 import React, { createContext, useContext } from "react";
-import { useAirtable } from "./../useAirtable";
 import { Poll, PollOption, PollVote } from "./../../types";
-import { CallAPI } from "./PollAPI.functions";
-import Airtable from "airtable";
+import { CallAPI, EmptyApi } from "./PollAPI.functions";
+import { useSupabase } from "./../useSupabase";
 
 // Defines the functions that come out of the PollAPI
 type PollAPI = {
-  createPoll: (NewPoll: Poll) => Promise<any>;
-  listPolls: (UserID: string) => Promise<Poll[]>;
-  updatePoll: (UpdatedPoll: Poll) => Promise<boolean>;
-  deletePoll: (PollID: string) => Promise<boolean>;
-  selectPoll: (PollID: string) => Promise<Poll[]>;
-  createPollOption: (NewPollOption: PollOption) => Promise<boolean>;
-  listPollOptions: (PollID: string) => Promise<PollOption[]>;
-  selectPollOption: (
-    PollOptionID: string,
-    PollID: string
-  ) => Promise<PollOption[]>;
-  deletePollOption: (PollOptionID: string, PollID: string) => Promise<boolean>;
-  updatePollOption: (UpdatedPollOption: PollOption) => Promise<boolean>;
-  vote: (PollOption: PollOption, UserID: string) => Promise<boolean>;
-  listPollVotes: (PollID: string) => Promise<PollVote[]>;
+  createPoll: (NewPoll: Poll) => any;
+  listPolls: (UserID: string) => Promise<any>;
+  updatePoll: (UpdatedPoll: Poll) => any;
+  deletePoll: (PollID: number) => any;
+  selectPoll: (PollID: number) => any;
+  selectPollBySlug: (Slug: string) => any;
+  createPollOption: (NewPollOption: PollOption) => any;
+  listPollOptions: (PollID: number) => any;
+  selectPollOption: (PollOptionID: number) => any;
+  deletePollOption: (PollOptionID: number) => any;
+  updatePollOption: (UpdatedPollOption: PollOption) => any;
+  vote: (Vote: PollVote) => any;
+  listPollVotes: (PollID: number) => any;
 };
 
 // The Context
-export const PollAPIContext = createContext<PollAPI>(
-  CallAPI(new Airtable({ apiKey: "Fake" }).base(""))
-);
+export const PollAPIContext = createContext<PollAPI>(EmptyApi());
 
 // The hook
 export const usePollAPI = () => useContext(PollAPIContext);
 
 // The Provider which provides the stuff
 export const PollAPIProvider: React.FC = ({ children }) => {
-  // Get Airtable
-  const airtable = useAirtable();
+  // here will be supabase shit
+  const { supabase } = useSupabase();
 
-  return (
-    <PollAPIContext.Provider value={CallAPI(airtable!)}>
-      {children}
-    </PollAPIContext.Provider>
-  );
+  if (supabase) {
+    return (
+      <PollAPIContext.Provider value={CallAPI(supabase)}>
+        {children}
+      </PollAPIContext.Provider>
+    );
+  }
+  return null;
 };

@@ -155,7 +155,7 @@ export default function Login() {
           <Input
             Label="Password"
             Name="password"
-            Placeholder="something other than 'password'"
+            Placeholder="maybe not 'password'"
             Type="password"
           />
           <Show when={loggingIn.error?.fieldErrors?.password}>
@@ -164,6 +164,7 @@ export default function Login() {
           <Button Type="submit">{data() ? "Login" : ""}</Button>
         </Form>
       </div>
+      <h2 class={styles.pollboytitle}>Pollboy</h2>
     </main>
   );
 }

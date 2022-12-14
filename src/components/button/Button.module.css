@@ -1,0 +1,22 @@
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  width: 100%;
+  background-color: #f99469;
+  border: 0px;
+  border-radius: 16px;
+  font-family: "Josefin Sans", sans-serif;
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #e78a62;
+}
+
+.button:active {
+  background-color: #d47e59;
+}

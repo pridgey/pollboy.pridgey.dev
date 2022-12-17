@@ -47,7 +47,8 @@
   user-select: none;
   margin: 0px;
 }
-ButtonBar .loginerror {
+
+.loginerror {
   font-size: 20px;
   color: #dd1616;
   width: 100%;
@@ -58,6 +59,11 @@ ButtonBar .loginerror {
   font-size: 20px;
   color: #f99469;
   font-weight: bold;
+}
+
+.logintext {
+  font-size: 20px;
+  margin: 0px;
 }
 
 /* Mobile Sizing */

@@ -5,6 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 // #region create Supabase client
 const url = import.meta.env.VITE_SUPABASE_URL || "no_url_found";
 const key = import.meta.env.VITE_SUPABASE_KEY || "no_key_found";
+console.log("Keys:", { url, key });
 const client = createClient(url, key);
 // #endregion create Supabase client
 

@@ -1,16 +1,15 @@
 @font-face {
   font-family: "Josefin Sans";
-  src: url("JosefinSans-VariableFont_wght.ttf") format("truetype");
+  src: url("/JosefinSans-VariableFont_wght.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "Italiana";
-  src: url("Italiana-Regular.ttf") format("truetype");
+  src: url("/Italiana-Regular.ttf") format("truetype");
 }
 
 body {
-  font-family: Gordita, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
-    "Helvetica Neue", sans-serif;
+  font-family: "Josefin Sans", sans-serif;
 }
 
 #layout {

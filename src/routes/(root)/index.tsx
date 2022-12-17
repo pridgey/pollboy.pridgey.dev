@@ -28,7 +28,12 @@ export default function Home() {
 
   return (
     <main class="w-full p-4 space-y-2">
-      <h1 class="font-bold text-3xl">Hello {user()?.user?.email || "World"}</h1>
+      <h1 class="font-bold text-3xl">
+        Hello{" "}
+        {user()?.user?.user_metadata?.username ||
+          user()?.user?.email ||
+          "World"}
+      </h1>
       <Form>
         <button name="logout" type="submit">
           Logout

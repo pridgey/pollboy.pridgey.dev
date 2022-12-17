@@ -1,7 +1,10 @@
+import styles from "./../css/404.module.css";
+
 export default function NotFound() {
   return (
-    <main class="w-full p-4 space-y-2">
-      <h1 class="font-bold text-xl">Page Not Found</h1>
+    <main class={styles.container}>
+      <h1 class={styles.notfoundtext}>404</h1>
+      <h2 class={styles.subtext}>Page Not Found</h2>
     </main>
   );
 }

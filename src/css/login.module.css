@@ -5,6 +5,7 @@
   grid-template-columns: 1fr;
   grid-template-rows: 1fr min-content;
   gap: 32px 0px;
+  padding: 32px 0px;
   align-items: center;
   justify-items: center;
   background-image: url("/ai-autumn-farmer.png");
@@ -22,7 +23,7 @@
   gap: 32px 0px;
   justify-content: center;
   align-items: center;
-  width: 300px;
+  min-width: 400px;
   top: 0px;
 }
 
@@ -45,6 +46,18 @@
   font-size: 96px;
   user-select: none;
   margin: 0px;
+}
+ButtonBar .loginerror {
+  font-size: 20px;
+  color: #dd1616;
+  width: 100%;
+  text-align: center;
+}
+
+.loginlink {
+  font-size: 20px;
+  color: #f99469;
+  font-weight: bold;
 }
 
 /* Mobile Sizing */

@@ -1,10 +1,22 @@
 import { Show } from "solid-js";
-import { useParams, useRouteData, A } from "solid-start";
+import { useParams, useRouteData } from "solid-start";
 import { FormError } from "solid-start/data";
 import { createServerAction$, createServerData$ } from "solid-start/server";
-import { createUserSession, login } from "~/db/session";
+import { createUserSession, register } from "~/db/session";
 import styles from "~/css/login.module.css";
 import { Button, Input } from "~/components";
+
+const validateUsername = (username: unknown) => {
+  if (typeof username !== "string") {
+    return "Issue submitting username.";
+  }
+  if (username.length === 0) {
+    return "Username is a required field";
+  }
+  if (username.length < 3) {
+    return "Username must be 3 characters or more.";
+  }
+};
 
 function validateEmail(email: unknown) {
   // Go through some email checks
@@ -40,7 +52,7 @@ export function routeData() {
   });
 }
 
-export default function Login() {
+export default function Register() {
   const data = useRouteData<typeof routeData>();
   const params = useParams();
 
@@ -48,22 +60,23 @@ export default function Login() {
     // Get all the data from the form
     const email = form.get("email");
     const password = form.get("password");
-    const redirectTo = form.get("redirectTo") || "/";
+    const username = form.get("username");
 
     // Quick validation
     if (
       typeof email !== "string" ||
       typeof password !== "string" ||
-      typeof redirectTo !== "string"
+      typeof username !== "string"
     ) {
       throw new FormError(`Form not submitted correctly.`);
     }
 
     // More validation
-    const fields = { email, password };
+    const fields = { email, password, username };
     const fieldErrors = {
       email: validateEmail(email),
       password: validatePassword(password),
+      username: validateUsername(username),
     };
     console.log("fieldErrors:", { fieldErrors });
 
@@ -74,9 +87,10 @@ export default function Login() {
       });
     }
 
-    console.log("------- It's login time...");
-    const user = await login({ email, password });
-    console.log("------- Post Login:", { user });
+    console.log("------- It's Register time...");
+    const user = await register({ email, username, password });
+    console.log("------- Post Register:", { user });
+
     if (!user) {
       throw new FormError("That didn't work. Please try again", {
         fields,
@@ -86,59 +100,14 @@ export default function Login() {
     return createUserSession(
       user?.user?.id || "",
       user?.session?.access_token || "",
-      redirectTo
+      "/confirm"
     );
-
-    // // Depending on login or register, do stuff
-    // switch (loginType) {
-    //   case "login": {
-    //     console.log("------- It's login time...");
-    //     const user = await login({ email, username, password });
-    //     console.log("------- Post Login:", { user });
-    //     if (!user) {
-    //       throw new FormError(`Ah man, something went wrong`, {
-    //         fields,
-    //       });
-    //     }
-    //     console.log("------ It's session time...");
-    //     return createUserSession(
-    //       user?.user?.id || "",
-    //       user?.session?.access_token || "",
-    //       redirectTo
-    //     );
-    //   }
-    //   case "register": {
-    //     const userExists = await db.user.findUnique({ where: { username } });
-    //     if (userExists) {
-    //       throw new FormError(`User with username ${username} already exists`, {
-    //         fields,
-    //       });
-    //     }
-    //     const user = await register({ email, username, password });
-    //     if (!user) {
-    //       throw new FormError(
-    //         `Something went wrong trying to create a new user.`,
-    //         {
-    //           fields,
-    //         }
-    //       );
-    //     }
-    //     return createUserSession(
-    //       user?.user?.id || "",
-    //       user?.session?.access_token || "",
-    //       redirectTo
-    //     );
-    //   }
-    //   default: {
-    //     throw new FormError(`Login type invalid`, { fields });
-    //   }
-    // }
   });
 
   return (
     <div class={styles.logincontainer}>
       <div class={styles.loginmodal}>
-        <h1 class={styles.logintitle}>Login</h1>
+        <h1 class={styles.logintitle}>Register</h1>
         <Form class={styles.loginform}>
           <input
             type="hidden"
@@ -150,6 +119,13 @@ export default function Login() {
               {loggingIn.error.message}
             </span>
           </Show>
+          <Input
+            Label="Username"
+            Name="username"
+            Placeholder="What to call you"
+            Type="text"
+            Error={loggingIn.error?.fieldErrors?.username}
+          />
           <Input
             Label="Email"
             Name="email"
@@ -164,11 +140,8 @@ export default function Login() {
             Type="password"
             Error={loggingIn.error?.fieldErrors?.password}
           />
-          <Button Type="submit">{data() ? "Login" : ""}</Button>
+          <Button Type="submit">{data() ? "Register" : ""}</Button>
         </Form>
-        <A href="/register" class={styles.loginlink}>
-          register
-        </A>
       </div>
       <h2 class={styles.pollboytitle}>Pollboy</h2>
     </div>

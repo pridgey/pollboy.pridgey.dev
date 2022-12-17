@@ -129,7 +129,7 @@ export default function Login() {
   });
 
   return (
-    <main class={styles.logincontainer}>
+    <div class={styles.logincontainer}>
       <div class={styles.loginmodal}>
         <h1 class={styles.logintitle}>Login</h1>
         <Form class={styles.loginform}>
@@ -165,6 +165,6 @@ export default function Login() {
         </Form>
       </div>
       <h2 class={styles.pollboytitle}>Pollboy</h2>
-    </main>
+    </div>
   );
 }

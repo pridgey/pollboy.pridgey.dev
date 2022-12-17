@@ -17,11 +17,11 @@ body {
 }
 
 #layout {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
   background-color: #2f2932;
   display: grid;
   grid-template-columns: 1fr;
@@ -45,4 +45,9 @@ body {
   border-top-left-radius: 32px;
   border-top-right-radius: 32px;
   background: linear-gradient(180deg, #f1f0f2 0%, #d1cbcd 100%);
+  box-sizing: border-box;
+}
+
+/* Mobile Sizing */
+@media (min-width: 480px) {
 }

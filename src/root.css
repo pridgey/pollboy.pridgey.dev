@@ -12,6 +12,10 @@ body {
   font-family: "Josefin Sans", sans-serif;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 #layout {
   position: absolute;
   top: 0;

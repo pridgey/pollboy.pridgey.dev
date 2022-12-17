@@ -42,3 +42,10 @@
   font-size: 96px;
   user-select: none;
 }
+
+/* Mobile Sizing */
+@media (min-width: 480px) {
+  .logincontainer {
+    justify-content: space-around;
+  }
+}

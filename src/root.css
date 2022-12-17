@@ -8,6 +8,22 @@
   src: url("/Italiana-Regular.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "La Belle Aurore";
+  src: url("/LaBelleAurore-Regular.ttf") format("truetype");
+}
+
+/* CSS Variables */
+:root {
+  --color-orange: #f99469;
+  --color-orange-hover: #e78a62;
+  --color-orange-active: #d47e59;
+  --color-red: #dd1616;
+  --font-main: "Josefin Sans", sans-serif;
+  --font-special: "Italiana", serif;
+  --font-avatar: "La Belle Aurore", cursive;
+}
+
 body {
   font-family: "Josefin Sans", sans-serif;
 }
@@ -46,6 +62,15 @@ body {
   border-top-right-radius: 32px;
   background: linear-gradient(180deg, #f1f0f2 0%, #d1cbcd 100%);
   box-sizing: border-box;
+}
+
+.sitetitle {
+  font-family: "Italiana", serif;
+  font-size: 26px;
+  font-weight: bold;
+  color: white;
+  user-select: none;
+  text-decoration: none;
 }
 
 /* Mobile Sizing */

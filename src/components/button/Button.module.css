@@ -4,7 +4,7 @@
   justify-content: center;
   padding: 16px;
   width: 100%;
-  background-color: #f99469;
+  background-color: var(--color-orange);
   border: 0px;
   border-radius: 16px;
   font-family: "Josefin Sans", sans-serif;
@@ -14,9 +14,9 @@
 }
 
 .button:hover {
-  background-color: #e78a62;
+  background-color: var(--color-orange-hover);
 }
 
 .button:active {
-  background-color: #d47e59;
+  background-color: var(--color-orange-active);
 }

@@ -4,7 +4,11 @@ import { logout } from "~/db/session";
 
 export function routeData() {
   return createServerData$(async (_, { request }) => {
-    await logout(request);
+    try {
+      await logout(request);
+    } catch (err) {
+      console.error("Error:", { err });
+    }
 
     return;
   });

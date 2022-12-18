@@ -4,6 +4,7 @@ import { createServerAction$ } from "solid-start/server";
 import { logout } from "~/db/session";
 import { DropdownOptions } from "../dropdown-options";
 import styles from "./Avatar.module.css";
+import { useNavigate } from "solid-start";
 
 export type AvatarProps = {
   User?: User;
@@ -11,6 +12,7 @@ export type AvatarProps = {
 
 export const Avatar = (props: AvatarProps) => {
   let avatarRef: HTMLButtonElement | undefined;
+  const navigate = useNavigate();
 
   const [_, handleLogout] = createServerAction$((_, { request }) =>
     logout(request)
@@ -43,7 +45,7 @@ export const Avatar = (props: AvatarProps) => {
           Options={[
             {
               Label: "User Profile",
-              OnClick: () => undefined,
+              OnClick: () => navigate("/settings"),
               Icon: "",
             },
             {

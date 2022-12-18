@@ -6,7 +6,7 @@ import { createClient } from "@supabase/supabase-js";
 const url = import.meta.env.VITE_SUPABASE_URL || "no_url_found";
 const key = import.meta.env.VITE_SUPABASE_KEY || "no_key_found";
 console.log("Keys:", { url, key });
-const client = createClient(url, key);
+export const client = createClient(url, key);
 // #endregion create Supabase client
 
 // #region create storage session
@@ -33,7 +33,6 @@ type LoginForm = {
   username?: string;
   password: string;
 };
-
 // #endregion session Types
 
 // Register the user with Supabase. Currently only email+pass auth
@@ -51,6 +50,30 @@ export async function register({ email, username, password }: LoginForm) {
   if (error) {
     console.error("Register Error:", error);
     return null;
+  }
+
+  return data;
+}
+
+// Update user information
+export async function updateUser(userProfileSettings: any) {
+  console.log(" ");
+  console.log(" ");
+  console.log("=============== UPDATE USER  ===============");
+  console.log("New Profile Settings:", { userProfileSettings });
+
+  const supabaseSession = await client.auth.getSession();
+
+  console.log("Supabase Session:", { supabaseSession });
+
+  const { data, error } = await client.auth.updateUser({
+    data: userProfileSettings,
+  });
+
+  console.log("Update User:", { data });
+
+  if (error) {
+    console.error("Update User Error:", { error });
   }
 
   return data;
@@ -108,7 +131,7 @@ export async function requireUserId(
 export async function getUser(request: Request) {
   console.log(" ");
   console.log(" ");
-  console.log("=============== GetUser ===============");
+  console.log("=============== GET USER ===============");
   const session = await storage.getSession(request.headers.get("Cookie"));
   const jwt = await session.get("token");
 
@@ -147,6 +170,7 @@ export async function logout(request: Request) {
 export async function createUserSession(
   userId: string,
   jwt: string,
+  refreshtoken: string,
   redirectTo: string = "/"
 ) {
   console.log(" ");
@@ -156,6 +180,8 @@ export async function createUserSession(
   console.log("Session Keys:", { userId, jwt });
   session.set("userId", userId);
   session.set("token", jwt);
+
+  client.auth.setSession({ access_token: jwt, refresh_token: refreshtoken });
 
   return redirect(redirectTo, {
     headers: {

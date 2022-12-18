@@ -86,6 +86,7 @@ export default function Login() {
     return createUserSession(
       user?.user?.id || "",
       user?.session?.access_token || "",
+      user?.session?.refresh_token || "",
       redirectTo
     );
   });

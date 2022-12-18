@@ -124,8 +124,18 @@ export async function getUser(request: Request) {
 
 // Sign user out of Supabase and then destroy the user session
 export async function logout(request: Request) {
+  console.log(" ");
+  console.log(" ");
+  console.log("=============== Logout ===============");
   const session = await storage.getSession(request.headers.get("Cookie"));
-  await client.auth.signOut();
+  const { error } = await client.auth.signOut();
+
+  if (error) {
+    console.error("Logout Error:", { error });
+  }
+
+  console.log("Post Logout:", { session });
+
   return redirect("/login", {
     headers: {
       "Set-Cookie": await storage.destroySession(session),

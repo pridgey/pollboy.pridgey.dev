@@ -1,14 +1,12 @@
 import { Outlet } from "@solidjs/router";
 import { A, useRouteData } from "solid-start";
-import { createServerData$, redirect } from "solid-start/server";
+import { createServerData$ } from "solid-start/server";
 import { Avatar } from "~/components";
 import { getUser } from "~/db/session";
 
 export function routeData() {
   return createServerData$(async (_, { request }) => {
     const user = await getUser(request);
-
-    console.log("Avatar", { user });
 
     return user;
   });

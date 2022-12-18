@@ -2,6 +2,7 @@ import type { User } from "@supabase/supabase-js";
 import styles from "./Avatar.module.css";
 import { DropdownOptions } from "../dropdown-options";
 import { createSignal, Show } from "solid-js";
+import { useNavigate } from "solid-start";
 
 export type AvatarProps = {
   User?: User;
@@ -9,6 +10,7 @@ export type AvatarProps = {
 
 export const Avatar = (props: AvatarProps) => {
   let avatarRef: HTMLButtonElement;
+  const navigate = useNavigate();
 
   const [optionsOpen, setOptionsOpen] = createSignal<boolean>(false);
 
@@ -16,7 +18,11 @@ export const Avatar = (props: AvatarProps) => {
     <>
       <button
         ref={avatarRef}
-        onClick={() => setOptionsOpen(!optionsOpen())}
+        onClick={() => {
+          if (props.User) {
+            setOptionsOpen(!optionsOpen());
+          }
+        }}
         type="button"
         class={styles.avatarbubble}
       >
@@ -38,7 +44,10 @@ export const Avatar = (props: AvatarProps) => {
             },
             {
               Label: "Logout",
-              OnClick: () => undefined,
+              OnClick: () => {
+                console.log("Click!");
+                navigate("/logout", { replace: true });
+              },
               Icon: "",
             },
             {

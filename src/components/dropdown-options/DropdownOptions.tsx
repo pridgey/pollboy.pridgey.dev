@@ -32,10 +32,6 @@ export const DropdownOptions = (props: DropdownOptionsProps) => {
       !ev.path.includes(optionContainerRef) &&
       !ev.path.includes(props.PositionRef)
     ) {
-      console.log("Outside Click:", {
-        options: ev.path.includes(optionContainerRef),
-        parent: ev.path.includes(props.PositionRef),
-      });
       props.OnOutsideClick?.();
     }
   };
@@ -94,7 +90,7 @@ export const DropdownOptions = (props: DropdownOptionsProps) => {
           {(option) => (
             <button
               class={styles.option}
-              onClick={option.OnClick}
+              onClick={() => option.OnClick()}
               type="button"
             >
               {option.Label}

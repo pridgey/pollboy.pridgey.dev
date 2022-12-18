@@ -88,51 +88,6 @@ export default function Login() {
       user?.session?.access_token || "",
       redirectTo
     );
-
-    // // Depending on login or register, do stuff
-    // switch (loginType) {
-    //   case "login": {
-    //     console.log("------- It's login time...");
-    //     const user = await login({ email, username, password });
-    //     console.log("------- Post Login:", { user });
-    //     if (!user) {
-    //       throw new FormError(`Ah man, something went wrong`, {
-    //         fields,
-    //       });
-    //     }
-    //     console.log("------ It's session time...");
-    //     return createUserSession(
-    //       user?.user?.id || "",
-    //       user?.session?.access_token || "",
-    //       redirectTo
-    //     );
-    //   }
-    //   case "register": {
-    //     const userExists = await db.user.findUnique({ where: { username } });
-    //     if (userExists) {
-    //       throw new FormError(`User with username ${username} already exists`, {
-    //         fields,
-    //       });
-    //     }
-    //     const user = await register({ email, username, password });
-    //     if (!user) {
-    //       throw new FormError(
-    //         `Something went wrong trying to create a new user.`,
-    //         {
-    //           fields,
-    //         }
-    //       );
-    //     }
-    //     return createUserSession(
-    //       user?.user?.id || "",
-    //       user?.session?.access_token || "",
-    //       redirectTo
-    //     );
-    //   }
-    //   default: {
-    //     throw new FormError(`Login type invalid`, { fields });
-    //   }
-    // }
   });
 
   return (

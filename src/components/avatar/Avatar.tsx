@@ -1,16 +1,16 @@
 import type { User } from "@supabase/supabase-js";
 import { createSignal, Show } from "solid-js";
-import { DropdownOptions } from "../dropdown-options";
-import styles from "./Avatar.module.css";
 import { createServerAction$ } from "solid-start/server";
 import { logout } from "~/db/session";
+import { DropdownOptions } from "../dropdown-options";
+import styles from "./Avatar.module.css";
 
 export type AvatarProps = {
   User?: User;
 };
 
 export const Avatar = (props: AvatarProps) => {
-  let avatarRef: HTMLButtonElement;
+  let avatarRef: HTMLButtonElement | undefined;
 
   const [_, handleLogout] = createServerAction$((_, { request }) =>
     logout(request)
@@ -42,18 +42,16 @@ export const Avatar = (props: AvatarProps) => {
           OnOutsideClick={() => setOptionsOpen(false)}
           Options={[
             {
-              Label: "Use",
+              Label: "User Profile",
               OnClick: () => undefined,
               Icon: "",
             },
             {
               Label: "Logout",
-              OnClick: handleLogout,
-              Icon: "",
-            },
-            {
-              Label: "Delete",
-              OnClick: () => undefined,
+              OnClick: () => {
+                setOptionsOpen(false);
+                handleLogout();
+              },
               Icon: "",
             },
           ]}

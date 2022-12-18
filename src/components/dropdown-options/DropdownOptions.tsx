@@ -17,7 +17,7 @@ export type DropdownOptionsProps = {
   HorizontalGap?: number;
   OnOutsideClick?: () => void;
   Options: Option[];
-  PositionRef: HTMLElement;
+  PositionRef?: HTMLElement;
   VerticalAlign?: VerticalAlign;
   VerticalGap?: number;
 };

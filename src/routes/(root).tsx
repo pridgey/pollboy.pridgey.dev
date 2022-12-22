@@ -3,17 +3,21 @@ import { A, useRouteData } from "solid-start";
 import { createServerData$ } from "solid-start/server";
 import { Avatar } from "~/components";
 import { getUser } from "~/db/session";
+import { getUserSettings } from "~/db/settings";
 
 export function routeData() {
   return createServerData$(async (_, { request }) => {
     const user = await getUser(request);
+    const userSettings = await getUserSettings(request);
 
-    return user;
+    console.log("User Settings?:", { userSettings });
+
+    return { user, userSettings };
   });
 }
 
 export default function GlobalLayout() {
-  const user = useRouteData<typeof routeData>();
+  const data = useRouteData<typeof routeData>();
 
   return (
     <div id="layout">
@@ -21,7 +25,10 @@ export default function GlobalLayout() {
         <A href="/" class="sitetitle">
           Pollboy
         </A>
-        <Avatar User={user()?.user} />
+        <Avatar
+          User={data()?.user?.user}
+          AvatarUrl={data()?.userSettings?.[0]?.avatar_url}
+        />
       </nav>
       <main class="maincontent">
         <Outlet />

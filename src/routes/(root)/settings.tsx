@@ -64,14 +64,15 @@ const Settings = () => {
     async (form: FormData, { request }) => {
       // Get all the data from the form
       const username = form.get("username");
+      const avatar = form.get("avatar");
 
       // Quick validation
-      if (typeof username !== "string") {
+      if (typeof username !== "string" || typeof avatar !== "string") {
         throw new FormError(`Form not submitted correctly.`);
       }
 
       // More validation
-      const fields = { username };
+      const fields = { username, avatar };
       //   const fieldErrors = {
       //     email: validateEmail(email),
       //     password: validatePassword(password),
@@ -84,9 +85,23 @@ const Settings = () => {
       //     });
       //   }
 
-      const response = await updateUserSettings(request, {
-        display_name: username,
-      });
+      let newUserData = {};
+
+      if (username.length) {
+        newUserData = {
+          ...newUserData,
+          display_name: username,
+        };
+      }
+
+      if (avatar.length) {
+        newUserData = {
+          ...newUserData,
+          avatar_url: avatar,
+        };
+      }
+
+      const response = await updateUserSettings(request, newUserData);
 
       if (!response) {
         throw new FormError("That didn't work. Please try again", {
@@ -102,11 +117,19 @@ const Settings = () => {
     <div class={styles.container}>
       <div class={styles.profilecard}>
         <Switch>
-          <Match when={!!userData()?.user?.user_metadata?.avatarurl?.length}>
+          <Match
+            when={
+              !!settingsData()?.[0]?.avatar_url ||
+              !!userData()?.user?.user_metadata?.avatarurl?.length
+            }
+          >
             <img
               alt="user profile image"
               class={styles.profileimage}
-              src={userData()?.user?.user_metadata?.avatarurl}
+              src={
+                settingsData()?.[0]?.avatar_url ||
+                userData()?.user?.user_metadata?.avatarurl
+              }
             />
           </Match>
           <Match when={!userData()?.user?.user_metadata?.avatarurl?.length}>
@@ -114,7 +137,9 @@ const Settings = () => {
           </Match>
         </Switch>
         <h1 class={styles.profiletitle}>
-          {userData()?.user?.user_metadata?.username || userData()?.user?.email}
+          {settingsData()?.[0]?.display_name ||
+            userData()?.user?.user_metadata?.username ||
+            userData()?.user?.email}
         </h1>
         <div class={styles.profileinfogroup}>
           <h2 class={styles.profileinfolabel}>email</h2>
@@ -127,7 +152,13 @@ const Settings = () => {
       </div>
       <div class={styles.profilecard} style={{ "align-items": "flex-start" }}>
         <h1 class={styles.profiletitle}>User Profile</h1>
-        <Form>
+        <Form class={styles.profileform}>
+          <Input
+            Label="Avatar URL"
+            Name="avatar"
+            Type="text"
+            Placeholder="Paste a URL to an avatar image"
+          />
           <Input
             Label="Display Name"
             Name="username"

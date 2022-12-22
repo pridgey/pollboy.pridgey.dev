@@ -7,6 +7,7 @@ import styles from "./Avatar.module.css";
 import { useNavigate } from "solid-start";
 
 export type AvatarProps = {
+  AvatarUrl?: string;
   User?: User;
 };
 
@@ -31,10 +32,13 @@ export const Avatar = (props: AvatarProps) => {
         }}
         type="button"
         class={styles.avatarbubble}
+        style={{ "background-image": `url('${props.AvatarUrl}')` }}
       >
-        {props.User?.user_metadata?.username?.split("")?.[0] ||
-          props.User?.email?.split("")?.[0] ||
-          ""}
+        <Show when={!props.AvatarUrl?.length}>
+          {props.User?.user_metadata?.username?.split("")?.[0] ||
+            props.User?.email?.split("")?.[0] ||
+            ""}
+        </Show>
       </button>
       <Show when={optionsOpen()}>
         <DropdownOptions
@@ -45,7 +49,10 @@ export const Avatar = (props: AvatarProps) => {
           Options={[
             {
               Label: "User Profile",
-              OnClick: () => navigate("/settings"),
+              OnClick: () => {
+                setOptionsOpen(false);
+                navigate("/settings");
+              },
               Icon: "",
             },
             {

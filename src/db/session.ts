@@ -181,7 +181,10 @@ export async function createUserSession(
   session.set("userId", userId);
   session.set("token", jwt);
 
-  client.auth.setSession({ access_token: jwt, refresh_token: refreshtoken });
+  await client.auth.setSession({
+    access_token: jwt,
+    refresh_token: refreshtoken,
+  });
 
   return redirect(redirectTo, {
     headers: {

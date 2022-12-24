@@ -41,6 +41,7 @@ h3 {
 @media (max-width: 480px) {
   .container {
     padding: 64px 0px;
+    background-image: unset;
   }
 
   .not_found {

@@ -32,3 +32,11 @@ h3 {
 .subtitle {
   font-size: 32px;
 }
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .container {
+    padding: 64px 0px;
+    background-image: unset;
+  }
+}

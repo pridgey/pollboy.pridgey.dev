@@ -1,69 +1,54 @@
 .container {
-  display: grid;
-  grid-template-columns: 0.25fr 1fr;
-  grid-template-rows: 1fr;
   width: 100%;
   height: 100%;
   bottom: 0px;
-}
-
-.pollcontainer {
-  width: 100%;
-  height: calc(100vh - 70px);
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: min-content 1fr min-content;
-  flex-direction: column;
-  padding: 24px;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px,
-    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
-  border-top-right-radius: 32px;
-  gap: 24px 0px;
-}
-
-.polllist {
-  display: flex;
-  flex-direction: column;
-  gap: 24px 0px;
-  border-top: 1px solid white;
-  padding: 16px 0px;
-  overflow-y: auto;
-}
-
-.polltitle {
-  font-family: var(--font-main);
-  font-size: 20px;
-  font-weight: bold;
-  margin: 0px;
-}
-
-.poll {
-  display: flex;
-  flex-direction: column;
-  gap: 24px 0px;
-  padding: 64px;
+  padding: 64px 20%;
   background-image: url("/ai-autumn-leaves.png");
-  background-repeat: no-repeat;
   background-position: bottom right;
-  height: calc(100vh - 70px);
-  overflow-y: auto;
+  background-repeat: no-repeat;
 }
 
-.pollinfotitle {
-  font-family: var(--font-main);
-  font-size: 48px;
-  margin: 0px;
-}
-
-.pollinfosubtitle {
-  font-family: var(--font-main);
-  font-size: 36px;
-  margin: 0px;
-}
-
-.polloptioncontainer {
+.not_found {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 16px;
+  flex-direction: column;
+  gap: 8px 0px;
+  align-items: center;
+  text-align: center;
+}
+
+.not_found svg {
+  width: 600px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-main);
+  margin: 0px;
+  font-weight: normal;
+}
+
+.poll_title {
+  font-family: var(--font-special);
+  font-size: 64px;
+}
+
+.poll_subtitle {
+  font-size: 32px;
+}
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .container {
+    padding: 64px 0px;
+  }
+
+  .not_found {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .not_found svg {
+    width: 100%;
+  }
 }

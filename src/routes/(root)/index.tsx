@@ -6,7 +6,9 @@ import {
 } from "solid-start/server";
 import { getUser, logout } from "~/db/session";
 import styles from "~/css/home.module.css";
-import { Button, Input, PollCard } from "~/components";
+import { Button, Input, PollCard, SVGPark } from "~/components";
+import { For, Switch, Match } from "solid-js";
+import { getUserPolls } from "~/db/poll";
 
 export function routeData() {
   return createServerData$(async (_, { request }) => {
@@ -16,112 +18,45 @@ export function routeData() {
       throw redirect("/login");
     }
 
-    return user;
+    const userPolls = await getUserPolls(request);
+
+    return { user, userPolls };
   });
 }
 
 export default function Home() {
-  // Grab user info from route data above
-  const user = useRouteData<typeof routeData>();
-  // Create a server action for the logout action
-  const [, { Form }] = createServerAction$((f: FormData, { request }) =>
-    logout(request)
-  );
+  const data = useRouteData<typeof routeData>();
 
   return (
     <div class={styles.container}>
-      <aside class={styles.pollcontainer}>
-        <Input
-          Label="Polls"
-          Name="poll-search"
-          Type="text"
-          Placeholder="Search for Polls"
-        />
-        <div class={styles.polllist}>
-          <h1 class={styles.polltitle}>Polls Created / Voted In</h1>
-          <PollCard
-            CardTitle="Jul-I can't believe it's not Disney"
-            Description="You’d think it was Disney, but nope"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-        </div>
-        <Button Type="button">Create Poll</Button>
-      </aside>
-      <div class={styles.poll}>
-        <h1 class={styles.pollinfotitle}>
-          Jul-I Can’t Believe It’s Not Disney
-        </h1>
-        <h2 class={styles.pollinfosubtitle}>
-          You’d think it was Disney, but nope
-        </h2>
-        <Button BackgroundColor="transparent" Type="button">
-          Edit
-        </Button>
-        <Button BackgroundColor="--color-green" Type="button">
-          Add Option
-        </Button>
-        <div class={styles.polloptioncontainer}>
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-          <PollCard
-            CardTitle="AuGust of Adventure"
-            Description="Thrust yourself into a gust of adventure"
-          />
-        </div>
-      </div>
+      <Switch>
+        <Match when={data()?.userPolls?.length}>
+          <h1 class={styles.poll_title}>Pollboy</h1>
+          <For each={data()?.userPolls}>
+            {(poll) => (
+              <>
+                <h2 class={styles.poll_subtitle}>{poll.poll_name}</h2>
+                <h2 class={styles.poll_subtitle}>{poll.poll_desc}</h2>
+              </>
+            )}
+          </For>
+        </Match>
+        <Match when={!data()?.userPolls?.length}>
+          <div class={styles.not_found}>
+            <SVGPark />
+            <h2 class={styles.poll_subtitle}>
+              On a breezy day, not a Poll was found...
+            </h2>
+            <Button
+              BackgroundColor="transparent"
+              TextColor="--color-orange"
+              Href="new"
+            >
+              Create a New Poll
+            </Button>
+          </div>
+        </Match>
+      </Switch>
     </div>
   );
 }

@@ -1,21 +1,4 @@
-import { getUserId, getUserSession } from "./session";
-import { createClient } from "@supabase/supabase-js";
-
-const getClient = async (request: Request) => {
-  // Get env variables
-  const url = import.meta.env.VITE_SUPABASE_URL || "no_url_found";
-  const key = import.meta.env.VITE_SUPABASE_KEY || "no_key_found";
-
-  const userSession = await getUserSession(request);
-  const jwt = await userSession.get("token");
-
-  // Return client
-  return createClient(url, key, {
-    global: {
-      headers: { Authorization: `Bearer ${jwt}` },
-    },
-  });
-};
+import { getClient, getUserId } from "./session";
 
 // Shape of User Settings
 type UserSettings = {

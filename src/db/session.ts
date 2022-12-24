@@ -35,6 +35,23 @@ type LoginForm = {
 };
 // #endregion session Types
 
+// Helper function that will create the supabase client with jwt context
+export const getClient = async (request: Request) => {
+  // Get env variables
+  const url = import.meta.env.VITE_SUPABASE_URL || "no_url_found";
+  const key = import.meta.env.VITE_SUPABASE_KEY || "no_key_found";
+
+  const userSession = await getUserSession(request);
+  const jwt = await userSession.get("token");
+
+  // Return client
+  return createClient(url, key, {
+    global: {
+      headers: { Authorization: `Bearer ${jwt}` },
+    },
+  });
+};
+
 // Register the user with Supabase. Currently only email+pass auth
 export async function register({ email, username, password }: LoginForm) {
   const { data, error } = await client.auth.signUp({

@@ -40,6 +40,13 @@ export default function Home() {
               </>
             )}
           </For>
+          <Button
+            BackgroundColor="transparent"
+            TextColor="--color-orange"
+            Href="new"
+          >
+            Create a New Poll
+          </Button>
         </Match>
         <Match when={!data()?.userPolls?.length}>
           <div class={styles.not_found}>

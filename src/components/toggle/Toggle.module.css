@@ -1,0 +1,48 @@
+.inputcontrol {
+  height: 0;
+  width: 0;
+  visibility: hidden;
+}
+
+.inputlabel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px 0px;
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 20px;
+}
+
+.toggle {
+  cursor: pointer;
+  width: 128px;
+  height: 64px;
+  background: grey;
+  display: block;
+  border-radius: 64px;
+  position: relative;
+}
+
+.toggle:after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  bottom: 5px;
+  width: 54px;
+  background: #fff;
+  border-radius: 64px;
+  transition: 0.3s;
+}
+
+input:checked + .toggle {
+  background: var(--color-orange);
+}
+
+input:checked + .toggle:after {
+  left: calc(100% - 5px);
+  transform: translateX(-100%);
+}
+
+.toggle:active:after {
+  width: 64px;
+}

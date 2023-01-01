@@ -1,25 +1,23 @@
+import styles from "./Toggle.module.css";
 import { Show } from "solid-js";
-import styles from "./Input.module.css";
 
-export type InputProps = {
+export type ToggleProps = {
   Error?: string;
   Label: string;
-  Placeholder?: string;
   Name: string;
-  Type: "text" | "password" | "date";
 };
 
-export const Input = (props: InputProps) => {
+export const Toggle = (props: ToggleProps) => {
   return (
     <label class={styles.inputlabel}>
       {props.Label}
       <input
         id={`${props.Name}-input`}
-        type={props.Type}
-        placeholder={props.Placeholder}
+        type="checkbox"
         name={props.Name}
         class={styles.inputcontrol}
       />
+      <div class={styles.toggle}></div>
       <Show when={props.Error}>
         <span role="alert" class={styles.inputerror}>
           {props.Error}

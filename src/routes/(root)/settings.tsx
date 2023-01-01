@@ -5,7 +5,7 @@ import {
   createServerData$,
   redirect,
 } from "solid-start/server";
-import { getUser } from "~/db/session";
+import { getUser, updateUser } from "~/db/session";
 import { Switch, Match, createEffect, createSignal } from "solid-js";
 import { FormError } from "solid-start/data";
 import { getUserSettings, updateUserSettings } from "~/db/settings";

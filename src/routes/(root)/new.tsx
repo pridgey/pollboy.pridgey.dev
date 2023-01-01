@@ -6,7 +6,7 @@ import {
 } from "solid-start/server";
 import { getUser, logout } from "~/db/session";
 import styles from "~/css/new.module.css";
-import { Button, Input, PollCard, SVGPark } from "~/components";
+import { Button, Input, Toggle, PollCard, SVGPark } from "~/components";
 import { Switch, Match } from "solid-js";
 import { FormError } from "solid-start/data";
 import { createPoll } from "~/db/poll";
@@ -29,14 +29,29 @@ export default function New() {
       // Get all the data from the form
       const poll_name = form.get("name");
       const poll_desc = form.get("description");
+      const expire_at = form.get("expiration");
+      const public_can_add = form.get("add_options");
+      const multivote = form.get("multivote");
+
+      console.log({ multivote });
 
       // Quick validation
-      if (typeof poll_name !== "string" || typeof poll_desc !== "string") {
+      if (
+        typeof poll_name !== "string" ||
+        typeof poll_desc !== "string" ||
+        typeof expire_at !== "string"
+      ) {
         throw new FormError(`Form not submitted correctly.`);
       }
 
       // More validation
-      const fields = { poll_name, poll_desc };
+      const fields = {
+        poll_name,
+        poll_desc,
+        expire_at,
+        public_can_add,
+        multivote,
+      };
       //   const fieldErrors = {
       //     email: validateEmail(email),
       //     password: validatePassword(password),
@@ -52,6 +67,9 @@ export default function New() {
       const response = await createPoll(request, {
         poll_desc,
         poll_name,
+        expire_at,
+        public_can_add: public_can_add === "on",
+        multivote: multivote === "on",
       });
 
       if (!response) {
@@ -85,6 +103,14 @@ export default function New() {
           Type="text"
           Placeholder="Add some additional info"
         />
+        <Input
+          Label="Poll Expiration"
+          Name="expiration"
+          Type="date"
+          Placeholder="When does this poll end?"
+        />
+        <Toggle Label="Users Can Add" Name="add_options" />
+        <Toggle Label="Vote on Multiple Options" Name="multivote" />
         <Button Type="submit">Create Poll</Button>
       </Form>
     </div>

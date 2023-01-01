@@ -96,6 +96,7 @@ export default function Register() {
         fields,
       });
     }
+
     console.log("------ It's session time...");
     return createUserSession(
       user?.user?.id || "",

@@ -37,7 +37,7 @@ export const updateUserSettings = async (
   // Update passed in settings for user
   const { data, error } = await client
     .from("settings")
-    .update({ ...newData })
+    .upsert({ ...newData, user_id: userID }, { onConflict: "user_id" })
     .eq("user_id", userID)
     .select();
 

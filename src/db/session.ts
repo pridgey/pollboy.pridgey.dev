@@ -73,15 +73,13 @@ export async function register({ email, username, password }: LoginForm) {
 }
 
 // Update user information
-export async function updateUser(userProfileSettings: any) {
+export async function updateUser(request: Request, userProfileSettings: any) {
   console.log(" ");
   console.log(" ");
   console.log("=============== UPDATE USER  ===============");
   console.log("New Profile Settings:", { userProfileSettings });
 
-  const supabaseSession = await client.auth.getSession();
-
-  console.log("Supabase Session:", { supabaseSession });
+  const client = await getClient(request);
 
   const { data, error } = await client.auth.updateUser({
     data: userProfileSettings,

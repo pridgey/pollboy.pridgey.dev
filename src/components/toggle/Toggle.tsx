@@ -9,15 +9,15 @@ export type ToggleProps = {
 
 export const Toggle = (props: ToggleProps) => {
   return (
-    <label class={styles.inputlabel}>
+    <label class={styles.inputlabel} for={props.Name}>
       {props.Label}
       <input
-        id={`${props.Name}-input`}
+        id={props.Name}
         type="checkbox"
         name={props.Name}
         class={styles.inputcontrol}
       />
-      <div class={styles.toggle}></div>
+      <span class={styles.toggle_display} hidden></span>
       <Show when={props.Error}>
         <span role="alert" class={styles.inputerror}>
           {props.Error}

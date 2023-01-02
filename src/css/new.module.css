@@ -20,9 +20,37 @@ h3 {
 }
 
 .form {
-  display: flex;
-  flex-direction: column;
-  gap: 24px 0px;
+  display: grid;
+  grid-template:
+    "label label expiry" min-content
+    "desc desc desc" min-content
+    "options multi ." min-content
+    "button button button" min-content / 1fr 1fr 1fr;
+  gap: 24px 24px;
+}
+
+.form_label {
+  grid-area: label;
+}
+
+.form_desc {
+  grid-area: desc;
+}
+
+.form_expiry {
+  grid-area: expiry;
+}
+
+.form_add {
+  grid-area: options;
+}
+
+.form_multi {
+  grid-area: multi;
+}
+
+.form_button {
+  grid-area: button;
 }
 
 .title {
@@ -36,7 +64,17 @@ h3 {
 /* Mobile Sizing */
 @media (max-width: 480px) {
   .container {
-    padding: 64px 0px;
+    padding: 5rem 3rem;
     background-image: unset;
+  }
+
+  .form {
+    grid-template:
+      "label label" min-content
+      "expiry expiry" min-content
+      "desc desc" min-content
+      "options multi" min-content
+      "button button" min-content / 1fr 1fr;
+    margin-bottom: 2rem;
   }
 }

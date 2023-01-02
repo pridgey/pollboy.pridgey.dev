@@ -2,6 +2,7 @@
   height: 0;
   width: 0;
   visibility: hidden;
+  display: contents;
 }
 
 .inputlabel {
@@ -14,8 +15,8 @@
 
 .toggle {
   cursor: pointer;
-  width: 128px;
-  height: 64px;
+  width: 8rem;
+  height: 4rem;
   background: grey;
   display: block;
   border-radius: 64px;
@@ -28,7 +29,7 @@
   top: 5px;
   left: 5px;
   bottom: 5px;
-  width: 54px;
+  width: calc(4rem - 10px);
   background: #fff;
   border-radius: 64px;
   transition: 0.3s;
@@ -44,5 +45,5 @@ input:checked + .toggle:after {
 }
 
 .toggle:active:after {
-  width: 64px;
+  width: 4rem;
 }

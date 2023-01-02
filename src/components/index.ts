@@ -5,4 +5,5 @@ export * from "./dropdown-options";
 export * from "./input";
 export * from "./poll-card";
 export * from "./svg-park";
+export * from "./textarea";
 export * from "./toggle";

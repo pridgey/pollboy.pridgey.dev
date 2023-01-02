@@ -6,7 +6,14 @@ import {
 } from "solid-start/server";
 import { getUser, logout } from "~/db/session";
 import styles from "~/css/new.module.css";
-import { Button, Input, Toggle, PollCard, SVGPark } from "~/components";
+import {
+  Button,
+  Input,
+  Textarea,
+  Toggle,
+  PollCard,
+  SVGPark,
+} from "~/components";
 import { Switch, Match } from "solid-js";
 import { FormError } from "solid-start/data";
 import { createPoll } from "~/db/poll";
@@ -91,27 +98,38 @@ export default function New() {
         deadline, and choosing whether to allow multiple votes.
       </h2>
       <Form class={styles.form}>
-        <Input
-          Label="Poll Name"
-          Name="name"
-          Type="text"
-          Placeholder="What's your favorite Backstreet Boys song?"
-        />
-        <Input
-          Label="Description"
-          Name="description"
-          Type="text"
-          Placeholder="Add some additional info"
-        />
-        <Input
-          Label="Poll Expiration"
-          Name="expiration"
-          Type="date"
-          Placeholder="When does this poll end?"
-        />
-        <Toggle Label="Users Can Add" Name="add_options" />
-        <Toggle Label="Vote on Multiple Options" Name="multivote" />
-        <Button Type="submit">Create Poll</Button>
+        <span class={styles.form_label}>
+          <Input
+            Label="Poll Name"
+            Name="name"
+            Type="text"
+            Placeholder="What's your favorite Backstreet Boys song?"
+          />
+        </span>
+        <span class={styles.form_expiry}>
+          <Input
+            Label="Poll Expiration"
+            Name="expiration"
+            Type="date"
+            Placeholder="When does this poll end?"
+          />
+        </span>
+        <span class={styles.form_desc}>
+          <Textarea
+            Label="Description"
+            Name="description"
+            Placeholder="Add some additional info"
+          />
+        </span>
+        <span class={styles.form_add}>
+          <Toggle Label="Users Can Add" Name="add_options" />
+        </span>
+        <span class={styles.form_multi}>
+          <Toggle Label="Multiple Votes" Name="multivote" />
+        </span>
+        <span class={styles.form_button}>
+          <Button Type="submit">Create Poll</Button>
+        </span>
       </Form>
     </div>
   );

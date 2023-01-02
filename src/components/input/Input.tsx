@@ -10,6 +10,7 @@ export type InputProps = {
 };
 
 export const Input = (props: InputProps) => {
+  console.log("Input Props:", props);
   return (
     <label class={styles.inputlabel}>
       {props.Label}

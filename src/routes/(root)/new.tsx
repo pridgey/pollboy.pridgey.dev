@@ -17,6 +17,7 @@ import {
 import { Switch, Match } from "solid-js";
 import { FormError } from "solid-start/data";
 import { createPoll } from "~/db/poll";
+import { validate } from "~/lib/Validate";
 
 export function routeData() {
   return createServerData$(async (_, { request }) => {
@@ -40,8 +41,6 @@ export default function New() {
       const public_can_add = form.get("poll_add_options");
       const multivote = form.get("poll_multivote");
 
-      console.log({ multivote });
-
       // Quick validation
       if (
         typeof poll_name !== "string" ||
@@ -59,17 +58,24 @@ export default function New() {
         public_can_add,
         multivote,
       };
-      //   const fieldErrors = {
-      //     email: validateEmail(email),
-      //     password: validatePassword(password),
-      //   };
+      const fieldErrors = {
+        poll_name: new validate(poll_name)
+          .required("Poll Name is a required field.")
+          .run(),
+        poll_description: new validate(poll_desc)
+          .required("Poll Description is a required field.")
+          .run(),
+        poll_expiration: new validate(expire_at)
+          .required("Expiration Date is a required field.")
+          .run(),
+      };
 
-      //   if (Object.values(fieldErrors).some(Boolean)) {
-      //     throw new FormError("There are some field format issues", {
-      //       fieldErrors,
-      //       fields,
-      //     });
-      //   }
+      if (Object.values(fieldErrors).some((field) => !field.valid)) {
+        throw new FormError("There are some field format issues", {
+          fieldErrors,
+          fields,
+        });
+      }
 
       const response = await createPoll(request, {
         poll_desc,
@@ -100,6 +106,7 @@ export default function New() {
       <Form class={styles.form}>
         <span class={styles.form_label}>
           <Input
+            Error={creatingPoll?.error?.fieldErrors?.poll_name?.error}
             Label="Poll Name"
             Name="poll_name"
             Type="text"
@@ -108,6 +115,7 @@ export default function New() {
         </span>
         <span class={styles.form_expiry}>
           <Input
+            Error={creatingPoll?.error?.fieldErrors?.poll_expiration?.error}
             Label="Poll Expiration"
             Name="poll_expiration"
             Type="date"
@@ -116,6 +124,7 @@ export default function New() {
         </span>
         <span class={styles.form_desc}>
           <Textarea
+            Error={creatingPoll?.error?.fieldErrors?.poll_description?.error}
             Label="Description"
             Name="poll_description"
             Placeholder="Add some additional info"
@@ -128,7 +137,9 @@ export default function New() {
           <Toggle Label="Multiple Votes" Name="poll_multivote" />
         </span>
         <span class={styles.form_button}>
-          <Button Type="submit">Create Poll</Button>
+          <Button Disabled={creatingPoll?.pending} Type="submit">
+            Create Poll
+          </Button>
         </span>
       </Form>
     </div>

@@ -3,6 +3,7 @@ import styles from "./Button.module.css";
 
 type ButtonCommonProps = {
   BackgroundColor?: string;
+  Disabled?: boolean;
   children: string;
   TextColor?: string;
 };
@@ -44,6 +45,7 @@ export const Button = (props: ButtonProps) => {
 
   return (
     <button
+      disabled={props.Disabled}
       class={styles.button}
       style={{ "background-color": buttonColor, color: textColor }}
       type={(props as ButtonEleProps).Type}

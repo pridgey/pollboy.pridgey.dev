@@ -34,7 +34,7 @@
 
 .profiletitle {
   font-family: var(--font-main);
-  font-size: 20px;
+  font-size: 4rem;
   font-weight: bold;
   margin: 0px;
 }
@@ -48,14 +48,14 @@
 
 .profileinfolabel {
   font-family: var(--font-main);
-  font-size: 18;
+  font-size: 3rem;
   font-weight: normal;
   margin: 0px;
 }
 
 .profileinfodatum {
   font-family: var(--font-main);
-  font-size: 18;
+  font-size: 2rem;
   font-weight: bold;
   margin: 0px;
 }

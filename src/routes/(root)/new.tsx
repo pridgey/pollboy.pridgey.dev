@@ -34,11 +34,11 @@ export default function New() {
   const [creatingPoll, { Form }] = createServerAction$(
     async (form: FormData, { request }) => {
       // Get all the data from the form
-      const poll_name = form.get("name");
-      const poll_desc = form.get("description");
-      const expire_at = form.get("expiration");
-      const public_can_add = form.get("add_options");
-      const multivote = form.get("multivote");
+      const poll_name = form.get("poll_name");
+      const poll_desc = form.get("poll_description");
+      const expire_at = form.get("poll_expiration");
+      const public_can_add = form.get("poll_add_options");
+      const multivote = form.get("poll_multivote");
 
       console.log({ multivote });
 
@@ -101,7 +101,7 @@ export default function New() {
         <span class={styles.form_label}>
           <Input
             Label="Poll Name"
-            Name="name"
+            Name="poll_name"
             Type="text"
             Placeholder="What's your favorite Backstreet Boys song?"
           />
@@ -109,7 +109,7 @@ export default function New() {
         <span class={styles.form_expiry}>
           <Input
             Label="Poll Expiration"
-            Name="expiration"
+            Name="poll_expiration"
             Type="date"
             Placeholder="When does this poll end?"
           />
@@ -117,15 +117,15 @@ export default function New() {
         <span class={styles.form_desc}>
           <Textarea
             Label="Description"
-            Name="description"
+            Name="poll_description"
             Placeholder="Add some additional info"
           />
         </span>
         <span class={styles.form_add}>
-          <Toggle Label="Users Can Add" Name="add_options" />
+          <Toggle Label="Users Can Add" Name="poll_add_options" />
         </span>
         <span class={styles.form_multi}>
-          <Toggle Label="Multiple Votes" Name="multivote" />
+          <Toggle Label="Multiple Votes" Name="poll_multivote" />
         </span>
         <span class={styles.form_button}>
           <Button Type="submit">Create Poll</Button>

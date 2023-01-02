@@ -15,8 +15,8 @@
 
 .toggle {
   cursor: pointer;
-  width: 8rem;
-  height: 4rem;
+  width: 10rem;
+  height: 5rem;
   background: grey;
   display: block;
   border-radius: 64px;
@@ -29,7 +29,7 @@
   top: 5px;
   left: 5px;
   bottom: 5px;
-  width: calc(4rem - 10px);
+  width: calc(5rem - 10px);
   background: #fff;
   border-radius: 64px;
   transition: 0.3s;
@@ -45,5 +45,5 @@ input:checked + .toggle:after {
 }
 
 .toggle:active:after {
-  width: 4rem;
+  width: 5rem;
 }

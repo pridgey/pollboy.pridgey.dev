@@ -41,8 +41,6 @@ export const updateUserSettings = async (
     .eq("user_id", userID)
     .select();
 
-  console.log("Post Update:", { data, error });
-
   if (error) {
     console.error("Update User Settings Error:", { error });
   }

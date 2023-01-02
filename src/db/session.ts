@@ -5,7 +5,6 @@ import { createClient } from "@supabase/supabase-js";
 // #region create Supabase client
 const url = import.meta.env.VITE_SUPABASE_URL || "no_url_found";
 const key = import.meta.env.VITE_SUPABASE_KEY || "no_key_found";
-console.log("Keys:", { url, key });
 export const client = createClient(url, key);
 // #endregion create Supabase client
 
@@ -74,18 +73,11 @@ export async function register({ email, username, password }: LoginForm) {
 
 // Update user information
 export async function updateUser(request: Request, userProfileSettings: any) {
-  console.log(" ");
-  console.log(" ");
-  console.log("=============== UPDATE USER  ===============");
-  console.log("New Profile Settings:", { userProfileSettings });
-
   const client = await getClient(request);
 
   const { data, error } = await client.auth.updateUser({
     data: userProfileSettings,
   });
-
-  console.log("Update User:", { data });
 
   if (error) {
     console.error("Update User Error:", { error });
@@ -96,16 +88,11 @@ export async function updateUser(request: Request, userProfileSettings: any) {
 
 // Login the user to Supabase and get auth result
 export async function login({ email, password }: LoginForm) {
-  console.log(" ");
-  console.log(" ");
-  console.log("=============== LOGIN  ===============");
   // Login to Supabase
   const { data, error } = await client.auth.signInWithPassword({
     email,
     password,
   });
-
-  console.log("Login:", { email, password, data });
 
   if (error) {
     console.error("Login Error:", error);
@@ -144,9 +131,6 @@ export async function requireUserId(
 
 // Grabs user data
 export async function getUser(request: Request) {
-  console.log(" ");
-  console.log(" ");
-  console.log("=============== GET USER ===============");
   const session = await storage.getSession(request.headers.get("Cookie"));
   const jwt = await session.get("token");
 
@@ -162,17 +146,12 @@ export async function getUser(request: Request) {
 
 // Sign user out of Supabase and then destroy the user session
 export async function logout(request: Request) {
-  console.log(" ");
-  console.log(" ");
-  console.log("=============== Logout ===============");
   const session = await storage.getSession(request.headers.get("Cookie"));
   const { error } = await client.auth.signOut();
 
   if (error) {
     console.error("Logout Error:", { error });
   }
-
-  console.log("Post Logout:", { session });
 
   return redirect("/login", {
     headers: {
@@ -188,11 +167,7 @@ export async function createUserSession(
   refreshtoken: string,
   redirectTo: string = "/"
 ) {
-  console.log(" ");
-  console.log(" ");
-  console.log("=============== CreateUserSession ===============");
   const session = await storage.getSession();
-  console.log("Session Keys:", { userId, jwt });
   session.set("userId", userId);
   session.set("token", jwt);
 

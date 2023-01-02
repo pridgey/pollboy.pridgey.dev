@@ -1,4 +1,5 @@
 import { getClient, getUserId } from "./session";
+import { generateSlug } from "~/lib/Slug";
 
 // Shape of Poll
 type PollRecord = {
@@ -14,23 +15,52 @@ type PollRecord = {
 };
 
 export const createPoll = async (request: Request, newData: PollRecord) => {
+  // Gets the client, and userID
   const client = await getClient(request);
-
   const userID = await getUserId(request);
 
+  // The data for the new poll
   const newPollData = {
     ...newData,
     user_id: userID,
   };
 
-  const { error } = await client.from("poll").insert({ ...newPollData });
+  // Create the new poll, and grab the new ID
+  const { data, error } = await client
+    .from("poll")
+    .insert({ ...newPollData })
+    .select("id");
 
+  // Error creating the poll
   if (error) {
     console.error("Create Poll Error:", { error });
-    return false;
+    return null;
   }
 
-  return true;
+  // Grabs the new poll id
+  const newPollId = data?.[0]?.id;
+  // Generates a fun slug to identify the poll (more fun than just an id)
+  const poll_slug = generateSlug();
+  // Combines the two info a string
+  const combined_slug = `${newPollId}-${poll_slug}`;
+
+  if (newPollId) {
+    // Update slug on created record to include unique id
+    const { error: updateError } = await client
+      .from("poll")
+      .update({
+        slug: combined_slug,
+      })
+      .eq("id", newPollId);
+
+    if (updateError) {
+      console.error("Create Poll Slug Error:", { updateError });
+      return null;
+    }
+    return combined_slug;
+  } else {
+    return null;
+  }
 };
 
 export const getUserPolls = async (request: Request) => {

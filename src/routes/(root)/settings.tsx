@@ -36,8 +36,6 @@ const Settings = () => {
   const data = useRouteData<typeof routeData>();
   const { userData, settingsData } = data;
 
-  console.log("Settings:", { data: settingsData() });
-
   // Signal for the formatted date_created string
   const [createdString, setCreatedString] = createSignal("");
 

@@ -10,8 +10,6 @@ export function routeData() {
     const user = await getUser(request);
     const userSettings = await getUserSettings(request);
 
-    console.log("User Settings?:", { userSettings });
-
     return { user, userSettings };
   });
 }

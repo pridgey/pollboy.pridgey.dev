@@ -78,7 +78,6 @@ export default function Register() {
       password: validatePassword(password),
       username: validateUsername(username),
     };
-    console.log("fieldErrors:", { fieldErrors });
 
     if (Object.values(fieldErrors).some(Boolean)) {
       throw new FormError("There are some field format issues", {
@@ -87,9 +86,7 @@ export default function Register() {
       });
     }
 
-    console.log("------- It's Register time...");
     const user = await register({ email, username, password });
-    console.log("------- Post Register:", { user });
 
     if (!user) {
       throw new FormError("That didn't work. Please try again", {
@@ -97,7 +94,6 @@ export default function Register() {
       });
     }
 
-    console.log("------ It's session time...");
     return createUserSession(
       user?.user?.id || "",
       user?.session?.access_token || "",

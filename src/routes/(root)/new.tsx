@@ -1,22 +1,13 @@
-import { useRouteData } from "solid-start";
+import { FormError } from "solid-start/data";
 import {
   createServerAction$,
   createServerData$,
   redirect,
 } from "solid-start/server";
-import { getUser, logout } from "~/db/session";
+import { Button, Input, Textarea, Toggle } from "~/components";
 import styles from "~/css/new.module.css";
-import {
-  Button,
-  Input,
-  Textarea,
-  Toggle,
-  PollCard,
-  SVGPark,
-} from "~/components";
-import { Switch, Match } from "solid-js";
-import { FormError } from "solid-start/data";
 import { createPoll } from "~/db/poll";
+import { getUser } from "~/db/session";
 import { validate } from "~/lib/Validate";
 
 export function routeData() {
@@ -91,7 +82,7 @@ export default function New() {
         });
       }
 
-      return redirect("/");
+      return redirect(`/poll/${response}`);
     }
   );
 

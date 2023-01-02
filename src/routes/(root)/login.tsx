@@ -65,7 +65,6 @@ export default function Login() {
       email: validateEmail(email),
       password: validatePassword(password),
     };
-    console.log("fieldErrors:", { fieldErrors });
 
     if (Object.values(fieldErrors).some(Boolean)) {
       throw new FormError("There are some field format issues", {
@@ -74,15 +73,12 @@ export default function Login() {
       });
     }
 
-    console.log("------- It's login time...");
     const user = await login({ email, password });
-    console.log("------- Post Login:", { user });
     if (!user) {
       throw new FormError("That didn't work. Please try again", {
         fields,
       });
     }
-    console.log("------ It's session time...");
     return createUserSession(
       user?.user?.id || "",
       user?.session?.access_token || "",

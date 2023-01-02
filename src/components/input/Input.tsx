@@ -1,19 +1,25 @@
 import { Show } from "solid-js";
 import styles from "./Input.module.css";
+import { InfoTip } from "../infotip";
 
 export type InputProps = {
   Error?: string;
   Label: string;
   Placeholder?: string;
   Name: string;
+  Tooltip?: string;
   Type: "text" | "password" | "date";
 };
 
 export const Input = (props: InputProps) => {
-  console.log("Input Props:", props);
   return (
     <label class={styles.inputlabel}>
-      {props.Label}
+      <div class={styles.labelspread}>
+        <span>{props.Label}</span>
+        <Show when={props.Tooltip?.length}>
+          <InfoTip Text={props.Tooltip || ""} />
+        </Show>
+      </div>
       <input
         id={`${props.Name}-input`}
         type={props.Type}

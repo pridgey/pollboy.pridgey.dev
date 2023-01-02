@@ -39,34 +39,36 @@ export const DropdownOptions = (props: DropdownOptionsProps) => {
   onMount(() => {
     // Create function to calculate the position of the options
     const calculatePosition = () => {
-      const parent = props.PositionRef.getBoundingClientRect();
+      const parent = props.PositionRef?.getBoundingClientRect();
       const options = optionContainerRef?.getBoundingClientRect();
 
-      // Calculate left value
-      let left = parent.x;
-      if (props.HorizontalAlign === "right") {
-        left += parent?.width;
-        left -= options?.width;
+      if (parent) {
+        // Calculate left value
+        let left = parent.x;
+        if (props.HorizontalAlign === "right") {
+          left += parent?.width;
+          left -= options?.width;
+        }
+
+        left += props.HorizontalGap || 0;
+
+        // Calculate top value
+        let top = parent.y + parent?.height;
+
+        if (props.VerticalAlign === "top") {
+          top -= parent?.height;
+          top -= options?.height;
+        }
+
+        top += props.VerticalGap || 0;
+
+        const styles = {
+          left: `${left}px`,
+          top: `${top}px`,
+        };
+
+        setInlineStyles(styles);
       }
-
-      left += props.HorizontalGap || 0;
-
-      // Calculate top value
-      let top = parent.y + parent?.height;
-
-      if (props.VerticalAlign === "top") {
-        top -= parent?.height;
-        top -= options?.height;
-      }
-
-      top += props.VerticalGap || 0;
-
-      const styles = {
-        left: `${left}px`,
-        top: `${top}px`,
-      };
-
-      setInlineStyles(styles);
     };
 
     calculatePosition();

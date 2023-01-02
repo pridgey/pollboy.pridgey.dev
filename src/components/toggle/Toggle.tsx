@@ -1,16 +1,23 @@
 import styles from "./Toggle.module.css";
 import { Show } from "solid-js";
+import { InfoTip } from "../infotip";
 
 export type ToggleProps = {
   Error?: string;
   Label: string;
   Name: string;
+  Tooltip?: string;
 };
 
 export const Toggle = (props: ToggleProps) => {
   return (
     <label class={styles.inputlabel} for={props.Name}>
-      {props.Label}
+      <div class={styles.labelspread}>
+        <span>{props.Label}</span>
+        <Show when={props.Tooltip?.length}>
+          <InfoTip Text={props.Tooltip || ""} />
+        </Show>
+      </div>
       <input
         id={props.Name}
         type="checkbox"

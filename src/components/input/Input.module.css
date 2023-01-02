@@ -6,6 +6,12 @@
   font-size: 3rem;
 }
 
+.labelspread {
+  display: flex;
+  flex-direction: row;
+  gap: 0px 1rem;
+}
+
 .inputcontrol {
   font-family: "Josefin Sans", sans-serif;
   font-size: 3rem;

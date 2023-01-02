@@ -1,18 +1,25 @@
 import { Show } from "solid-js";
 import styles from "./Textarea.module.css";
+import { InfoTip } from "../infotip";
 
 export type TextareaProps = {
   Error?: string;
   Label: string;
+  Name: string;
   Placeholder?: string;
   Rows?: number;
-  Name: string;
+  Tooltip?: string;
 };
 
 export const Textarea = (props: TextareaProps) => {
   return (
     <label class={styles.textarealabel}>
-      {props.Label}
+      <div class={styles.labelspread}>
+        <span>{props.Label}</span>
+        <Show when={props.Tooltip?.length}>
+          <InfoTip Text={props.Tooltip || ""} />
+        </Show>
+      </div>
       <textarea
         id={`${props.Name}-input`}
         placeholder={props.Placeholder}

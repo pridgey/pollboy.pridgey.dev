@@ -110,6 +110,7 @@ export default function New() {
             Label="Poll Name"
             Name="poll_name"
             Type="text"
+            Tooltip="This is the title of the poll. It'll be used to identify the poll."
             Placeholder="What's your favorite Backstreet Boys song?"
           />
         </span>
@@ -118,6 +119,7 @@ export default function New() {
             Error={creatingPoll?.error?.fieldErrors?.poll_expiration?.error}
             Label="Poll Expiration"
             Name="poll_expiration"
+            Tooltip="This is the last day someone can vote on this poll."
             Type="date"
             Placeholder="When does this poll end?"
           />
@@ -127,14 +129,23 @@ export default function New() {
             Error={creatingPoll?.error?.fieldErrors?.poll_description?.error}
             Label="Description"
             Name="poll_description"
+            Tooltip="The description of the Poll. It's helpful for users to understand the poll."
             Placeholder="Add some additional info"
           />
         </span>
         <span class={styles.form_add}>
-          <Toggle Label="Users Can Add" Name="poll_add_options" />
+          <Toggle
+            Label="Users Can Add"
+            Name="poll_add_options"
+            Tooltip="Can users add options to this poll?"
+          />
         </span>
         <span class={styles.form_multi}>
-          <Toggle Label="Multiple Votes" Name="poll_multivote" />
+          <Toggle
+            Label="Multiple Votes"
+            Name="poll_multivote"
+            Tooltip="Can users vote for more than one option on this poll?"
+          />
         </span>
         <span class={styles.form_button}>
           <Button Disabled={creatingPoll?.pending} Type="submit">

@@ -28,3 +28,10 @@
   top: calc(100% + 2rem);
   z-index: 2;
 }
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .container:hover::after {
+    max-width: 100vw;
+  }
+}

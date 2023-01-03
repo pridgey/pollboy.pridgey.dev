@@ -1,4 +1,4 @@
-import { useRouteData } from "solid-start";
+import { A, useRouteData } from "solid-start";
 import {
   createServerAction$,
   createServerData$,
@@ -34,10 +34,10 @@ export default function Home() {
           <h1 class={styles.poll_title}>Pollboy</h1>
           <For each={data()?.userPolls}>
             {(poll) => (
-              <>
+              <A href={`poll/${poll.slug}`}>
                 <h2 class={styles.poll_subtitle}>{poll.poll_name}</h2>
                 <h2 class={styles.poll_subtitle}>{poll.poll_desc}</h2>
-              </>
+              </A>
             )}
           </For>
           <Button Href="new">Create a New Poll</Button>

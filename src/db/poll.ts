@@ -79,3 +79,20 @@ export const getUserPolls = async (request: Request) => {
 
   return data;
 };
+
+export const getPollBySlug = async (request: Request, slug: string) => {
+  const client = await getClient(request);
+  const userID = await getUserId(request);
+
+  const { data, error } = await client
+    .from("poll")
+    .select()
+    .eq("user_id", userID)
+    .eq("slug", slug);
+
+  if (error) {
+    console.error("Error retrieving specific Poll:", { error });
+  }
+
+  return data;
+};

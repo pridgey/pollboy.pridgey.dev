@@ -12,6 +12,16 @@ type PollRecord = {
   multivote?: boolean;
   user_id?: string;
   slug?: string;
+  options?: PollOptionProps[];
+};
+
+export type PollOptionProps = {
+  id?: number;
+  poll_id: number;
+  option_name: string;
+  option_desc: string;
+  user_id: string;
+  created_at: string;
 };
 
 export const createPoll = async (request: Request, newData: PollRecord) => {
@@ -80,7 +90,10 @@ export const getUserPolls = async (request: Request) => {
   return data;
 };
 
-export const getPollBySlug = async (request: Request, slug: string) => {
+export const getPollBySlug = async (
+  request: Request,
+  slug: string
+): Promise<PollRecord> => {
   const client = await getClient(request);
   const userID = await getUserId(request);
 
@@ -94,5 +107,19 @@ export const getPollBySlug = async (request: Request, slug: string) => {
     console.error("Error retrieving specific Poll:", { error });
   }
 
-  return data;
+  const { data: options, error: optionerror } = await client
+    .from("polloptions")
+    .select()
+    .eq("poll_id", data?.[0]?.id);
+
+  if (optionerror) {
+    console.error("Error retrieving Poll Options:", { optionerror });
+  }
+
+  console.log("Poll Results:", { data, options });
+
+  return {
+    ...data?.[0],
+    options,
+  };
 };

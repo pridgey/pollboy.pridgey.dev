@@ -7,9 +7,9 @@ import {
 } from "solid-start/server";
 import { getUser, logout } from "~/db/session";
 import styles from "~/css/poll.module.css";
-import { Button, Input, PollCard, SVGPark } from "~/components";
+import { Button, Input, PollCard, PollOption, SVGPark } from "~/components";
 import { For, Switch, Match } from "solid-js";
-import { getPollBySlug } from "~/db/poll";
+import { getPollBySlug, PollOptionProps } from "~/db/poll";
 
 export function routeData({ params }: RouteDataArgs) {
   return createServerData$(
@@ -22,7 +22,7 @@ export function routeData({ params }: RouteDataArgs) {
 
       const poll = await getPollBySlug(request, key[0]);
 
-      return { user, poll: poll?.[0] };
+      return { user, poll };
     },
     {
       key: () => [params.id],
@@ -37,6 +37,21 @@ export default function Poll() {
     <div class={styles.container}>
       <h1 class={styles.polltitle}>{pollData()?.poll?.poll_name}</h1>
       <h2 class={styles.pollsubtitle}>{pollData()?.poll?.poll_desc}</h2>
+      <div class={styles.buttonrow}>
+        <Button Type="button" BackgroundColor="transparent" TextColor="red">
+          Delete
+        </Button>
+      </div>
+      <For each={pollData()?.poll?.options}>
+        {(polloption: PollOptionProps, index) => (
+          <PollOption
+            PollID={pollData()?.poll?.id || 0}
+            OptionName={polloption?.option_name}
+            OptionDescription={polloption?.option_desc}
+            VotePercentage={100 / (index() + 1)}
+          />
+        )}
+      </For>
     </div>
   );
 }

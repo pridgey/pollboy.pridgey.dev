@@ -1,0 +1,53 @@
+.optioncontainer {
+  display: grid;
+  grid-template-columns: 40px 1fr 20px;
+  grid-template-rows: min-content 2px min-content;
+  width: 100%;
+  gap: 1rem 2rem;
+  grid-template-areas: "img title place" "img percent place" "img desc place";
+}
+
+.optioncheck {
+  width: 40px;
+  height: 40px;
+  border-radius: 15px;
+  background-image: url("https://source.unsplash.com/random/100x100?paper,office");
+  background-position: center;
+  background-size: cover;
+  grid-area: img;
+}
+
+h1,
+h2 {
+  margin: 0px;
+  font-family: var(--font-main);
+}
+
+.optiontitle {
+  font-size: 3rem;
+  font-weight: bold;
+  grid-area: title;
+}
+
+.optionsubtitle {
+  font-size: 3rem;
+  grid-area: desc;
+}
+
+.optionpercent {
+  width: 100%;
+  height: 2px;
+  grid-area: percent;
+  position: relative;
+}
+
+.optionpercent::after {
+  content: "";
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border-radius: 100%;
+  height: 100%;
+  width: var(--data-percent);
+  background-color: var(--color-orange);
+}

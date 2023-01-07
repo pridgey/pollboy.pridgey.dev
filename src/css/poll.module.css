@@ -30,3 +30,10 @@ h3 {
   justify-content: space-between;
   align-content: flex-start;
 }
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .container {
+    width: 100%;
+  }
+}

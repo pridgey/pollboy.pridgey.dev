@@ -1,19 +1,36 @@
 .optioncontainer {
   display: grid;
   grid-template-columns: 40px 1fr 20px;
-  grid-template-rows: min-content 2px min-content;
+  grid-template-rows: min-content min-content;
   width: 100%;
   gap: 1rem 2rem;
-  grid-template-areas: "img title place" "img percent place" "img desc place";
+  padding: 2rem 2rem;
+  grid-template-areas: "img title place" "img desc place";
+  border-radius: 2rem;
+  align-items: center;
+  justify-items: flex-start;
+  background-color: white;
+  cursor: pointer;
+  border: 2px solid transparent;
+  box-shadow: var(--shadow);
+}
+
+.optioncontainer:hover,
+.optioncontainer:focus {
+  border: 2px solid black;
 }
 
 .optioncheck {
   width: 40px;
   height: 40px;
   border-radius: 15px;
-  background-image: url("https://source.unsplash.com/random/100x100?paper,office");
-  background-position: center;
-  background-size: cover;
+  border: 3px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+  font-family: var(--font-main);
   grid-area: img;
 }
 

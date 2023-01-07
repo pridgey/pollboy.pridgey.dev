@@ -24,6 +24,14 @@ export type PollOptionProps = {
   created_at: string;
 };
 
+export type PollVoteProps = {
+  id?: number;
+  created_at: string;
+  poll_id: number;
+  polloption_id: number;
+  user_id: string;
+};
+
 export const createPoll = async (request: Request, newData: PollRecord) => {
   // Gets the client, and userID
   const client = await getClient(request);
@@ -116,10 +124,54 @@ export const getPollBySlug = async (
     console.error("Error retrieving Poll Options:", { optionerror });
   }
 
-  console.log("Poll Results:", { data, options });
-
   return {
     ...data?.[0],
     options,
   };
+};
+
+export const optionVote = async (
+  request: Request,
+  pollID: number,
+  optionID: number
+) => {
+  const client = await getClient(request);
+  const userID = await getUserId(request);
+
+  const { data: checkData, error: checkError } = await client
+    .from("pollvotes")
+    .select()
+    .eq("polloption_id", optionID)
+    .eq("user_id", userID);
+
+  if (checkError) {
+    console.error("Error checking for Poll Vote existence", checkError);
+  }
+
+  if (checkData?.length) {
+    // Option exists, so let's remove it
+    const { error: removeError } = await client
+      .from("pollvotes")
+      .delete()
+      .eq("id", checkData[0].id);
+
+    if (removeError) {
+      console.error("Error removing Poll Vote", removeError);
+      return false;
+    }
+  } else {
+    // Option doesn't exist, so let's add it
+    const { error: insertError } = await client.from("pollvotes").insert({
+      poll_id: pollID,
+      polloption_id: optionID,
+      user_id: userID,
+    });
+
+    if (insertError) {
+      console.error("Error inserting Poll Vote", insertError);
+      return false;
+    }
+  }
+
+  return true;
 };

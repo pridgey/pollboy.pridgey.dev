@@ -45,6 +45,7 @@ export default function Poll() {
       <For each={pollData()?.poll?.options}>
         {(polloption: PollOptionProps, index) => (
           <PollOption
+            ID={polloption?.id || 0}
             PollID={pollData()?.poll?.id || 0}
             OptionName={polloption?.option_name}
             OptionDescription={polloption?.option_desc}

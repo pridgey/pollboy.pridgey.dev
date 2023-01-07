@@ -23,6 +23,7 @@
   --font-main: "Josefin Sans", sans-serif;
   --font-special: "Italiana", serif;
   --font-avatar: "La Belle Aurore", cursive;
+  --shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   font-size: 8px;
 }
 

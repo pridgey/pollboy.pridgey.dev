@@ -10,6 +10,7 @@ type ButtonCommonProps = {
 
 type ButtonEleProps = ButtonCommonProps & {
   Type: "button" | "submit";
+  OnClick?: () => void;
 };
 
 type ButtonAnchorProps = ButtonCommonProps & {
@@ -49,6 +50,7 @@ export const Button = (props: ButtonProps) => {
       class={styles.button}
       style={{ "background-color": buttonColor, color: textColor }}
       type={(props as ButtonEleProps).Type}
+      onClick={() => (props as ButtonEleProps).OnClick?.()}
     >
       {props.children}
     </button>

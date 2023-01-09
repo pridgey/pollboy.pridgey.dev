@@ -8,6 +8,7 @@ export type PollOptionProps = {
   OptionName: string;
   OptionDescription: string;
   PollID: number;
+  UserVoted?: boolean;
   Votes?: number;
   VotePercentage?: number;
 };
@@ -17,7 +18,7 @@ export const PollOption = (props: PollOptionProps) => {
     await optionVote(request, args.PollID, args.ID);
   });
 
-  const [selected, setSelected] = createSignal(false);
+  const [selected, setSelected] = createSignal(props.UserVoted);
   return (
     <button
       class={styles.optioncontainer}

@@ -22,6 +22,7 @@ export type PollOptionProps = {
   option_desc: string;
   user_id: string;
   created_at: string;
+  user_voted?: boolean;
 };
 
 export type PollVoteProps = {
@@ -115,18 +116,38 @@ export const getPollBySlug = async (
     console.error("Error retrieving specific Poll:", { error });
   }
 
-  const { data: options, error: optionerror } = await client
+  const currentPollID = data?.[0]?.id;
+
+  const getPollOptions = client
     .from("polloptions")
     .select()
-    .eq("poll_id", data?.[0]?.id);
+    .eq("poll_id", currentPollID);
+
+  const getUserVotes = client
+    .from("pollvotes")
+    .select()
+    .eq("user_id", userID)
+    .eq("poll_id", currentPollID);
+
+  const [
+    { data: options, error: optionerror },
+    { data: optionVotes, error: votesError },
+  ] = await Promise.all([getPollOptions, getUserVotes]);
 
   if (optionerror) {
     console.error("Error retrieving Poll Options:", { optionerror });
   }
 
+  if (votesError) {
+    console.error("Error retrieving User Votes:", { votesError });
+  }
+
   return {
     ...data?.[0],
-    options,
+    options: options?.map((opt) => ({
+      ...opt,
+      user_voted: optionVotes?.some((vote) => vote.polloption_id === opt.id),
+    })),
   };
 };
 

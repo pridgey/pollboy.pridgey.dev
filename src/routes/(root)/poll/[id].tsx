@@ -1,15 +1,10 @@
-import { RouteDataArgs, useParams } from "solid-start";
-import { useRouteData } from "solid-start";
-import {
-  createServerAction$,
-  createServerData$,
-  redirect,
-} from "solid-start/server";
-import { getUser, logout } from "~/db/session";
+import { For, createSignal, Show } from "solid-js";
+import { RouteDataArgs, useRouteData } from "solid-start";
+import { createServerData$, redirect } from "solid-start/server";
+import { Button, NewOptionsModal, PollOption } from "~/components";
 import styles from "~/css/poll.module.css";
-import { Button, Input, PollCard, PollOption, SVGPark } from "~/components";
-import { For, Switch, Match } from "solid-js";
 import { getPollBySlug, PollOptionProps } from "~/db/poll";
+import { getUser } from "~/db/session";
 
 export function routeData({ params }: RouteDataArgs) {
   return createServerData$(
@@ -33,6 +28,8 @@ export function routeData({ params }: RouteDataArgs) {
 export default function Poll() {
   const pollData = useRouteData<typeof routeData>();
 
+  const [showNewOptionModal, setShowNewOptionModal] = createSignal(false);
+
   return (
     <div class={styles.container}>
       <h1 class={styles.polltitle}>{pollData()?.poll?.poll_name}</h1>
@@ -49,10 +46,17 @@ export default function Poll() {
             PollID={pollData()?.poll?.id || 0}
             OptionName={polloption?.option_name}
             OptionDescription={polloption?.option_desc}
+            UserVoted={polloption?.user_voted}
             VotePercentage={100 / (index() + 1)}
           />
         )}
       </For>
+      <Button Type="button" OnClick={() => setShowNewOptionModal(true)}>
+        Add Option
+      </Button>
+      <Show when={showNewOptionModal()}>
+        <NewOptionsModal />
+      </Show>
     </div>
   );
 }

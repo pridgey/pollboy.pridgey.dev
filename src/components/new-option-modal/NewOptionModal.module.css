@@ -1,0 +1,19 @@
+.container {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(0, 0, 0, 0.5);
+}
+
+.modal {
+  background-color: white;
+  border-radius: 2rem;
+  width: 600px;
+  height: 400px;
+  padding: 2rem;
+}

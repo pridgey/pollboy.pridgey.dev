@@ -21,7 +21,7 @@ export type PollOptionProps = {
   option_name: string;
   option_desc: string;
   user_id: string;
-  created_at: string;
+  created_at?: string;
   user_voted?: boolean;
 };
 
@@ -195,4 +195,26 @@ export const optionVote = async (
   }
 
   return true;
+};
+
+export const createPollOption = async (
+  request: Request,
+  newOption: Omit<PollOptionProps, "user_id">
+): Promise<PollOptionProps> => {
+  const client = await getClient(request);
+  const userID = await getUserId(request);
+
+  const { data, error } = await client
+    .from("polloptions")
+    .insert({
+      ...newOption,
+      user_id: userID,
+    })
+    .select();
+
+  if (error) {
+    console.error("Error creating new Poll Option", error);
+  }
+
+  return data?.[0];
 };

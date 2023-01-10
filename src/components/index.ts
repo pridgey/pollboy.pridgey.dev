@@ -4,6 +4,7 @@ export * from "./button-bar";
 export * from "./dropdown-options";
 export * from "./infotip";
 export * from "./input";
+export * from "./loader";
 export * from "./new-option-modal";
 export * from "./poll-card";
 export * from "./poll-option";

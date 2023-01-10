@@ -11,9 +11,32 @@
 }
 
 .modal {
-  background-color: white;
+  background: linear-gradient(180deg, #f1f0f2 0%, #d1cbcd 100%);
   border-radius: 2rem;
   width: 600px;
-  height: 400px;
-  padding: 2rem;
+  padding: 4rem 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-main);
+  margin: 0px;
+  font-weight: normal;
+}
+
+.title {
+  font-size: 6rem;
+}
+
+.subtitle {
+  font-size: 4rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem 0rem;
 }

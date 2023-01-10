@@ -55,7 +55,10 @@ export default function Poll() {
         Add Option
       </Button>
       <Show when={showNewOptionModal()}>
-        <NewOptionsModal />
+        <NewOptionsModal
+          PollID={pollData()?.poll?.id}
+          OnClose={() => setShowNewOptionModal(false)}
+        />
       </Show>
     </div>
   );

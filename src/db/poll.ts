@@ -106,11 +106,7 @@ export const getPollBySlug = async (
   const client = await getClient(request);
   const userID = await getUserId(request);
 
-  const { data, error } = await client
-    .from("poll")
-    .select()
-    .eq("user_id", userID)
-    .eq("slug", slug);
+  const { data, error } = await client.from("poll").select().eq("slug", slug);
 
   if (error) {
     console.error("Error retrieving specific Poll:", { error });

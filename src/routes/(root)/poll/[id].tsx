@@ -1,10 +1,11 @@
-import { For, createSignal, Show } from "solid-js";
+import { For, createSignal, Show, createEffect } from "solid-js";
 import { RouteDataArgs, useRouteData } from "solid-start";
-import { createServerData$, redirect } from "solid-start/server";
+import { createServerData$, redirect, useRequest } from "solid-start/server";
 import { Button, NewOptionsModal, PollOption } from "~/components";
 import styles from "~/css/poll.module.css";
 import { getPollBySlug, PollOptionProps } from "~/db/poll";
 import { getUser } from "~/db/session";
+import { createClient } from "@supabase/supabase-js";
 
 export function routeData({ params }: RouteDataArgs) {
   return createServerData$(
@@ -27,6 +28,19 @@ export function routeData({ params }: RouteDataArgs) {
 
 export default function Poll() {
   const pollData = useRouteData<typeof routeData>();
+
+  createEffect(() => {
+    const url = import.meta.env.VITE_SUPABASE_URL || "no_url_found";
+    const key = import.meta.env.VITE_SUPABASE_KEY || "no_key_found";
+    const client = createClient(url, key);
+
+    client
+      .channel("listen")
+      .on("postgres_changes", { event: "*", schema: "public" }, (payload) =>
+        console.log({ payload })
+      )
+      .subscribe();
+  });
 
   const [showNewOptionModal, setShowNewOptionModal] = createSignal(false);
 

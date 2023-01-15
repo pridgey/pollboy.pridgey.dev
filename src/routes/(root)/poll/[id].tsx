@@ -1,5 +1,5 @@
 import { For, createSignal, Show, createEffect } from "solid-js";
-import { RouteDataArgs, useRouteData } from "solid-start";
+import { RouteDataArgs, useRouteData, refetchRouteData } from "solid-start";
 import { createServerData$, redirect, useRequest } from "solid-start/server";
 import { Button, NewOptionsModal, PollOption } from "~/components";
 import styles from "~/css/poll.module.css";
@@ -10,7 +10,6 @@ import { createClient } from "@supabase/supabase-js";
 export function routeData({ params }: RouteDataArgs) {
   return createServerData$(
     async (key, { request }) => {
-      console.log("Create Server Data");
       const user = await getUser(request);
 
       if (!user) {
@@ -33,26 +32,25 @@ export function routeData({ params }: RouteDataArgs) {
 export default function Poll() {
   const pollData = useRouteData<typeof routeData>();
 
-  console.log("Render Poll");
-
   createEffect(() => {
     const url = import.meta.env.VITE_SUPABASE_URL || "no_url_found";
     const key = import.meta.env.VITE_SUPABASE_KEY || "no_key_found";
 
-    console.log("token:", pollData()?.token);
+    if (pollData()?.token) {
+      const client = createClient(url, key, {
+        global: {
+          headers: { Authorization: `Bearer ${pollData()?.token}` },
+        },
+      });
 
-    const client = createClient(url, key, {
-      global: {
-        headers: { Authorization: `Bearer ${pollData()?.token}` },
-      },
-    });
-
-    client
-      .channel("listen")
-      .on("postgres_changes", { event: "*", schema: "public" }, (payload) =>
-        console.log({ payload })
-      )
-      .subscribe();
+      client
+        .channel("listen")
+        .on("postgres_changes", { event: "*", schema: "public" }, (payload) => {
+          console.log({ payload });
+          refetchRouteData();
+        })
+        .subscribe();
+    }
   });
 
   const [showNewOptionModal, setShowNewOptionModal] = createSignal(false);
@@ -69,6 +67,7 @@ export default function Poll() {
       <For each={pollData()?.poll?.options}>
         {(polloption: PollOptionProps, index) => (
           <PollOption
+            CanModify={polloption?.user_id === pollData()?.user?.user?.id}
             ID={polloption?.id || 0}
             PollID={pollData()?.poll?.id || 0}
             OptionName={polloption?.option_name}

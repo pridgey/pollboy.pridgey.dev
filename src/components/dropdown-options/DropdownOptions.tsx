@@ -28,9 +28,11 @@ export const DropdownOptions = (props: DropdownOptionsProps) => {
   const [inlineStyles, setInlineStyles] = createSignal<JSX.CSSProperties>();
 
   const handleDocumentClick = (ev: MouseEvent) => {
+    const path = ev.composedPath();
     if (
-      !ev?.path?.includes(optionContainerRef) &&
-      !ev?.path?.includes(props.PositionRef)
+      !path?.includes(optionContainerRef) &&
+      props.PositionRef &&
+      !path?.includes(props.PositionRef)
     ) {
       props.OnOutsideClick?.();
     }

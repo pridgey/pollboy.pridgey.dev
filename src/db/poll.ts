@@ -214,3 +214,30 @@ export const createPollOption = async (
 
   return data?.[0];
 };
+
+export const deletePollOption = async (request: Request, optionId: number) => {
+  const client = await getClient(request);
+  const userID = await getUserId(request);
+
+  const { error: votesError } = await client
+    .from("pollvotes")
+    .delete()
+    .eq("polloption_id", optionId);
+
+  if (votesError) {
+    console.error("Error deleting votes", votesError);
+  }
+
+  const { data: options, error: optionsError } = await client
+    .from("polloptions")
+    .delete()
+    .eq("id", optionId)
+    .eq("user_id", userID)
+    .select();
+
+  if (optionsError) {
+    console.error("Error deleting options", optionsError);
+  }
+
+  return options;
+};

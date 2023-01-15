@@ -1,25 +1,44 @@
-.optioncontainer {
-  display: grid;
-  grid-template-columns: 40px 1fr 20px;
-  grid-template-rows: min-content min-content;
-  width: 100%;
-  gap: 1rem 2rem;
-  padding: 2rem 2rem;
-  grid-template-areas: "img title place" "img desc place";
+/* Container of the entire element */
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: 0px 2rem;
+  padding: 0px;
   border-radius: 2rem;
   align-items: center;
-  justify-items: flex-start;
+  justify-content: flex-start;
   background-color: white;
   cursor: pointer;
   border: 2px solid transparent;
   box-shadow: var(--shadow);
+  width: 100%;
 }
 
-.optioncontainer:hover,
-.optioncontainer:focus {
+/* Determines if the voting button is hovered or focused
+  but shows outline of the entire component */
+.container:hover,
+.container:focus-within {
   border: 2px solid black;
 }
 
+/* Part of the component users will click on to vote */
+.optioncontents {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  grid-template-rows: repeat(2, min-content);
+  grid-template-areas: "check title" "check desc";
+  align-items: center;
+  justify-items: flex-start;
+  width: 100%;
+  gap: 1rem 2rem;
+  padding: 2rem;
+  border-radius: 2rem;
+  background-color: transparent;
+  border: 0px;
+  cursor: pointer;
+}
+
+/* Checkbox part of the component */
 .optioncheck {
   width: 40px;
   height: 40px;
@@ -31,40 +50,59 @@
   font-size: 3rem;
   font-weight: bold;
   font-family: var(--font-main);
-  grid-area: img;
+  grid-area: check;
 }
 
+/* Standard H1, H2 styling (probably move this up somewhere) */
 h1,
 h2 {
   margin: 0px;
   font-family: var(--font-main);
 }
 
+/* Main text of the option */
 .optiontitle {
   font-size: 3rem;
   font-weight: bold;
   grid-area: title;
 }
 
+/* Description text for the otpion */
 .optionsubtitle {
   font-size: 3rem;
   grid-area: desc;
 }
 
-.optionpercent {
-  width: 100%;
-  height: 2px;
-  grid-area: percent;
-  position: relative;
+/* Container to better position the menu button */
+.menucontainer {
+  height: 100%;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.optionpercent::after {
-  content: "";
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  border-radius: 100%;
-  height: 100%;
-  width: var(--data-percent);
-  background-color: var(--color-orange);
+/* The menu button for editing the option */
+.menu {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20%;
+  padding: 1rem;
+  grid-area: menu;
+  background-color: transparent;
+  border: 0px;
+  cursor: pointer;
+}
+
+.menu:hover,
+.menu:focus {
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.menu svg {
+  width: 40px;
+  height: 40px;
 }

@@ -29,8 +29,8 @@ export const DropdownOptions = (props: DropdownOptionsProps) => {
 
   const handleDocumentClick = (ev: MouseEvent) => {
     if (
-      !ev.path.includes(optionContainerRef) &&
-      !ev.path.includes(props.PositionRef)
+      !ev?.path?.includes(optionContainerRef) &&
+      !ev?.path?.includes(props.PositionRef)
     ) {
       props.OnOutsideClick?.();
     }

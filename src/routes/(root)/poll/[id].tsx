@@ -4,12 +4,13 @@ import { createServerData$, redirect, useRequest } from "solid-start/server";
 import { Button, NewOptionsModal, PollOption } from "~/components";
 import styles from "~/css/poll.module.css";
 import { getPollBySlug, PollOptionProps } from "~/db/poll";
-import { getUser } from "~/db/session";
+import { getUser, getUserSession } from "~/db/session";
 import { createClient } from "@supabase/supabase-js";
 
 export function routeData({ params }: RouteDataArgs) {
   return createServerData$(
     async (key, { request }) => {
+      console.log("Create Server Data");
       const user = await getUser(request);
 
       if (!user) {
@@ -17,8 +18,11 @@ export function routeData({ params }: RouteDataArgs) {
       }
 
       const poll = await getPollBySlug(request, key[0]);
+      const session = await getUserSession(request);
 
-      return { user, poll };
+      const token = await session.get("token");
+
+      return { user, poll, token };
     },
     {
       key: () => [params.id],
@@ -29,10 +33,19 @@ export function routeData({ params }: RouteDataArgs) {
 export default function Poll() {
   const pollData = useRouteData<typeof routeData>();
 
+  console.log("Render Poll");
+
   createEffect(() => {
     const url = import.meta.env.VITE_SUPABASE_URL || "no_url_found";
     const key = import.meta.env.VITE_SUPABASE_KEY || "no_key_found";
-    const client = createClient(url, key);
+
+    console.log("token:", pollData()?.token);
+
+    const client = createClient(url, key, {
+      global: {
+        headers: { Authorization: `Bearer ${pollData()?.token}` },
+      },
+    });
 
     client
       .channel("listen")

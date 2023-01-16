@@ -3,6 +3,7 @@ import styles from "./Input.module.css";
 import { InfoTip } from "../infotip";
 
 export type InputProps = {
+  DefaultValue?: string;
   Error?: string;
   Label: string;
   Placeholder?: string;
@@ -26,6 +27,7 @@ export const Input = (props: InputProps) => {
         placeholder={props.Placeholder}
         name={props.Name}
         class={styles.inputcontrol}
+        value={props.DefaultValue || ""}
       />
       <Show when={props.Error}>
         <span role="alert" class={styles.inputerror}>

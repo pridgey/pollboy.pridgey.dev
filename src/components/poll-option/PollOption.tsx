@@ -2,7 +2,12 @@ import styles from "./PollOption.module.css";
 import { createSignal, Show } from "solid-js";
 import { optionVote, deletePollOption } from "~/db/poll";
 import { createServerAction$ } from "solid-start/server";
-import { ConfirmDeleteModal, DropdownOptions, MenuDots } from "~/components";
+import {
+  ConfirmDeleteModal,
+  DropdownOptions,
+  MenuDots,
+  PollOptionsModal,
+} from "~/components";
 
 export type PollOptionProps = {
   CanModify: boolean;
@@ -47,6 +52,7 @@ export const PollOption = (props: PollOptionProps) => {
   const [showMenu, setShowMenu] = createSignal(false);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] =
     createSignal(false);
+  const [showModifyOptionModal, setShowModifyOptionModal] = createSignal(false);
 
   return (
     <div class={styles.container}>
@@ -84,7 +90,8 @@ export const PollOption = (props: PollOptionProps) => {
                 {
                   Label: "Edit Option",
                   OnClick: () => {
-                    console.log("Edit");
+                    setShowModifyOptionModal(true);
+                    setShowMenu(false);
                   },
                   Icon: "",
                 },
@@ -108,6 +115,15 @@ export const PollOption = (props: PollOptionProps) => {
                 }
                 setShowConfirmDeleteModal(false);
               }}
+            />
+          </Show>
+          <Show when={showModifyOptionModal()}>
+            <PollOptionsModal
+              OnClose={() => setShowModifyOptionModal(false)}
+              ID={props.ID}
+              OptionDescription={props.OptionDescription}
+              OptionName={props.OptionName}
+              PollID={props.PollID}
             />
           </Show>
         </div>

@@ -23,6 +23,7 @@ export type PollOptionProps = {
   user_id: string;
   created_at?: string;
   user_voted?: boolean;
+  can_modify?: boolean;
 };
 
 export type PollVoteProps = {
@@ -97,11 +98,9 @@ export const getUserPolls = async (request: Request) => {
     console.error("Error retrieving Poll IDs User has Voted In", { voteError });
   }
 
-  console.log("PollIDs", { votedPolls });
   const votedPollIds: number[] = Array.from(
     new Set(votedPolls?.map((id) => Number(id.poll_id)) || [])
   );
-  console.log("Converted IDs", { votedPollIds });
 
   // Grab Poll data for any poll the user has made, or has participated in
   const { data, error } = await client
@@ -129,7 +128,8 @@ export const getPollBySlug = async (
     console.error("Error retrieving specific Poll:", { error });
   }
 
-  const currentPollID = data?.[0]?.id;
+  const currentPoll = data?.[0];
+  const currentPollID = currentPoll.id;
 
   const getPollOptions = client
     .from("polloptions")
@@ -155,12 +155,21 @@ export const getPollBySlug = async (
     console.error("Error retrieving User Votes:", { votesError });
   }
 
+  // Determines if this user created this poll
+  const isPollOwner = currentPoll.user_id === userID;
+
   return {
     ...data?.[0],
-    options: options?.map((opt) => ({
-      ...opt,
-      user_voted: optionVotes?.some((vote) => vote.polloption_id === opt.id),
-    })),
+    options: options?.map((opt) => {
+      // Determines if this user created this Poll Option
+      const isOptionOwner = opt.user_id === userID;
+
+      return {
+        ...opt,
+        user_voted: optionVotes?.some((vote) => vote.polloption_id === opt.id),
+        can_modify: isPollOwner || isOptionOwner,
+      };
+    }),
   };
 };
 
@@ -249,7 +258,6 @@ export const deletePollOption = async (request: Request, optionId: number) => {
     .from("polloptions")
     .delete()
     .eq("id", optionId)
-    .eq("user_id", userID)
     .select();
 
   if (optionsError) {
@@ -257,4 +265,27 @@ export const deletePollOption = async (request: Request, optionId: number) => {
   }
 
   return options;
+};
+
+export const modifyPollOption = async (
+  request: Request,
+  modifiedOption: Omit<PollOptionProps, "user_voted" | "user_id">
+) => {
+  // Get supabase client and logged in userid
+  const client = await getClient(request);
+  const userID = await getUserId(request);
+
+  const { data, error } = await client
+    .from("polloptions")
+    .update({
+      ...modifiedOption,
+    })
+    .eq("id", modifiedOption.id)
+    .select();
+
+  if (error) {
+    console.error("Error modifying existing Poll Option", { error });
+  }
+
+  return data;
 };

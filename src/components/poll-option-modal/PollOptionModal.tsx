@@ -1,28 +1,32 @@
-import { Portal } from "solid-js/web";
-import { ButtonBar, Button, Input, Loader } from "~/components";
-import styles from "./NewOptionModal.module.css";
-import { FormError } from "solid-start/data";
-import {
-  createServerAction$,
-  createServerData$,
-  redirect,
-} from "solid-start/server";
-import { validate } from "~/lib/Validate";
-import { createPollOption } from "~/db/poll";
 import { createEffect, Show } from "solid-js";
+import { Portal } from "solid-js/web";
+import { FormError } from "solid-start/data";
+import { createServerAction$ } from "solid-start/server";
+import { Button, ButtonBar, Input, Loader } from "~/components";
+import { createPollOption, modifyPollOption } from "~/db/poll";
+import { validate } from "~/lib/Validate";
+import styles from "./PollOptionModal.module.css";
 
-type NewOptionModalProps = {
+type PollOptionModalProps = {
+  ID?: number;
+  OptionDescription?: string;
+  OptionName?: string;
   PollID?: number;
   OnClose: () => void;
 };
 
-export const NewOptionsModal = (props: NewOptionModalProps) => {
+export const PollOptionsModal = (props: PollOptionModalProps) => {
+  // Action to create/modify a poll option
   const [creatingOption, { Form }] = createServerAction$(
     async (form: FormData, { request }) => {
       // Get all the data from the form
       const option_name = form.get("option_name");
       const option_desc = form.get("option_desc");
       const poll_id = form.get("poll_id");
+      const option_id = Number(form.get("option_id"));
+
+      // Used to determine if this will be a create or modify action
+      const doesOptionExist = option_id > 0;
 
       // Quick validation
       if (
@@ -51,13 +55,24 @@ export const NewOptionsModal = (props: NewOptionModalProps) => {
         });
       }
 
-      const response = await createPollOption(request, {
-        option_name,
-        option_desc,
-        poll_id: Number(poll_id),
-      });
+      if (doesOptionExist) {
+        const modifyResponse = await modifyPollOption(request, {
+          id: option_id,
+          option_desc,
+          option_name,
+          poll_id: Number(poll_id),
+        });
 
-      return response;
+        return modifyResponse;
+      } else {
+        const createResponse = await createPollOption(request, {
+          option_name,
+          option_desc,
+          poll_id: Number(poll_id),
+        });
+
+        return createResponse;
+      }
     }
   );
 
@@ -72,9 +87,11 @@ export const NewOptionsModal = (props: NewOptionModalProps) => {
       <div class={styles.container}>
         <div class={styles.modal}>
           <Form class={styles.form}>
-            <h1 class={styles.title}>New Option</h1>
+            <h1 class={styles.title}>{props.ID ? "Modify" : "New"} Option</h1>
+            <input type="hidden" name="option_id" value={props.ID || -1} />
             <input type="hidden" name="poll_id" value={props.PollID} />
             <Input
+              DefaultValue={props.OptionName}
               Type="text"
               Name="option_name"
               Label="Option Title"
@@ -82,6 +99,7 @@ export const NewOptionsModal = (props: NewOptionModalProps) => {
               Placeholder="The Option Title"
             />
             <Input
+              DefaultValue={props.OptionDescription}
               Type="text"
               Name="option_desc"
               Label="Option Description"
@@ -95,7 +113,7 @@ export const NewOptionsModal = (props: NewOptionModalProps) => {
               >
                 Cancel
               </Button>
-              <Button Type="submit">Submit</Button>
+              <Button Type="submit">{props.ID ? "Update" : "Create"}</Button>
             </ButtonBar>
           </Form>
           <Show when={creatingOption.pending}>

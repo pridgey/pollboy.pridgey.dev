@@ -1,7 +1,14 @@
 import { For, createSignal, Show, createEffect } from "solid-js";
 import { RouteDataArgs, useRouteData, refetchRouteData } from "solid-start";
 import { createServerData$, redirect, useRequest } from "solid-start/server";
-import { Button, NewOptionsModal, PollOption } from "~/components";
+import {
+  Button,
+  DropdownOptions,
+  MenuDots,
+  PollOptionsModal,
+  PollOption,
+  PollResults,
+} from "~/components";
 import styles from "~/css/poll.module.css";
 import { getPollBySlug, PollOptionProps } from "~/db/poll";
 import { getUser, getUserSession } from "~/db/session";
@@ -21,7 +28,7 @@ export function routeData({ params }: RouteDataArgs) {
 
       const token = await session.get("token");
 
-      return { user, poll, token };
+      return { userID: user.user.id, poll, token };
     },
     {
       key: () => [params.id],
@@ -30,6 +37,7 @@ export function routeData({ params }: RouteDataArgs) {
 }
 
 export default function Poll() {
+  let pollMenuRef: HTMLButtonElement | undefined;
   const pollData = useRouteData<typeof routeData>();
 
   createEffect(() => {
@@ -50,36 +58,76 @@ export default function Poll() {
   });
 
   const [showNewOptionModal, setShowNewOptionModal] = createSignal(false);
+  const [showPollMenu, setShowPollMenu] = createSignal(false);
 
   return (
     <div class={styles.container}>
+      {/* Title Text */}
       <h1 class={styles.polltitle}>{pollData()?.poll?.poll_name}</h1>
       <h2 class={styles.pollsubtitle}>{pollData()?.poll?.poll_desc}</h2>
-      <div class={styles.buttonrow}>
-        <Button Type="button" BackgroundColor="transparent" TextColor="red">
-          Delete
+      {/* Poll Context Menu */}
+      <button
+        type="button"
+        class={styles.menu}
+        ref={pollMenuRef}
+        onClick={() => setShowPollMenu(!showPollMenu())}
+      >
+        <MenuDots />
+      </button>
+      {/* Votable Options */}
+      <div class={styles.optionscontainer}>
+        <For each={pollData()?.poll?.options}>
+          {(polloption: PollOptionProps, index) => {
+            return (
+              <PollOption
+                CanModify={!!polloption.can_modify}
+                ID={polloption?.id || 0}
+                PollID={pollData()?.poll?.id || 0}
+                OptionName={polloption?.option_name}
+                OptionDescription={polloption?.option_desc}
+                UserVoted={polloption?.user_voted}
+                VotePercentage={100 / (index() + 1)}
+              />
+            );
+          }}
+        </For>
+        <Button Type="button" OnClick={() => setShowNewOptionModal(true)}>
+          Add Option
         </Button>
       </div>
-      <For each={pollData()?.poll?.options}>
-        {(polloption: PollOptionProps, index) => (
-          <PollOption
-            CanModify={polloption?.user_id === pollData()?.user?.user?.id}
-            ID={polloption?.id || 0}
-            PollID={pollData()?.poll?.id || 0}
-            OptionName={polloption?.option_name}
-            OptionDescription={polloption?.option_desc}
-            UserVoted={polloption?.user_voted}
-            VotePercentage={100 / (index() + 1)}
-          />
-        )}
-      </For>
-      <Button Type="button" OnClick={() => setShowNewOptionModal(true)}>
-        Add Option
-      </Button>
+      <div class={styles.results}>
+        <PollResults PollID={pollData()?.poll?.id || -1} />
+      </div>
+
+      {/* Modals */}
       <Show when={showNewOptionModal()}>
-        <NewOptionsModal
+        <PollOptionsModal
           PollID={pollData()?.poll?.id}
           OnClose={() => setShowNewOptionModal(false)}
+        />
+      </Show>
+      <Show when={showPollMenu()}>
+        <DropdownOptions
+          Options={[
+            {
+              Label: "Edit Poll",
+              Icon: "",
+              OnClick: () => {
+                console.log("Edit Poll");
+              },
+            },
+            {
+              Label: "Delete Poll",
+              Icon: "",
+              OnClick: () => {
+                console.log("Delete Poll");
+              },
+            },
+          ]}
+          OnOutsideClick={() => setShowPollMenu(false)}
+          PositionRef={pollMenuRef}
+          HorizontalAlign="right"
+          VerticalGap={10}
         />
       </Show>
     </div>

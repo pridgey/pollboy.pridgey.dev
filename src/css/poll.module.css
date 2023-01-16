@@ -1,10 +1,19 @@
 .container {
+  display: grid;
+  grid-template-columns: 50% 1fr 50px;
+  grid-template-rows: repeat(2, min-content) 1fr;
+  grid-template-areas: "title title menu" "subtitle subtitle menu" "options stats stats";
+  gap: 2rem;
+  padding: 8rem 4rem;
+}
+
+.optionscontainer {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 8rem 4rem;
   gap: 2rem;
-  width: 50%;
+  grid-area: options;
+  padding: 2rem 0px;
 }
 
 h1,
@@ -17,10 +26,41 @@ h3 {
 
 .polltitle {
   font-size: 8rem;
+  grid-area: title;
 }
 
 .pollsubtitle {
   font-size: 4rem;
+  grid-area: subtitle;
+}
+
+.menu {
+  grid-area: menu;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20%;
+  padding: 1rem;
+  background-color: transparent;
+  border: 0px;
+  cursor: pointer;
+}
+
+.menu:hover,
+.menu:focus {
+  border: 1px solid rgb(230, 229, 229);
+}
+
+.menu svg {
+  width: 40px;
+  height: 40px;
+}
+
+.results {
+  grid-area: stats;
+  padding: 2rem 0px;
 }
 
 .buttonrow {
@@ -34,6 +74,7 @@ h3 {
 /* Mobile Sizing */
 @media (max-width: 480px) {
   .container {
-    width: 100%;
+    grid-template-columns: 1fr 50px;
+    grid-template-areas: "title menu" "subtitle menu" "options options";
   }
 }

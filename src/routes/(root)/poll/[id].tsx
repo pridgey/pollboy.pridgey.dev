@@ -40,6 +40,14 @@ export default function Poll() {
   let pollMenuRef: HTMLButtonElement | undefined;
   const pollData = useRouteData<typeof routeData>();
 
+  const [isMobile, setIsMobile] = createSignal(false);
+
+  createEffect(() => {
+    if (window.innerWidth < 480) {
+      setIsMobile(true);
+    }
+  });
+
   createEffect(() => {
     const url = import.meta.env.VITE_SUPABASE_URL || "no_url_found";
     const key = import.meta.env.VITE_SUPABASE_KEY || "no_key_found";
@@ -95,9 +103,12 @@ export default function Poll() {
           Add Option
         </Button>
       </div>
-      <div class={styles.results}>
-        <PollResults PollID={pollData()?.poll?.id || -1} />
-      </div>
+      {/* The Voting Results */}
+      <Show when={!isMobile()}>
+        <div class={styles.results}>
+          <PollResults PollID={pollData()?.poll?.id || -1} />
+        </div>
+      </Show>
 
       {/* Modals */}
       <Show when={showNewOptionModal()}>

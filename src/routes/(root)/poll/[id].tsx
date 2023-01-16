@@ -37,11 +37,7 @@ export default function Poll() {
     const key = import.meta.env.VITE_SUPABASE_KEY || "no_key_found";
 
     if (pollData()?.token) {
-      const client = createClient(url, key, {
-        global: {
-          headers: { Authorization: `Bearer ${pollData()?.token}` },
-        },
-      });
+      const client = createClient(url, key);
 
       client
         .channel("listen")

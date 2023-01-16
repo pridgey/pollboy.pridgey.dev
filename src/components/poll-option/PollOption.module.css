@@ -58,6 +58,7 @@ h1,
 h2 {
   margin: 0px;
   font-family: var(--font-main);
+  text-align: left;
 }
 
 /* Main text of the option */

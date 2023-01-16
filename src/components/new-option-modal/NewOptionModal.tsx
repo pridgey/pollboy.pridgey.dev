@@ -90,8 +90,7 @@ export const NewOptionsModal = (props: NewOptionModalProps) => {
             <ButtonBar Split="right-heavy">
               <Button
                 Type="button"
-                BackgroundColor="red"
-                TextColor="white"
+                BackgroundColor="transparent"
                 OnClick={() => props.OnClose()}
               >
                 Cancel

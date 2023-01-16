@@ -1,6 +1,7 @@
 export * from "./avatar";
 export * from "./button";
 export * from "./button-bar";
+export * from "./confirm-delete-modal";
 export * from "./dropdown-options";
 export * from "./infotip";
 export * from "./input";

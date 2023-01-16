@@ -83,14 +83,31 @@ export const createPoll = async (request: Request, newData: PollRecord) => {
 };
 
 export const getUserPolls = async (request: Request) => {
+  // Grab authenticated client and logged in UserID
   const client = await getClient(request);
-
   const userID = await getUserId(request);
 
+  // Grab Poll IDs of any Poll a user has voted in
+  const { data: votedPolls, error: voteError } = await client
+    .from("pollvotes")
+    .select("poll_id")
+    .eq("user_id", userID);
+
+  if (voteError) {
+    console.error("Error retrieving Poll IDs User has Voted In", { voteError });
+  }
+
+  console.log("PollIDs", { votedPolls });
+  const votedPollIds: number[] = Array.from(
+    new Set(votedPolls?.map((id) => Number(id.poll_id)) || [])
+  );
+  console.log("Converted IDs", { votedPollIds });
+
+  // Grab Poll data for any poll the user has made, or has participated in
   const { data, error } = await client
     .from("poll")
     .select()
-    .eq("user_id", userID);
+    .or(`user_id.eq.${userID},id.in.(${votedPollIds.join(",")})`);
 
   if (error) {
     console.error("Error retrieving User's Polls:", { error });

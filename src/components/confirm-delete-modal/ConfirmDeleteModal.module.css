@@ -17,6 +17,9 @@
   padding: 4rem 3rem;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem 0px;
 }
 
 h1,
@@ -34,10 +37,5 @@ h3 {
 
 .subtitle {
   font-size: 4rem;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem 0rem;
+  line-height: 120%;
 }

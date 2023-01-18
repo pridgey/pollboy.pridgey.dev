@@ -1,18 +1,18 @@
-import { For, createSignal, Show, createEffect } from "solid-js";
-import { RouteDataArgs, useRouteData, refetchRouteData } from "solid-start";
-import { createServerData$, redirect, useRequest } from "solid-start/server";
+import { createClient } from "@supabase/supabase-js";
+import { createEffect, createSignal, For, Show } from "solid-js";
+import { refetchRouteData, RouteDataArgs, useRouteData } from "solid-start";
+import { createServerData$, redirect } from "solid-start/server";
 import {
   Button,
   DropdownOptions,
   MenuDots,
-  PollOptionsModal,
   PollOption,
+  PollOptionsModal,
   PollResults,
 } from "~/components";
 import styles from "~/css/poll.module.css";
-import { getPollBySlug, PollOptionProps } from "~/db/poll";
-import { getUser, getUserSession } from "~/db/session";
-import { createClient } from "@supabase/supabase-js";
+import { getPollBySlug, getPollResults, PollOptionProps } from "~/db/poll";
+import { getUser } from "~/db/session";
 
 export function routeData({ params }: RouteDataArgs) {
   return createServerData$(
@@ -24,11 +24,9 @@ export function routeData({ params }: RouteDataArgs) {
       }
 
       const poll = await getPollBySlug(request, key[0]);
-      const session = await getUserSession(request);
+      const results = await getPollResults(request, poll.id || 0);
 
-      const token = await session.get("token");
-
-      return { userID: user.user.id, poll, token };
+      return { userID: user.user.id, poll, results };
     },
     {
       key: () => [params.id],
@@ -45,6 +43,7 @@ export default function Poll() {
   createEffect(() => {
     if (window.innerWidth < 480) {
       setIsMobile(true);
+      setShowStats(false);
     }
   });
 
@@ -52,21 +51,20 @@ export default function Poll() {
     const url = import.meta.env.VITE_SUPABASE_URL || "no_url_found";
     const key = import.meta.env.VITE_SUPABASE_KEY || "no_key_found";
 
-    if (pollData()?.token) {
-      const client = createClient(url, key);
+    const client = createClient(url, key);
 
-      client
-        .channel("listen")
-        .on("postgres_changes", { event: "*", schema: "public" }, (payload) => {
-          console.log({ payload });
-          refetchRouteData();
-        })
-        .subscribe();
-    }
+    client
+      .channel("listen")
+      .on("postgres_changes", { event: "*", schema: "public" }, (payload) => {
+        console.log({ payload });
+        refetchRouteData().then((val) => console.log({ val }));
+      })
+      .subscribe();
   });
 
   const [showNewOptionModal, setShowNewOptionModal] = createSignal(false);
   const [showPollMenu, setShowPollMenu] = createSignal(false);
+  const [showStats, setShowStats] = createSignal(!isMobile());
 
   return (
     <div class={styles.container}>
@@ -104,9 +102,12 @@ export default function Poll() {
         </Button>
       </div>
       {/* The Voting Results */}
-      <Show when={!isMobile()}>
+      <Show when={showStats()}>
         <div class={styles.results}>
-          <PollResults PollID={pollData()?.poll?.id || -1} />
+          <PollResults
+            OnClose={() => setShowStats(false)}
+            Results={[...(pollData()?.results || [])]}
+          />
         </div>
       </Show>
 
@@ -134,7 +135,20 @@ export default function Poll() {
                 console.log("Delete Poll");
               },
             },
-          ]}
+          ].concat(
+            isMobile()
+              ? [
+                  {
+                    Label: "Show Results",
+                    Icon: "",
+                    OnClick: () => {
+                      setShowStats(true);
+                      setShowPollMenu(false);
+                    },
+                  },
+                ]
+              : []
+          )}
           OnOutsideClick={() => setShowPollMenu(false)}
           PositionRef={pollMenuRef}
           HorizontalAlign="right"

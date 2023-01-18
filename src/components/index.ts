@@ -11,6 +11,7 @@ export * from "./poll-card";
 export * from "./poll-option";
 export * from "./poll-option-modal";
 export * from "./poll-results";
+export * from "./ranking";
 export * from "./svg-park";
 export * from "./textarea";
 export * from "./toggle";

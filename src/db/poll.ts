@@ -243,7 +243,6 @@ export const createPollOption = async (
 
 export const deletePollOption = async (request: Request, optionId: number) => {
   const client = await getClient(request);
-  const userID = await getUserId(request);
 
   const { error: votesError } = await client
     .from("pollvotes")
@@ -273,7 +272,6 @@ export const modifyPollOption = async (
 ) => {
   // Get supabase client and logged in userid
   const client = await getClient(request);
-  const userID = await getUserId(request);
 
   const { data, error } = await client
     .from("polloptions")
@@ -288,4 +286,41 @@ export const modifyPollOption = async (
   }
 
   return data;
+};
+
+export const getPollResults = async (request: Request, pollID: number) => {
+  // Get supabase client and logged in userid
+  const client = await getClient(request);
+
+  const optionQuery = client.from("polloptions").select().eq("poll_id", pollID);
+
+  const voteQuery = client.from("pollvotes").select().eq("poll_id", pollID);
+
+  const [
+    { data: options, error: optionsError },
+    { data: votes, error: votesError },
+  ] = await Promise.all([optionQuery, voteQuery]);
+
+  if (optionsError || votesError) {
+    console.error("Error retrieving Poll rankings", {
+      optionsError,
+      votesError,
+    });
+  }
+
+  const rankedOptions = options?.map((opt) => {
+    // count votes for this option
+    const voteCount =
+      votes?.filter((v) => v.polloption_id === opt.id).length || 0;
+
+    return {
+      Name: String(opt.option_name),
+      Votes: voteCount,
+    };
+  });
+
+  // Sort by votes
+  rankedOptions?.sort((a, b) => b.Votes - a.Votes);
+
+  return rankedOptions;
 };

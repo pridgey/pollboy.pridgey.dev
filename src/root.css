@@ -66,6 +66,7 @@ body {
   background: linear-gradient(180deg, #f1f0f2 0%, #d1cbcd 100%);
   box-sizing: border-box;
   overflow-y: auto;
+  position: relative;
 }
 
 .sitetitle {

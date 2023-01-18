@@ -1035,6 +1035,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@otonashixav/solid-flip@^0.10.5":
+  version "0.10.5"
+  resolved "https://registry.yarnpkg.com/@otonashixav/solid-flip/-/solid-flip-0.10.5.tgz#f1f2ddaabd48b7becef965db00118a4acf0e1e63"
+  integrity sha512-Tb2n9lzuktteqm26KJ1yH9NJsY2SbgNCHWnCOAKjEWBfGfw4j31vJVG1+k11WmgP2g9YzuyS8Skr7HsFntXZWA==
+
 "@polka/url@^1.0.0-next.20", "@polka/url@^1.0.0-next.21":
   version "1.0.0-next.21"
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"

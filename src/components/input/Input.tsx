@@ -3,6 +3,7 @@ import styles from "./Input.module.css";
 import { InfoTip } from "../infotip";
 
 export type InputProps = {
+  Autocomplete?: string | "off";
   DefaultValue?: string;
   Error?: string;
   Label: string;
@@ -22,6 +23,7 @@ export const Input = (props: InputProps) => {
         </Show>
       </div>
       <input
+        autocomplete={props.Autocomplete}
         id={`${props.Name}-input`}
         type={props.Type}
         placeholder={props.Placeholder}

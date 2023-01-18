@@ -91,6 +91,7 @@ export const PollOptionsModal = (props: PollOptionModalProps) => {
             <input type="hidden" name="option_id" value={props.ID || -1} />
             <input type="hidden" name="poll_id" value={props.PollID} />
             <Input
+              Autocomplete="off"
               DefaultValue={props.OptionName}
               Type="text"
               Name="option_name"
@@ -99,6 +100,7 @@ export const PollOptionsModal = (props: PollOptionModalProps) => {
               Placeholder="The Option Title"
             />
             <Input
+              Autocomplete="off"
               DefaultValue={props.OptionDescription}
               Type="text"
               Name="option_desc"

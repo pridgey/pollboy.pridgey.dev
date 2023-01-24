@@ -1,3 +1,4 @@
+import { RouteDataArgs, useRouteData } from "solid-start";
 import { FormError } from "solid-start/data";
 import {
   createServerAction$,
@@ -5,27 +6,42 @@ import {
   redirect,
 } from "solid-start/server";
 import { PollForm } from "~/components";
-import styles from "~/css/new.module.css";
-import { createPoll } from "~/db/poll";
+import { editPoll, getPollBySlug } from "~/db/poll";
 import { getUser } from "~/db/session";
 import { validate } from "~/lib/Validate";
 
-export function routeData() {
-  return createServerData$(async (_, { request }) => {
-    const user = await getUser(request);
+export function routeData({ params }: RouteDataArgs) {
+  return createServerData$(
+    async (key, { request }) => {
+      const user = await getUser(request);
 
-    if (!user) {
-      throw redirect("/login");
+      if (!user) {
+        throw redirect("/login");
+      }
+
+      const poll = await getPollBySlug(request, key[0]);
+
+      if (!poll || poll.user_id !== user.user.id) {
+        throw redirect("/404");
+      }
+
+      return { userID: user.user.id, poll };
+    },
+    {
+      key: () => [params.id],
     }
-
-    return user;
-  });
+  );
 }
 
-export default function New() {
-  const [creatingPoll, { Form }] = createServerAction$(
+const EditPollPage = () => {
+  const pollData = useRouteData<typeof routeData>();
+
+  // Server action for editing a poll
+  const [modifyingPoll, { Form }] = createServerAction$(
     async (form: FormData, { request }) => {
       // Get all the data from the form
+      const id = form.get("poll_id");
+      const slug = form.get("poll_slug");
       const poll_name = form.get("poll_name");
       const poll_desc = form.get("poll_description");
       const expire_at = form.get("poll_expiration");
@@ -36,18 +52,22 @@ export default function New() {
       if (
         typeof poll_name !== "string" ||
         typeof poll_desc !== "string" ||
-        typeof expire_at !== "string"
+        typeof expire_at !== "string" ||
+        typeof id !== "string" ||
+        typeof slug !== "string"
       ) {
         throw new FormError(`Form not submitted correctly.`);
       }
 
       // More validation
       const fields = {
+        id,
         poll_name,
         poll_desc,
         expire_at,
         public_can_add,
         multivote,
+        slug,
       };
       const fieldErrors = {
         poll_name: new validate(poll_name)
@@ -68,12 +88,14 @@ export default function New() {
         });
       }
 
-      const response = await createPoll(request, {
+      const response = await editPoll(request, {
+        id: Number(id),
         poll_desc,
         poll_name,
         expire_at,
         public_can_add: public_can_add === "on",
         multivote: multivote === "on",
+        slug,
       });
 
       if (!response) {
@@ -82,24 +104,26 @@ export default function New() {
         });
       }
 
-      return redirect(`/poll/${response}`);
+      return redirect(`/poll/${slug}`);
     }
   );
 
   return (
-    <div class={styles.container}>
-      <h1 class={styles.title}>Get feedback, gather opinions</h1>
-      <h2 class={styles.subtitle}>
-        Simply provide a question and some options for people to choose from.
-        You can also customize the poll by adding a description, setting a
-        deadline, and choosing whether to allow multiple votes.
-      </h2>
-      <Form class={styles.form}>
-        <PollForm
-          FormLoading={creatingPoll.pending}
-          FormErrors={creatingPoll?.error?.fieldErrors}
-        />
-      </Form>
-    </div>
+    <Form>
+      <input type="hidden" value={pollData()?.poll.id} name="poll_id" />
+      <input type="hidden" value={pollData()?.poll.slug} name="poll_slug" />
+      <PollForm
+        FormLoading={false}
+        FormValues={{
+          PollDescription: pollData()?.poll?.poll_desc || "",
+          PollName: pollData()?.poll?.poll_name || "",
+          MultipleVotes: pollData()?.poll?.multivote || false,
+          PollExpiration: pollData()?.poll?.expire_at || "",
+          UsersCanAdd: pollData()?.poll?.public_can_add || false,
+        }}
+      />
+    </Form>
   );
-}
+};
+
+export default EditPollPage;

@@ -1,9 +1,19 @@
 import { createClient } from "@supabase/supabase-js";
 import { createEffect, createSignal, For, Show } from "solid-js";
-import { refetchRouteData, RouteDataArgs, useRouteData } from "solid-start";
-import { createServerData$, redirect } from "solid-start/server";
+import {
+  refetchRouteData,
+  RouteDataArgs,
+  useRouteData,
+  useNavigate,
+} from "solid-start";
+import {
+  createServerAction$,
+  createServerData$,
+  redirect,
+} from "solid-start/server";
 import {
   Button,
+  ConfirmDeleteModal,
   DropdownOptions,
   MenuDots,
   PollOption,
@@ -11,7 +21,12 @@ import {
   PollResults,
 } from "~/components";
 import styles from "~/css/poll.module.css";
-import { getPollBySlug, getPollResults, PollOptionProps } from "~/db/poll";
+import {
+  deletePoll,
+  getPollBySlug,
+  getPollResults,
+  PollOptionProps,
+} from "~/db/poll";
 import { getUser } from "~/db/session";
 
 export function routeData({ params }: RouteDataArgs) {
@@ -24,6 +39,11 @@ export function routeData({ params }: RouteDataArgs) {
       }
 
       const poll = await getPollBySlug(request, key[0]);
+
+      if (!poll) {
+        throw redirect("/404");
+      }
+
       const results = await getPollResults(request, poll.id || 0);
 
       return { userID: user.user.id, poll, results };
@@ -34,9 +54,21 @@ export function routeData({ params }: RouteDataArgs) {
   );
 }
 
+type DeletePollActionArgs = {
+  ID: number;
+};
+
 export default function Poll() {
   let pollMenuRef: HTMLButtonElement | undefined;
   const pollData = useRouteData<typeof routeData>();
+  const navigate = useNavigate();
+
+  // Server action to handle deleting a poll
+  const [deleting, handleDeletePoll] = createServerAction$(
+    async (args: DeletePollActionArgs, { request }) => {
+      await deletePoll(request, args.ID);
+    }
+  );
 
   const [isMobile, setIsMobile] = createSignal(false);
 
@@ -55,8 +87,7 @@ export default function Poll() {
 
     client
       .channel("listen")
-      .on("postgres_changes", { event: "*", schema: "public" }, (payload) => {
-        console.log({ payload });
+      .on("postgres_changes", { event: "*", schema: "public" }, () => {
         refetchRouteData().then((val) => console.log({ val }));
       })
       .subscribe();
@@ -64,6 +95,7 @@ export default function Poll() {
 
   const [showNewOptionModal, setShowNewOptionModal] = createSignal(false);
   const [showPollMenu, setShowPollMenu] = createSignal(false);
+  const [showDeletePoll, setShowDeletePoll] = createSignal(false);
   const [showStats, setShowStats] = createSignal(!isMobile());
 
   return (
@@ -118,6 +150,19 @@ export default function Poll() {
           OnClose={() => setShowNewOptionModal(false)}
         />
       </Show>
+      <Show when={showDeletePoll()}>
+        <ConfirmDeleteModal
+          Name={`Poll: "${pollData()?.poll.poll_name}"`}
+          OnClose={async (confirm) => {
+            if (confirm) {
+              // Delete Poll
+              handleDeletePoll({ ID: pollData()?.poll.id || 0 });
+              navigate("/");
+            }
+            setShowDeletePoll(false);
+          }}
+        />
+      </Show>
       <Show when={showPollMenu()}>
         <DropdownOptions
           Options={[
@@ -125,14 +170,14 @@ export default function Poll() {
               Label: "Edit Poll",
               Icon: "",
               OnClick: () => {
-                console.log("Edit Poll");
+                navigate(`edit`);
               },
             },
             {
               Label: "Delete Poll",
               Icon: "",
               OnClick: () => {
-                console.log("Delete Poll");
+                setShowDeletePoll(!showDeletePoll());
               },
             },
           ].concat(

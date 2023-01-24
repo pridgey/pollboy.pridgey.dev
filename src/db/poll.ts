@@ -1,5 +1,6 @@
 import { getClient, getUserId } from "./session";
 import { generateSlug } from "~/lib/Slug";
+import { redirect } from "solid-start";
 
 // Shape of Poll
 type PollRecord = {
@@ -118,7 +119,7 @@ export const getUserPolls = async (request: Request) => {
 export const getPollBySlug = async (
   request: Request,
   slug: string
-): Promise<PollRecord> => {
+): Promise<PollRecord | null> => {
   const client = await getClient(request);
   const userID = await getUserId(request);
 
@@ -129,7 +130,12 @@ export const getPollBySlug = async (
   }
 
   const currentPoll = data?.[0];
-  const currentPollID = currentPoll.id;
+
+  if (!currentPoll) {
+    return null;
+  }
+
+  const currentPollID = currentPoll?.id;
 
   const getPollOptions = client
     .from("polloptions")
@@ -156,7 +162,7 @@ export const getPollBySlug = async (
   }
 
   // Determines if this user created this poll
-  const isPollOwner = currentPoll.user_id === userID;
+  const isPollOwner = currentPoll?.user_id === userID;
 
   return {
     ...data?.[0],
@@ -171,6 +177,61 @@ export const getPollBySlug = async (
       };
     }),
   };
+};
+
+export const editPoll = async (request: Request, pollData: PollRecord) => {
+  const client = await getClient(request);
+  const userID = await getUserId(request);
+
+  const { data, error } = await client
+    .from("poll")
+    .update({
+      ...pollData,
+    })
+    .eq("user_id", userID)
+    .eq("id", pollData.id)
+    .select();
+
+  if (error) {
+    console.error("Error modifying Poll", { error });
+  }
+
+  return data;
+};
+
+export const deletePoll = async (request: Request, pollID: number) => {
+  const client = await getClient(request);
+  const userID = await getUserId(request);
+
+  const { error: votesError } = await client
+    .from("pollvotes")
+    .delete()
+    .eq("poll_id", pollID);
+
+  if (votesError) {
+    console.error("Error deleting Poll's Votes", votesError);
+  }
+
+  const { error: optionsError } = await client
+    .from("polloptions")
+    .delete()
+    .eq("poll_id", pollID);
+
+  if (optionsError) {
+    console.error("Error deleting Poll's Options", optionsError);
+  }
+
+  const { error: pollError } = await client
+    .from("poll")
+    .delete()
+    .eq("id", pollID)
+    .eq("user_id", userID);
+
+  if (pollError) {
+    console.error("Error deleting Poll", pollError);
+  }
+
+  return redirect("/");
 };
 
 export const optionVote = async (

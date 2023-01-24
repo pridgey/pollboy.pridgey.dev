@@ -3,6 +3,7 @@ import styles from "./Textarea.module.css";
 import { InfoTip } from "../infotip";
 
 export type TextareaProps = {
+  DefaultValue?: string;
   Error?: string;
   Label: string;
   Name: string;
@@ -26,6 +27,7 @@ export const Textarea = (props: TextareaProps) => {
         name={props.Name}
         class={styles.textareacontrol}
         rows={props.Rows || 4}
+        value={props.DefaultValue || ""}
       />
       <Show when={props.Error}>
         <span role="alert" class={styles.textareaerror}>

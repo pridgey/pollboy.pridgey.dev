@@ -1,0 +1,23 @@
+.form_label {
+  grid-area: label;
+}
+
+.form_desc {
+  grid-area: desc;
+}
+
+.form_expiry {
+  grid-area: expiry;
+}
+
+.form_add {
+  grid-area: options;
+}
+
+.form_multi {
+  grid-area: multi;
+}
+
+.form_button {
+  grid-area: button;
+}

@@ -3,6 +3,7 @@ import { Show } from "solid-js";
 import { InfoTip } from "../infotip";
 
 export type ToggleProps = {
+  DefaultValue?: boolean;
   Error?: string;
   Label: string;
   Name: string;
@@ -23,6 +24,7 @@ export const Toggle = (props: ToggleProps) => {
         type="checkbox"
         name={props.Name}
         class={styles.inputcontrol}
+        checked={props.DefaultValue}
       />
       <span class={styles.toggle_display} hidden></span>
       <Show when={props.Error}>

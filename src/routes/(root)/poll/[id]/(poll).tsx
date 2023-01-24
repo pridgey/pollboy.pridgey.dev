@@ -104,14 +104,16 @@ export default function Poll() {
       <h1 class={styles.polltitle}>{pollData()?.poll?.poll_name}</h1>
       <h2 class={styles.pollsubtitle}>{pollData()?.poll?.poll_desc}</h2>
       {/* Poll Context Menu */}
-      <button
-        type="button"
-        class={styles.menu}
-        ref={pollMenuRef}
-        onClick={() => setShowPollMenu(!showPollMenu())}
-      >
-        <MenuDots />
-      </button>
+      <Show when={pollData()?.poll?.isPollOwner}>
+        <button
+          type="button"
+          class={styles.menu}
+          ref={pollMenuRef}
+          onClick={() => setShowPollMenu(!showPollMenu())}
+        >
+          <MenuDots />
+        </button>
+      </Show>
       {/* Votable Options */}
       <div class={styles.optionscontainer}>
         <For each={pollData()?.poll?.options}>
@@ -129,9 +131,11 @@ export default function Poll() {
             );
           }}
         </For>
-        <Button Type="button" OnClick={() => setShowNewOptionModal(true)}>
-          Add Option
-        </Button>
+        <Show when={pollData()?.poll?.canUserAddOptions}>
+          <Button Type="button" OnClick={() => setShowNewOptionModal(true)}>
+            Add Option
+          </Button>
+        </Show>
       </div>
       {/* The Voting Results */}
       <Show when={showStats()}>

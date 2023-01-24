@@ -9,6 +9,7 @@ import { PollForm } from "~/components";
 import { editPoll, getPollBySlug } from "~/db/poll";
 import { getUser } from "~/db/session";
 import { validate } from "~/lib/Validate";
+import styles from "~/css/new.module.css";
 
 export function routeData({ params }: RouteDataArgs) {
   return createServerData$(
@@ -109,20 +110,23 @@ const EditPollPage = () => {
   );
 
   return (
-    <Form>
-      <input type="hidden" value={pollData()?.poll.id} name="poll_id" />
-      <input type="hidden" value={pollData()?.poll.slug} name="poll_slug" />
-      <PollForm
-        FormLoading={false}
-        FormValues={{
-          PollDescription: pollData()?.poll?.poll_desc || "",
-          PollName: pollData()?.poll?.poll_name || "",
-          MultipleVotes: pollData()?.poll?.multivote || false,
-          PollExpiration: pollData()?.poll?.expire_at || "",
-          UsersCanAdd: pollData()?.poll?.public_can_add || false,
-        }}
-      />
-    </Form>
+    <div class={styles.container}>
+      <h1 class={styles.title}>Modifying: {pollData()?.poll.poll_name}</h1>
+      <Form class={styles.form}>
+        <input type="hidden" value={pollData()?.poll.id} name="poll_id" />
+        <input type="hidden" value={pollData()?.poll.slug} name="poll_slug" />
+        <PollForm
+          FormLoading={false}
+          FormValues={{
+            PollDescription: pollData()?.poll?.poll_desc || "",
+            PollName: pollData()?.poll?.poll_name || "",
+            MultipleVotes: pollData()?.poll?.multivote || false,
+            PollExpiration: pollData()?.poll?.expire_at || "",
+            UsersCanAdd: pollData()?.poll?.public_can_add || false,
+          }}
+        />
+      </Form>
+    </div>
   );
 };
 

@@ -2,7 +2,7 @@ import { getClient, getUserId } from "./session";
 import { generateSlug } from "~/lib/Slug";
 import { redirect } from "solid-start";
 
-// Shape of Poll
+// Shape of Poll in the db
 type PollRecord = {
   id?: number;
   poll_name: string;
@@ -13,7 +13,13 @@ type PollRecord = {
   multivote?: boolean;
   user_id?: string;
   slug?: string;
+};
+
+// Types used in the poll page for rendering, includes PollOptions and other helpful properties
+type RenderedPollProps = PollRecord & {
   options?: PollOptionProps[];
+  canUserAddOptions?: boolean;
+  isPollOwner?: boolean;
 };
 
 export type PollOptionProps = {
@@ -119,7 +125,7 @@ export const getUserPolls = async (request: Request) => {
 export const getPollBySlug = async (
   request: Request,
   slug: string
-): Promise<PollRecord | null> => {
+): Promise<RenderedPollProps | null> => {
   const client = await getClient(request);
   const userID = await getUserId(request);
 
@@ -129,7 +135,7 @@ export const getPollBySlug = async (
     console.error("Error retrieving specific Poll:", { error });
   }
 
-  const currentPoll = data?.[0];
+  const currentPoll: PollRecord = data?.[0];
 
   if (!currentPoll) {
     return null;
@@ -164,6 +170,9 @@ export const getPollBySlug = async (
   // Determines if this user created this poll
   const isPollOwner = currentPoll?.user_id === userID;
 
+  // Determines if this user can add options
+  const canUserAddOptions = isPollOwner || currentPoll?.public_can_add;
+
   return {
     ...data?.[0],
     options: options?.map((opt) => {
@@ -176,6 +185,8 @@ export const getPollBySlug = async (
         can_modify: isPollOwner || isOptionOwner,
       };
     }),
+    canUserAddOptions,
+    isPollOwner,
   };
 };
 

@@ -72,6 +72,44 @@ export default function Poll() {
 
   const [isMobile, setIsMobile] = createSignal(false);
 
+  const generatePollMenuOptions = (isPollOwner: boolean, isMobile: boolean) => {
+    const results: any[] = [];
+
+    if (isPollOwner) {
+      results.concat([
+        {
+          Label: "Edit Poll",
+          Icon: "",
+          OnClick: () => {
+            navigate(`edit`);
+          },
+        },
+        {
+          Label: "Delete Poll",
+          Icon: "",
+          OnClick: () => {
+            setShowDeletePoll(!showDeletePoll());
+          },
+        },
+      ]);
+    }
+
+    if (isMobile) {
+      results.concat([
+        {
+          Label: "Show Results",
+          Icon: "",
+          OnClick: () => {
+            setShowStats(true);
+            setShowPollMenu(false);
+          },
+        },
+      ]);
+    }
+
+    return results;
+  };
+
   createEffect(() => {
     if (window.innerWidth < 480) {
       setIsMobile(true);
@@ -104,7 +142,7 @@ export default function Poll() {
       <h1 class={styles.polltitle}>{pollData()?.poll?.poll_name}</h1>
       <h2 class={styles.pollsubtitle}>{pollData()?.poll?.poll_desc}</h2>
       {/* Poll Context Menu */}
-      <Show when={pollData()?.poll?.isPollOwner}>
+      <Show when={pollData()?.poll?.isPollOwner || isMobile()}>
         <button
           type="button"
           class={styles.menu}
@@ -169,34 +207,9 @@ export default function Poll() {
       </Show>
       <Show when={showPollMenu()}>
         <DropdownOptions
-          Options={[
-            {
-              Label: "Edit Poll",
-              Icon: "",
-              OnClick: () => {
-                navigate(`edit`);
-              },
-            },
-            {
-              Label: "Delete Poll",
-              Icon: "",
-              OnClick: () => {
-                setShowDeletePoll(!showDeletePoll());
-              },
-            },
-          ].concat(
+          Options={generatePollMenuOptions(
+            pollData()?.poll?.isPollOwner,
             isMobile()
-              ? [
-                  {
-                    Label: "Show Results",
-                    Icon: "",
-                    OnClick: () => {
-                      setShowStats(true);
-                      setShowPollMenu(false);
-                    },
-                  },
-                ]
-              : []
           )}
           OnOutsideClick={() => setShowPollMenu(false)}
           PositionRef={pollMenuRef}

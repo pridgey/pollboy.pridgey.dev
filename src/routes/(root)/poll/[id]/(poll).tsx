@@ -20,6 +20,7 @@ import {
   PollOption,
   PollOptionsModal,
   PollResults,
+  SharePollModal,
 } from "~/components";
 import styles from "~/css/poll.module.css";
 import {
@@ -75,6 +76,13 @@ export default function Poll() {
 
   const adminMenuOptions: Option[] = [
     {
+      Label: "Share QR Code",
+      Icon: "",
+      OnClick: () => {
+        setShowQR(!showQR());
+      },
+    },
+    {
       Label: "Edit Poll",
       Icon: "",
       OnClick: () => {
@@ -125,6 +133,7 @@ export default function Poll() {
   const [showNewOptionModal, setShowNewOptionModal] = createSignal(false);
   const [showPollMenu, setShowPollMenu] = createSignal(false);
   const [showDeletePoll, setShowDeletePoll] = createSignal(false);
+  const [showQR, setShowQR] = createSignal(false);
   const [showStats, setShowStats] = createSignal(!isMobile());
 
   return (
@@ -195,6 +204,9 @@ export default function Poll() {
             setShowDeletePoll(false);
           }}
         />
+      </Show>
+      <Show when={showQR()}>
+        <SharePollModal OnClose={() => setShowQR(false)} />
       </Show>
       <Show when={showPollMenu()}>
         <DropdownOptions

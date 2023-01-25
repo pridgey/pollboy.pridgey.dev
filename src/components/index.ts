@@ -13,6 +13,7 @@ export * from "./poll-option";
 export * from "./poll-option-modal";
 export * from "./poll-results";
 export * from "./ranking";
+export * from "./share-poll-modal";
 export * from "./svg-park";
 export * from "./textarea";
 export * from "./toggle";

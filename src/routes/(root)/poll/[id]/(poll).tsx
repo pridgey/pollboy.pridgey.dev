@@ -16,6 +16,7 @@ import {
   ConfirmDeleteModal,
   DropdownOptions,
   MenuDots,
+  Option,
   PollOption,
   PollOptionsModal,
   PollResults,
@@ -72,43 +73,33 @@ export default function Poll() {
 
   const [isMobile, setIsMobile] = createSignal(false);
 
-  const generatePollMenuOptions = (isPollOwner: boolean, isMobile: boolean) => {
-    const results: any[] = [];
+  const adminMenuOptions: Option[] = [
+    {
+      Label: "Edit Poll",
+      Icon: "",
+      OnClick: () => {
+        navigate(`edit`);
+      },
+    },
+    {
+      Label: "Delete Poll",
+      Icon: "",
+      OnClick: () => {
+        setShowDeletePoll(!showDeletePoll());
+      },
+    },
+  ];
 
-    if (isPollOwner) {
-      results.concat([
-        {
-          Label: "Edit Poll",
-          Icon: "",
-          OnClick: () => {
-            navigate(`edit`);
-          },
-        },
-        {
-          Label: "Delete Poll",
-          Icon: "",
-          OnClick: () => {
-            setShowDeletePoll(!showDeletePoll());
-          },
-        },
-      ]);
-    }
-
-    if (isMobile) {
-      results.concat([
-        {
-          Label: "Show Results",
-          Icon: "",
-          OnClick: () => {
-            setShowStats(true);
-            setShowPollMenu(false);
-          },
-        },
-      ]);
-    }
-
-    return results;
-  };
+  const mobileMenuOptions: Option[] = [
+    {
+      Label: "Show Results",
+      Icon: "",
+      OnClick: () => {
+        setShowStats(true);
+        setShowPollMenu(false);
+      },
+    },
+  ];
 
   createEffect(() => {
     if (window.innerWidth < 480) {
@@ -207,10 +198,9 @@ export default function Poll() {
       </Show>
       <Show when={showPollMenu()}>
         <DropdownOptions
-          Options={generatePollMenuOptions(
-            pollData()?.poll?.isPollOwner,
-            isMobile()
-          )}
+          Options={([] as Option[])
+            .concat(pollData()?.poll?.isPollOwner ? adminMenuOptions : [])
+            .concat(isMobile() ? mobileMenuOptions : [])}
           OnOutsideClick={() => setShowPollMenu(false)}
           PositionRef={pollMenuRef}
           HorizontalAlign="right"

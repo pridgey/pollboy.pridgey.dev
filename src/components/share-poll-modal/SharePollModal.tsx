@@ -12,8 +12,8 @@ export const SharePollModal = (props: SharePollModalProps) => {
   onMount(() => {
     document.getElementById("qr-container")!.innerHTML = new QRCode({
       content: window.location.href,
-      container: "svg-viewbox", //Responsive use
-      join: true, //Crisp rendering and 4-5x reduced file size
+      container: "svg-viewbox",
+      join: true,
     }).svg();
   });
 

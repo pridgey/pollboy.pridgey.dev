@@ -5,6 +5,13 @@
   grid-template-areas: "place title votes";
   align-items: center;
   gap: 0px 2rem;
+  animation-name: dropin;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+  animation-delay: var(--delay);
+  transform: translateY(-50%);
+  opacity: 0;
 }
 
 .trophy {
@@ -47,4 +54,16 @@
 .count {
   grid-area: votes;
   font-variant-numeric: tabular-nums;
+}
+
+@keyframes dropin {
+  from {
+    transform: translateY(-50%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

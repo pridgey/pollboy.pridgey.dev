@@ -2,6 +2,7 @@ import styles from "./Ranking.module.css";
 import { Show } from "solid-js";
 
 export type RankingProps = {
+  Index: number;
   Name: string;
   Place?: number;
   VoteCount: number;
@@ -9,7 +10,7 @@ export type RankingProps = {
 
 export const Ranking = (props: RankingProps) => {
   return (
-    <div class={styles.container}>
+    <div class={styles.container} style={{ "--delay": `${props.Index / 25}s` }}>
       <div class={styles.trophy}>
         <Show when={props.Place}>
           <svg

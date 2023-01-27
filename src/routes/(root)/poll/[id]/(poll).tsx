@@ -190,6 +190,14 @@ export default function Poll() {
           </Show>
           {/* Votable Options */}
           <div class={styles.optionscontainer}>
+            <Show when={pollData()?.poll?.options?.length === 0}>
+              <h2 class={styles.pollsubtitle}>
+                There are no options to vote for
+              </h2>
+              <Show when={pollData()?.poll?.canUserAddOptions}>
+                <h2 class={styles.pollsubtitle}>Click below to get started</h2>
+              </Show>
+            </Show>
             <For each={pollData()?.poll?.options}>
               {(polloption: PollOptionProps, index) => {
                 return (

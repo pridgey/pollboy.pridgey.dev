@@ -34,3 +34,10 @@ h3 {
   font-size: 6rem;
   font-weight: bold;
 }
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .title {
+    font-size: 4rem;
+  }
+}

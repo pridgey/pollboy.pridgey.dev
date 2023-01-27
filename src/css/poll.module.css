@@ -79,6 +79,10 @@ h3 {
     padding: 4rem 3rem;
   }
 
+  .optionscontainer {
+    align-items: center;
+  }
+
   .polltitle {
     font-size: 6rem;
   }

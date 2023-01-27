@@ -44,6 +44,7 @@ export const PollResults = (props: PollResultsProps) => {
             {(result, index) => (
               <li>
                 <Ranking
+                  Index={index() + 1}
                   Place={index() < 3 ? index() + 1 : undefined}
                   Name={result.Name}
                   VoteCount={result.Votes}

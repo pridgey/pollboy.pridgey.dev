@@ -32,14 +32,12 @@ export default function Home() {
       <Switch>
         <Match when={data()?.userPolls?.length}>
           <h1 class={styles.poll_title}>Pollboy</h1>
-          <For each={data()?.userPolls}>
-            {(poll) => (
-              <A href={`poll/${poll.slug}`}>
-                <h2 class={styles.poll_subtitle}>{poll.poll_name}</h2>
-                <h2 class={styles.poll_subtitle}>{poll.poll_desc}</h2>
-              </A>
-            )}
-          </For>
+          <h2 class={styles.section}>Polls You've Made or Voted In</h2>
+          <div class={styles.pollbox}>
+            <For each={data()?.userPolls}>
+              {(poll) => <PollCard Poll={poll} />}
+            </For>
+          </div>
           <Button Href="new">Create a New Poll</Button>
         </Match>
         <Match when={!data()?.userPolls?.length}>

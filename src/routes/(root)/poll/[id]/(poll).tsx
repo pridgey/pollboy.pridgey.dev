@@ -158,142 +158,122 @@ export default function Poll() {
   const [showStats, setShowStats] = createSignal(!isMobile());
 
   return (
-    <Switch>
-      {/* When we're in mobile, and we show stats, we replace everything
-          with the stats so we prevent scrolling beyond the stat box */}
-      <Match when={isMobile() && showStats()}>
+    <div
+      class={styles.container}
+      style={{ overflow: showStats() ? "hidden" : "auto" }}
+    >
+      {/* Title Text */}
+      <h1 class={styles.polltitle}>{pollData()?.poll?.poll_name}</h1>
+      <h2 class={styles.pollsubtitle}>{pollData()?.poll?.poll_desc}</h2>
+      {/* Poll Context Menu */}
+      <Show when={pollData()?.poll?.isPollOwner || isMobile()}>
+        <button
+          type="button"
+          class={styles.menu}
+          ref={pollMenuRef}
+          onClick={() => setShowPollMenu(!showPollMenu())}
+        >
+          <MenuDots />
+        </button>
+      </Show>
+      <div class={styles.optionscontainer}>
+        <Switch>
+          {/* Stats are a separate box in mobile, and when poll has expired */}
+          <Match
+            when={
+              (isMobile() && showStats()) || pollData()?.poll?.hasPollExpired
+            }
+          >
+            <Show when={pollData()?.poll?.hasPollExpired}>
+              <div class={styles.expiredbanner}>
+                <h2 class={styles.pollsubtitle}>This Poll has Expired</h2>
+              </div>
+            </Show>
+            <PollResults
+              PollExpired={pollData()?.poll?.hasPollExpired || false}
+              OnClose={() => setShowStats(false)}
+              Results={[...(pollData()?.results || [])]}
+            />
+          </Match>
+          <Match when={!pollData()?.poll?.hasPollExpired}>
+            {/* Votable Options */}
+            <Show when={pollData()?.poll?.options?.length === 0}>
+              <h2 class={styles.pollsubtitle}>
+                There are no options to vote for
+              </h2>
+              <Show when={pollData()?.poll?.canUserAddOptions}>
+                <h2 class={styles.pollsubtitle}>Click below to get started</h2>
+              </Show>
+            </Show>
+            <For each={pollData()?.poll?.options}>
+              {(polloption: PollOptionProps, index) => {
+                return (
+                  <PollOption
+                    CanModify={!!polloption.can_modify}
+                    ID={polloption?.id || 0}
+                    PollID={pollData()?.poll?.id || 0}
+                    OptionName={polloption?.option_name}
+                    OptionDescription={polloption?.option_desc}
+                    UserVoted={polloption?.user_voted}
+                    VotePercentage={100 / (index() + 1)}
+                  />
+                );
+              }}
+            </For>
+            <Show when={pollData()?.poll?.canUserAddOptions}>
+              <Button Type="button" OnClick={() => setShowNewOptionModal(true)}>
+                Add Option
+              </Button>
+            </Show>
+          </Match>
+        </Switch>
+      </div>
+
+      {/* The Voting Results */}
+      <Show when={showStats() && !pollData()?.poll?.hasPollExpired}>
         <div class={styles.results}>
           <PollResults
+            PollExpired={pollData()?.poll?.hasPollExpired || false}
             OnClose={() => setShowStats(false)}
             Results={[...(pollData()?.results || [])]}
           />
         </div>
-      </Match>
-      <Match when={true}>
-        <div
-          class={styles.container}
-          style={{ overflow: showStats() ? "hidden" : "auto" }}
-        >
-          {/* Title Text */}
-          <h1 class={styles.polltitle}>{pollData()?.poll?.poll_name}</h1>
-          <h2 class={styles.pollsubtitle}>{pollData()?.poll?.poll_desc}</h2>
-          {/* Poll Context Menu */}
-          <Show when={pollData()?.poll?.isPollOwner || isMobile()}>
-            <button
-              type="button"
-              class={styles.menu}
-              ref={pollMenuRef}
-              onClick={() => setShowPollMenu(!showPollMenu())}
-            >
-              <MenuDots />
-            </button>
-          </Show>
-          <div class={styles.optionscontainer}>
-            <Switch>
-              {/* Stats are a separate box in mobile, and when poll has expired */}
-              <Match
-                when={
-                  (isMobile() && showStats()) ||
-                  pollData()?.poll?.hasPollExpired
-                }
-              >
-                <Show when={pollData()?.poll?.hasPollExpired}>
-                  <div class={styles.expiredbanner}>
-                    <h2 class={styles.pollsubtitle}>This Poll has Expired</h2>
-                  </div>
-                </Show>
-                <PollResults
-                  PollExpired={pollData()?.poll?.hasPollExpired || false}
-                  OnClose={() => setShowStats(false)}
-                  Results={[...(pollData()?.results || [])]}
-                />
-              </Match>
-              <Match when={!pollData()?.poll?.hasPollExpired}>
-                {/* Votable Options */}
-                <Show when={pollData()?.poll?.options?.length === 0}>
-                  <h2 class={styles.pollsubtitle}>
-                    There are no options to vote for
-                  </h2>
-                  <Show when={pollData()?.poll?.canUserAddOptions}>
-                    <h2 class={styles.pollsubtitle}>
-                      Click below to get started
-                    </h2>
-                  </Show>
-                </Show>
-                <For each={pollData()?.poll?.options}>
-                  {(polloption: PollOptionProps, index) => {
-                    return (
-                      <PollOption
-                        CanModify={!!polloption.can_modify}
-                        ID={polloption?.id || 0}
-                        PollID={pollData()?.poll?.id || 0}
-                        OptionName={polloption?.option_name}
-                        OptionDescription={polloption?.option_desc}
-                        UserVoted={polloption?.user_voted}
-                        VotePercentage={100 / (index() + 1)}
-                      />
-                    );
-                  }}
-                </For>
-                <Show when={pollData()?.poll?.canUserAddOptions}>
-                  <Button
-                    Type="button"
-                    OnClick={() => setShowNewOptionModal(true)}
-                  >
-                    Add Option
-                  </Button>
-                </Show>
-              </Match>
-            </Switch>
-          </div>
+      </Show>
 
-          {/* The Voting Results */}
-          <Show when={showStats() && !pollData()?.poll?.hasPollExpired}>
-            <div class={styles.results}>
-              <PollResults
-                PollExpired={pollData()?.poll?.hasPollExpired || false}
-                OnClose={() => setShowStats(false)}
-                Results={[...(pollData()?.results || [])]}
-              />
-            </div>
-          </Show>
-
-          {/* Modals */}
-          <Show when={showNewOptionModal()}>
-            <PollOptionsModal
-              PollID={pollData()?.poll?.id}
-              OnClose={() => setShowNewOptionModal(false)}
-            />
-          </Show>
-          <Show when={showDeletePoll()}>
-            <ConfirmDeleteModal
-              Name={`Poll: "${pollData()?.poll.poll_name}"`}
-              OnClose={async (confirm) => {
-                if (confirm) {
-                  // Delete Poll
-                  handleDeletePoll({ ID: pollData()?.poll.id || 0 });
-                  navigate("/");
-                }
-                setShowDeletePoll(false);
-              }}
-            />
-          </Show>
-          <Show when={showQR()}>
-            <SharePollModal OnClose={() => setShowQR(false)} />
-          </Show>
-          <Show when={showPollMenu()}>
-            <DropdownOptions
-              Options={([] as Option[])
-                .concat(pollData()?.poll?.isPollOwner ? adminMenuOptions : [])
-                .concat(isMobile() ? mobileMenuOptions : [])}
-              OnOutsideClick={() => setShowPollMenu(false)}
-              PositionRef={pollMenuRef}
-              HorizontalAlign="right"
-              VerticalGap={10}
-            />
-          </Show>
-        </div>
-      </Match>
-    </Switch>
+      {/* Modals */}
+      <Show when={showNewOptionModal()}>
+        <PollOptionsModal
+          PollID={pollData()?.poll?.id}
+          OnClose={() => setShowNewOptionModal(false)}
+        />
+      </Show>
+      <Show when={showDeletePoll()}>
+        <ConfirmDeleteModal
+          Name={`Poll: "${pollData()?.poll.poll_name}"`}
+          OnClose={async (confirm) => {
+            if (confirm) {
+              // Delete Poll
+              handleDeletePoll({ ID: pollData()?.poll.id || 0 });
+              navigate("/");
+            }
+            setShowDeletePoll(false);
+          }}
+        />
+      </Show>
+      <Show when={showQR()}>
+        <SharePollModal OnClose={() => setShowQR(false)} />
+      </Show>
+      <Show when={showPollMenu()}>
+        <DropdownOptions
+          Options={([] as Option[])
+            .concat(pollData()?.poll?.isPollOwner ? adminMenuOptions : [])
+            .concat(isMobile() ? mobileMenuOptions : [])}
+          OnOutsideClick={() => setShowPollMenu(false)}
+          PositionRef={pollMenuRef}
+          HorizontalAlign="right"
+          VerticalGap={10}
+        />
+      </Show>
+    </div>
   );
 }

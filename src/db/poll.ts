@@ -16,7 +16,7 @@ type PollRecord = {
 };
 
 // Types used in the poll page for rendering, includes PollOptions and other helpful properties
-type RenderedPollProps = PollRecord & {
+export type RenderedPollProps = PollRecord & {
   options?: PollOptionProps[];
   canUserAddOptions?: boolean;
   isPollOwner?: boolean;

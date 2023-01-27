@@ -6,6 +6,22 @@
   background-image: url("/ai-autumn-leaves.png");
   background-position: bottom right;
   background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem 0px;
+}
+
+.pollbox {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.section {
+  font-size: 4rem;
+  color: black;
+  font-family: var(--font-main);
 }
 
 .not_found {

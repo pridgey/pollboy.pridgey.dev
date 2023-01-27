@@ -31,6 +31,16 @@ body {
   font-family: "Josefin Sans", sans-serif;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0px;
+  font-family: var(--font-main);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -78,6 +88,14 @@ body {
   text-decoration: none;
 }
 
-/* Mobile Sizing */
-@media (min-width: 480px) {
+.linkgroup {
+  display: flex;
+  flex-direction: row;
+  gap: 0px 2rem;
+}
+
+.link {
+  font-size: 2rem;
+  color: var(--color-orange);
+  font-weight: bold;
 }

@@ -15,6 +15,7 @@ export type OptionVotes = {
 
 export type PollResultsProps = {
   OnClose: () => void;
+  PollExpired: boolean;
   Results: OptionVotes[];
 };
 
@@ -54,7 +55,7 @@ export const PollResults = (props: PollResultsProps) => {
           </For>
         </TransitionGroup>
       </ul>
-      <Show when={isMobile()}>
+      <Show when={isMobile() && !props.PollExpired}>
         <Button Type="button" OnClick={() => props.OnClose()}>
           Close Results
         </Button>

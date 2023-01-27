@@ -203,6 +203,7 @@ export default function Poll() {
                   </div>
                 </Show>
                 <PollResults
+                  PollExpired={pollData()?.poll?.hasPollExpired || false}
                   OnClose={() => setShowStats(false)}
                   Results={[...(pollData()?.results || [])]}
                 />
@@ -250,6 +251,7 @@ export default function Poll() {
           <Show when={showStats() && !pollData()?.poll?.hasPollExpired}>
             <div class={styles.results}>
               <PollResults
+                PollExpired={pollData()?.poll?.hasPollExpired || false}
                 OnClose={() => setShowStats(false)}
                 Results={[...(pollData()?.results || [])]}
               />

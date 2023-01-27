@@ -20,6 +20,7 @@ type RenderedPollProps = PollRecord & {
   options?: PollOptionProps[];
   canUserAddOptions?: boolean;
   isPollOwner?: boolean;
+  hasPollExpired?: boolean;
 };
 
 export type PollOptionProps = {
@@ -39,6 +40,17 @@ export type PollVoteProps = {
   poll_id: number;
   polloption_id: number;
   user_id: string;
+};
+
+const getDateInUTC = (date: Date) => {
+  return new Date(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    date.getUTCHours(),
+    date.getUTCMinutes(),
+    date.getUTCSeconds()
+  );
 };
 
 export const createPoll = async (request: Request, newData: PollRecord) => {
@@ -141,6 +153,27 @@ export const getPollBySlug = async (
     return null;
   }
 
+  // Check if the poll has expired
+  let hasPollExpired = false;
+
+  if (currentPoll.expire_at) {
+    const pollExpiration = new Date(currentPoll.expire_at);
+
+    if (pollExpiration instanceof Date && !isNaN(pollExpiration.valueOf())) {
+      // This is a valid date!
+      const pollExpiryUTC = getDateInUTC(pollExpiration);
+      const today = getDateInUTC(new Date());
+      const dayInMs = 1000 * 3600 * 24;
+
+      if (
+        Math.floor((today.valueOf() - pollExpiryUTC.valueOf()) / dayInMs) > 0
+      ) {
+        // We have  passed the expiration date
+        hasPollExpired = true;
+      }
+    }
+  }
+
   const currentPollID = currentPoll?.id;
 
   const getPollOptions = client
@@ -187,6 +220,7 @@ export const getPollBySlug = async (
     }),
     canUserAddOptions,
     isPollOwner,
+    hasPollExpired,
   };
 };
 

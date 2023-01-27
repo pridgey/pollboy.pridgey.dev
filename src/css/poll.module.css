@@ -71,6 +71,21 @@ h3 {
   align-content: flex-start;
 }
 
+.expiredbanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 3rem;
+  background-color: var(--color-orange);
+  border-radius: 2rem;
+}
+
+.expiredbanner h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+}
+
 /* Mobile Sizing */
 @media (max-width: 480px) {
   .container {

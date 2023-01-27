@@ -88,12 +88,8 @@ export default function New() {
 
   return (
     <div class={styles.container}>
-      <h1 class={styles.title}>Get feedback, gather opinions</h1>
-      <h2 class={styles.subtitle}>
-        Simply provide a question and some options for people to choose from.
-        You can also customize the poll by adding a description, setting a
-        deadline, and choosing whether to allow multiple votes.
-      </h2>
+      <h1 class={styles.title}>Create a Poll</h1>
+      <h2 class={styles.subtitle}>Get feedback, gather opinions</h2>
       <Form class={styles.form}>
         <PollForm
           FormLoading={creatingPoll.pending}

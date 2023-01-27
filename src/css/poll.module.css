@@ -76,6 +76,15 @@ h3 {
   .container {
     grid-template-columns: 1fr 50px;
     grid-template-areas: "title menu" "subtitle menu" "options options";
+    padding: 4rem 3rem;
+  }
+
+  .polltitle {
+    font-size: 6rem;
+  }
+
+  .pollsubtitle {
+    font-size: 3rem;
   }
 
   .results {
@@ -85,5 +94,6 @@ h3 {
     width: 100%;
     top: 0px;
     left: 0px;
+    bottom: 0px;
   }
 }

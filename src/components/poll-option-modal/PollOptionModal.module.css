@@ -43,3 +43,16 @@ h3 {
   flex-direction: column;
   gap: 3rem 0rem;
 }
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .title {
+    font-size: 4rem;
+    font-weight: bold;
+  }
+
+  .subtitle {
+    font-size: 3rem;
+    line-height: 120%;
+  }
+}

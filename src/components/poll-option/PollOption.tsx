@@ -68,8 +68,8 @@ export const PollOption = (props: PollOptionProps) => {
         <div class={styles.optioncheck}>
           <Show when={selected()}>✓</Show>
         </div>
-        <h1 class={styles.optiontitle}>{props.OptionName}</h1>
-        <h2 class={styles.optionsubtitle}>{props.OptionDescription}</h2>
+        <h3 class={styles.optiontitle}>{props.OptionName}</h3>
+        <h4 class={styles.optionsubtitle}>{props.OptionDescription}</h4>
       </button>
       <Show when={props.CanModify}>
         <div class={styles.menucontainer}>

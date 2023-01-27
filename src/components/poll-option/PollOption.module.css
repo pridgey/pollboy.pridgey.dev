@@ -54,11 +54,12 @@
 }
 
 /* Standard H1, H2 styling (probably move this up somewhere) */
-h1,
-h2 {
+h3,
+h4 {
   margin: 0px;
   font-family: var(--font-main);
   text-align: left;
+  font-weight: normal;
 }
 
 /* Main text of the option */
@@ -106,4 +107,17 @@ h2 {
 .menu svg {
   width: 40px;
   height: 40px;
+}
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  /* Main text of the option */
+  .optiontitle {
+    font-size: 2.5rem;
+  }
+
+  /* Description text for the otpion */
+  .optionsubtitle {
+    font-size: 2.5rem;
+  }
 }

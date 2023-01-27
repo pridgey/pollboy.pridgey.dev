@@ -1,5 +1,5 @@
 import styles from "./PollResults.module.css";
-import { Ranking } from "~/components";
+import { Button, Ranking } from "~/components";
 import { For, createSignal, createEffect, Show } from "solid-js";
 import {
   TransitionGroup,
@@ -29,7 +29,6 @@ export const PollResults = (props: PollResultsProps) => {
   });
 
   createEffect(() => {
-    console.log("rerender results");
     setResults([...props.Results]);
   });
 
@@ -55,7 +54,9 @@ export const PollResults = (props: PollResultsProps) => {
         </TransitionGroup>
       </ul>
       <Show when={isMobile()}>
-        <button onClick={() => props.OnClose()}>Close</button>
+        <Button Type="button" OnClick={() => props.OnClose()}>
+          Close Results
+        </Button>
       </Show>
     </>
   );

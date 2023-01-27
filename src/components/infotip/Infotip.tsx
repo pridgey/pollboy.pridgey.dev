@@ -11,6 +11,7 @@ export const InfoTip = (props: InfotipProps) => {
       data-gap={`${props.Gap || 2}rem`}
       data-text={props.Text}
       class={styles.container}
+      onClick={(e) => e.preventDefault()}
     >
       i
     </div>

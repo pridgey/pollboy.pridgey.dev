@@ -1,6 +1,14 @@
 .list {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 2rem 0px;
   list-style: none;
+}
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .list {
+    padding: 2rem;
+  }
 }

@@ -94,3 +94,10 @@
   filter: grayscale(40%);
   cursor: not-allowed;
 }
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .inputlabel {
+    font-size: 2.5rem;
+  }
+}

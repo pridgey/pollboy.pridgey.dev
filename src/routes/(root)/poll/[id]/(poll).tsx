@@ -155,7 +155,7 @@ export default function Poll() {
   const [showPollMenu, setShowPollMenu] = createSignal(false);
   const [showDeletePoll, setShowDeletePoll] = createSignal(false);
   const [showQR, setShowQR] = createSignal(false);
-  const [showStats, setShowStats] = createSignal(!isMobile());
+  const [showStats, setShowStats] = createSignal(false);
 
   return (
     <div
@@ -176,26 +176,24 @@ export default function Poll() {
           <MenuDots />
         </button>
       </Show>
-      <div class={styles.optionscontainer}>
-        <Switch>
-          {/* Stats are a separate box in mobile, and when poll has expired */}
-          <Match
-            when={
-              (isMobile() && showStats()) || pollData()?.poll?.hasPollExpired
-            }
-          >
-            <Show when={pollData()?.poll?.hasPollExpired}>
-              <div class={styles.expiredbanner}>
-                <h2 class={styles.pollsubtitle}>This Poll has Expired</h2>
-              </div>
-            </Show>
+      <Switch>
+        {/* Stats are a separate box in mobile, and when poll has expired */}
+        <Match when={pollData()?.poll?.hasPollExpired}>
+          <div class={styles.optionscontainer}>
+            {/* Expiration banner */}
+            <div class={styles.expiredbanner}>
+              <h2 class={styles.pollsubtitle}>This Poll has Expired</h2>
+            </div>
+            {/* Show only the results */}
             <PollResults
               PollExpired={pollData()?.poll?.hasPollExpired || false}
               OnClose={() => setShowStats(false)}
               Results={[...(pollData()?.results || [])]}
             />
-          </Match>
-          <Match when={!pollData()?.poll?.hasPollExpired}>
+          </div>
+        </Match>
+        <Match when={!pollData()?.poll?.hasPollExpired && !showStats()}>
+          <div class={styles.optionscontainer}>
             {/* Votable Options */}
             <Show when={pollData()?.poll?.options?.length === 0}>
               <h2 class={styles.pollsubtitle}>
@@ -225,13 +223,22 @@ export default function Poll() {
                 Add Option
               </Button>
             </Show>
-          </Match>
-        </Switch>
-      </div>
+          </div>
+          <Show when={!isMobile()}>
+            <div class={styles.results}>
+              <PollResults
+                PollExpired={pollData()?.poll?.hasPollExpired || false}
+                OnClose={() => setShowStats(false)}
+                Results={[...(pollData()?.results || [])]}
+              />
+            </div>
+          </Show>
+        </Match>
+      </Switch>
 
-      {/* The Voting Results */}
+      {/* The Voting Results for mobile view */}
       <Show when={showStats() && !pollData()?.poll?.hasPollExpired}>
-        <div class={styles.results}>
+        <div class={styles.optionscontainer}>
           <PollResults
             PollExpired={pollData()?.poll?.hasPollExpired || false}
             OnClose={() => setShowStats(false)}
@@ -267,7 +274,11 @@ export default function Poll() {
         <DropdownOptions
           Options={([] as Option[])
             .concat(pollData()?.poll?.isPollOwner ? adminMenuOptions : [])
-            .concat(isMobile() ? mobileMenuOptions : [])}
+            .concat(
+              isMobile() && !pollData()?.poll?.hasPollExpired
+                ? mobileMenuOptions
+                : []
+            )}
           OnOutsideClick={() => setShowPollMenu(false)}
           PositionRef={pollMenuRef}
           HorizontalAlign="right"

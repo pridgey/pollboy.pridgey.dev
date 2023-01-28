@@ -34,7 +34,7 @@ export const PollResults = (props: PollResultsProps) => {
   });
 
   return (
-    <>
+    <div class={styles.container}>
       <ul class={styles.list}>
         <TransitionGroup
           enter={animateEnter()}
@@ -60,6 +60,6 @@ export const PollResults = (props: PollResultsProps) => {
           Close Results
         </Button>
       </Show>
-    </>
+    </div>
   );
 };

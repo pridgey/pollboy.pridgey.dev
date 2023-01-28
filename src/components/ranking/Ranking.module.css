@@ -44,16 +44,22 @@
 .count {
   font-size: 3rem;
   font-family: var(--font-main);
+  white-space: pre-line;
 }
 
 .name {
   font-weight: bold;
   grid-area: title;
+  width: 100%;
+  word-break: break-word;
 }
 
 .count {
   grid-area: votes;
   font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 @keyframes dropin {
@@ -65,5 +71,12 @@
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .name {
+    font-size: 2.5rem;
   }
 }

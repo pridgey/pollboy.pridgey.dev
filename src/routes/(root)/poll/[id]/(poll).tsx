@@ -74,6 +74,27 @@ export default function Poll() {
 
   const [isMobile, setIsMobile] = createSignal(false);
 
+  const calculateOptionStatus = (
+    multivote: boolean,
+    userHasVotedForThisOption: boolean,
+    userHasVotedForOtherOptions: boolean
+  ): boolean => {
+    if (multivote) {
+      return false;
+    }
+
+    if (userHasVotedForThisOption) {
+      return false;
+    }
+
+    if (userHasVotedForOtherOptions) {
+      return true;
+    }
+
+    // multivote is off, user has not voted for any options
+    return false;
+  };
+
   const adminMenuOptions: Option[] = [
     {
       Label: "Edit Poll",
@@ -208,7 +229,13 @@ export default function Poll() {
                 return (
                   <PollOption
                     CanModify={!!polloption.can_modify}
+                    Disabled={calculateOptionStatus(
+                      !!pollData()?.poll?.multivote,
+                      !!polloption.user_voted,
+                      !!pollData()?.poll?.options?.some((opt) => opt.user_voted)
+                    )}
                     ID={polloption?.id || 0}
+                    MultiVote={pollData()?.poll?.multivote || false}
                     PollID={pollData()?.poll?.id || 0}
                     OptionName={polloption?.option_name}
                     OptionDescription={polloption?.option_desc}

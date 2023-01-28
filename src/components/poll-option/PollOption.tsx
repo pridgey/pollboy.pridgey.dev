@@ -11,7 +11,9 @@ import {
 
 export type PollOptionProps = {
   CanModify: boolean;
+  Disabled: boolean;
   ID: number;
+  MultiVote: boolean;
   OptionName: string;
   OptionDescription: string;
   PollID: number;
@@ -55,8 +57,14 @@ export const PollOption = (props: PollOptionProps) => {
   const [showModifyOptionModal, setShowModifyOptionModal] = createSignal(false);
 
   return (
-    <div class={styles.container}>
+    <div
+      classList={{
+        [styles.containerdisabled]: props.Disabled,
+        [styles.container]: true,
+      }}
+    >
       <button
+        disabled={props.Disabled}
         class={styles.optioncontents}
         onClick={async () => {
           if (!voting.pending) {
@@ -65,7 +73,12 @@ export const PollOption = (props: PollOptionProps) => {
           }
         }}
       >
-        <div class={styles.optioncheck}>
+        <div
+          classList={{
+            [styles.optioncheck]: true,
+            [styles.radio]: !props.MultiVote,
+          }}
+        >
           <Show when={selected()}>✓</Show>
         </div>
         <h3 class={styles.optiontitle}>{props.OptionName}</h3>

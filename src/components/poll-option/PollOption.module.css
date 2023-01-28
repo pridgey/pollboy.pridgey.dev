@@ -16,7 +16,7 @@
 
 /* Determines if the voting button is hovered or focused
   but shows outline of the entire component */
-.container:hover,
+.container:hover:not(.containerdisabled),
 .container:focus-within {
   border: 1px solid black;
 }
@@ -38,6 +38,10 @@
   cursor: pointer;
 }
 
+.optioncontents:disabled .optioncheck {
+  opacity: 0.3;
+}
+
 /* Checkbox part of the component */
 .optioncheck {
   width: 40px;
@@ -51,6 +55,11 @@
   font-weight: bold;
   font-family: var(--font-main);
   grid-area: check;
+}
+
+/* Looks more like a radio button when multivote is off */
+.radio {
+  border-radius: 100%;
 }
 
 /* Standard H1, H2 styling (probably move this up somewhere) */

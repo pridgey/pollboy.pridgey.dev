@@ -308,45 +308,70 @@ export const optionVote = async (
   pollID: number,
   optionID: number
 ) => {
+  // Get client and userID
   const client = await getClient(request);
   const userID = await getUserId(request);
 
-  const { data: checkData, error: checkError } = await client
+  // Selecting all votes by this user, for this poll
+  const votesQuery = client
     .from("pollvotes")
     .select()
-    .eq("polloption_id", optionID)
-    .eq("user_id", userID);
+    .eq("user_id", userID)
+    .eq("poll_id", pollID);
 
-  if (checkError) {
-    console.error("Error checking for Poll Vote existence", checkError);
-  }
+  // Select vote options for this poll
+  const pollQuery = client
+    .from("poll")
+    .select("multivote")
+    .eq("id", pollID)
+    .limit(1)
+    .single();
 
-  if (checkData?.length) {
-    // Option exists, so let's remove it
+  // Query for Votes and Poll Settings simultaneously
+  const [
+    { data: votes, error: votesError },
+    { data: multivote, error: pollError },
+  ] = await Promise.all([votesQuery, pollQuery]);
+
+  // Log any errors
+  votesError && console.error("Error retrieving Poll Votes", votesError);
+  pollError && console.error("Error retrieving Poll Settings", pollError);
+
+  // Check and see if there is already a Vote record for this poll option
+  const existingVote: PollVoteProps = votes?.find(
+    (vote: PollVoteProps) => vote.polloption_id === optionID
+  );
+  console.log("Vote", { votes, multivote, existingVote });
+  if (existingVote?.id) {
+    // There is a vote record. This must be an "unvote", remove it
     const { error: removeError } = await client
       .from("pollvotes")
       .delete()
-      .eq("id", checkData[0].id);
-
+      .eq("id", existingVote.id);
     if (removeError) {
-      console.error("Error removing Poll Vote", removeError);
+      console.error("Error removing vote record", removeError);
       return false;
     }
+    return true;
   } else {
-    // Option doesn't exist, so let's add it
-    const { error: insertError } = await client.from("pollvotes").insert({
-      poll_id: pollID,
-      polloption_id: optionID,
-      user_id: userID,
-    });
-
-    if (insertError) {
-      console.error("Error inserting Poll Vote", insertError);
+    // There is no existing vote with this id
+    if (!multivote?.multivote && (votes?.length || 0) > 0) {
+      // There are other votes, and multivote isn't allowed
       return false;
+    } else {
+      // Either multivote is on, or there are no other votes
+      const { error: insertError } = await client.from("pollvotes").insert({
+        poll_id: pollID,
+        polloption_id: optionID,
+        user_id: userID,
+      });
+      if (insertError) {
+        console.error("Error inserting new vote record", insertError);
+        return false;
+      }
+      return true;
     }
   }
-
-  return true;
 };
 
 export const createPollOption = async (

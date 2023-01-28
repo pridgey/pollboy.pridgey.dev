@@ -73,8 +73,8 @@ h4 {
 
 /* Main text of the option */
 .optiontitle {
-  font-size: 3rem;
-  font-weight: bold;
+  font-size: 4rem;
+  font-weight: normal;
   grid-area: title;
   word-break: break-word;
 }
@@ -123,7 +123,7 @@ h4 {
 @media (max-width: 480px) {
   /* Main text of the option */
   .optiontitle {
-    font-size: 2.5rem;
+    font-size: 3.5rem;
   }
 
   /* Description text for the otpion */

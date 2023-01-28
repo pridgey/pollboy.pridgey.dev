@@ -1,0 +1,80 @@
+.logincontainer {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr min-content;
+  gap: 32px 0px;
+  padding: 32px 0px;
+  align-items: center;
+  justify-items: center;
+  background-image: url("/ai-autumn-farmer.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+}
+
+.loginmodal {
+  padding: 24px;
+  border-radius: 32px;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 32px 0px;
+  justify-content: center;
+  align-items: center;
+  width: 400px;
+  top: 0px;
+}
+
+.loginform {
+  display: flex;
+  flex-direction: column;
+  gap: 32px 0px;
+  width: 100%;
+}
+
+.logintitle {
+  font-family: "Josefin Sans", sans-serif;
+  font-weight: bold;
+  font-size: 40px;
+  user-select: none;
+}
+
+.pollboytitle {
+  font-family: "Italiana", serif;
+  font-size: 96px;
+  user-select: none;
+  margin: 0px;
+}
+
+.loginerror {
+  font-size: 20px;
+  color: var(--color-red);
+  width: 100%;
+  text-align: center;
+}
+
+.loginlink {
+  font-size: 20px;
+  color: var(--color-orange);
+  font-weight: bold;
+}
+
+.logintext {
+  font-size: 20px;
+  margin: 0px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .logincontainer {
+    justify-content: space-around;
+  }
+
+  .loginmodal {
+    width: 100%;
+  }
+}

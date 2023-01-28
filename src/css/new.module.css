@@ -1,0 +1,66 @@
+.container {
+  width: 100%;
+  height: 100%;
+  padding: 64px 20%;
+  background-image: url("/ai-autumn-leaves.png");
+  background-position: bottom right;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  gap: 16px 0px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-main);
+  margin: 0px;
+  font-weight: normal;
+}
+
+.form {
+  display: grid;
+  grid-template:
+    "label label expiry" min-content
+    "desc desc desc" min-content
+    "options multi ." min-content
+    "button button button" min-content / 1fr 1fr 1fr;
+  gap: 24px 24px;
+  margin-top: 2rem;
+}
+
+.title {
+  font-size: 8rem;
+}
+
+.subtitle {
+  font-size: 3rem;
+}
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .container {
+    padding: 5rem 3rem;
+    background-image: unset;
+    height: unset;
+    margin-bottom: 3rem;
+  }
+
+  .title {
+    font-size: 6rem;
+  }
+
+  .subtitle {
+    font-size: 3rem;
+  }
+
+  .form {
+    grid-template:
+      "label label" min-content
+      "expiry expiry" min-content
+      "desc desc" min-content
+      "options multi" min-content
+      "button button" min-content / 1fr 1fr;
+    margin-bottom: 2rem;
+  }
+}

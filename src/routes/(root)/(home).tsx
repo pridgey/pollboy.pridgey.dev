@@ -32,7 +32,6 @@ export default function Home() {
       <Switch>
         <Match when={data()?.userPolls?.length}>
           <h1 class={styles.poll_title}>Pollboy</h1>
-          <h2 class={styles.section}>Polls You've Made or Voted In</h2>
           <div class={styles.pollbox}>
             <For each={data()?.userPolls}>
               {(poll) => <PollCard Poll={poll} />}

@@ -12,9 +12,8 @@
 }
 
 .pollbox {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 }
 
@@ -56,8 +55,14 @@ h3 {
 /* Mobile Sizing */
 @media (max-width: 480px) {
   .container {
-    padding: 64px 0px;
+    padding: 2rem;
     background-image: unset;
+    height: unset;
+    margin-bottom: 5rem;
+  }
+
+  .pollbox {
+    grid-template-columns: 1fr;
   }
 
   .not_found {

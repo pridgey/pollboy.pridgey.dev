@@ -53,6 +53,45 @@ const getDateInUTC = (date: Date) => {
   );
 };
 
+const pollToRenderedPoll = (
+  poll: PollRecord,
+  userID: string
+): RenderedPollProps => {
+  // Check if the poll has expired
+  let hasPollExpired = false;
+
+  if (poll.expire_at) {
+    const pollExpiration = new Date(poll.expire_at);
+
+    if (pollExpiration instanceof Date && !isNaN(pollExpiration.valueOf())) {
+      // This is a valid date!
+      const pollExpiryUTC = getDateInUTC(pollExpiration);
+      const today = getDateInUTC(new Date());
+      const dayInMs = 1000 * 3600 * 24;
+
+      if (
+        Math.floor((today.valueOf() - pollExpiryUTC.valueOf()) / dayInMs) > 0
+      ) {
+        // We have  passed the expiration date
+        hasPollExpired = true;
+      }
+    }
+  }
+
+  // Determine if this is poll owner
+  const isPollOwner = poll.user_id === userID;
+
+  // Determine if user can add options
+  const canUserAddOptions = isPollOwner || poll.public_can_add;
+
+  return {
+    ...poll,
+    hasPollExpired,
+    isPollOwner,
+    canUserAddOptions,
+  };
+};
+
 export const createPoll = async (request: Request, newData: PollRecord) => {
   // Gets the client, and userID
   const client = await getClient(request);
@@ -131,62 +170,53 @@ export const getUserPolls = async (request: Request) => {
     console.error("Error retrieving User's Polls:", { error });
   }
 
-  return data;
+  // Grab poll metadata
+  const pollsWithMetaData = data?.map((poll) =>
+    pollToRenderedPoll(poll, userID || "")
+  );
+
+  return pollsWithMetaData;
 };
 
 export const getPollBySlug = async (
   request: Request,
   slug: string
 ): Promise<RenderedPollProps | null> => {
+  // Get user and supabase client
   const client = await getClient(request);
   const userID = await getUserId(request);
 
+  // Grab poll data for this slug
   const { data, error } = await client.from("poll").select().eq("slug", slug);
 
   if (error) {
     console.error("Error retrieving specific Poll:", { error });
   }
 
+  // Grab first poll for easier access
   const currentPoll: PollRecord = data?.[0];
 
   if (!currentPoll) {
     return null;
   }
 
-  // Check if the poll has expired
-  let hasPollExpired = false;
-
-  if (currentPoll.expire_at) {
-    const pollExpiration = new Date(currentPoll.expire_at);
-
-    if (pollExpiration instanceof Date && !isNaN(pollExpiration.valueOf())) {
-      // This is a valid date!
-      const pollExpiryUTC = getDateInUTC(pollExpiration);
-      const today = getDateInUTC(new Date());
-      const dayInMs = 1000 * 3600 * 24;
-
-      if (
-        Math.floor((today.valueOf() - pollExpiryUTC.valueOf()) / dayInMs) > 0
-      ) {
-        // We have  passed the expiration date
-        hasPollExpired = true;
-      }
-    }
-  }
-
+  // This poll's ID, for easier access
   const currentPollID = currentPoll?.id;
 
+  // Collect the options for this poll
   const getPollOptions = client
     .from("polloptions")
     .select()
     .eq("poll_id", currentPollID);
 
+  // Collect the votes for this poll
   const getUserVotes = client
     .from("pollvotes")
     .select()
     .eq("user_id", userID)
     .eq("poll_id", currentPollID);
 
+  // Run options and votes query at once
   const [
     { data: options, error: optionerror },
     { data: optionVotes, error: votesError },
@@ -200,14 +230,11 @@ export const getPollBySlug = async (
     console.error("Error retrieving User Votes:", { votesError });
   }
 
-  // Determines if this user created this poll
-  const isPollOwner = currentPoll?.user_id === userID;
-
-  // Determines if this user can add options
-  const canUserAddOptions = isPollOwner || currentPoll?.public_can_add;
+  // Get the metadata for the poll
+  const pollWithMeta = pollToRenderedPoll(currentPoll, userID || "");
 
   return {
-    ...data?.[0],
+    ...pollWithMeta,
     options: options?.map((opt) => {
       // Determines if this user created this Poll Option
       const isOptionOwner = opt.user_id === userID;
@@ -215,12 +242,9 @@ export const getPollBySlug = async (
       return {
         ...opt,
         user_voted: optionVotes?.some((vote) => vote.polloption_id === opt.id),
-        can_modify: isPollOwner || isOptionOwner,
+        can_modify: pollWithMeta.isPollOwner || isOptionOwner,
       };
     }),
-    canUserAddOptions,
-    isPollOwner,
-    hasPollExpired,
   };
 };
 

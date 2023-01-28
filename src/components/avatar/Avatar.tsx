@@ -56,6 +56,17 @@ export const Avatar = (props: AvatarProps) => {
               Icon: "",
             },
             {
+              Label: "Buy Me A Pizza Slice?",
+              Icon: "🍕",
+              OnClick: () => {
+                window.open(
+                  "https://www.buymeacoffee.com/pridgey",
+                  "_blank",
+                  "noopener,noreferrer"
+                );
+              },
+            },
+            {
               Label: "Logout",
               OnClick: () => {
                 setOptionsOpen(false);

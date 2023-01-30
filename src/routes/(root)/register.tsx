@@ -1,7 +1,11 @@
 import { Show } from "solid-js";
 import { useParams, useRouteData } from "solid-start";
 import { FormError } from "solid-start/data";
-import { createServerAction$, createServerData$ } from "solid-start/server";
+import {
+  createServerAction$,
+  createServerData$,
+  redirect,
+} from "solid-start/server";
 import { createUserSession, register } from "~/db/session";
 import styles from "~/css/login.module.css";
 import { Button, Input } from "~/components";
@@ -94,11 +98,7 @@ export default function Register() {
       });
     }
 
-    return createUserSession(
-      user?.user?.id || "",
-      user?.session?.access_token || "",
-      "/confirm"
-    );
+    return redirect("/confirm");
   });
 
   return (
@@ -137,7 +137,9 @@ export default function Register() {
             Type="password"
             Error={loggingIn.error?.fieldErrors?.password}
           />
-          <Button Type="submit">{data() ? "Register" : ""}</Button>
+          <Button Disabled={loggingIn.pending} Type="submit">
+            {data() ? "Register" : ""}
+          </Button>
         </Form>
       </div>
       <h2 class={styles.pollboytitle}>Pollboy</h2>

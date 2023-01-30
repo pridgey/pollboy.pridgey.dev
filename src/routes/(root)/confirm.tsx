@@ -4,7 +4,7 @@ export default function Confirm() {
   return (
     <div class={styles.logincontainer}>
       <div class={styles.loginmodal}>
-        <h1 class={styles.logintitle}>Excellent</h1>
+        <h1 class={styles.logintitle}>Welcome!</h1>
         <h2 class={styles.logintext}>
           Before you can login to Pollboy you will need to confirm your email
         </h2>

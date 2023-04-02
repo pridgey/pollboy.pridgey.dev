@@ -184,5 +184,7 @@ export async function createUserSession(
 }
 
 export const triggerPasswordReset = async (email: string, redirect: string) => {
-  client.auth.resetPasswordForEmail(email, { redirectTo: redirect });
+  const redirectTo =
+    import.meta.env.VITE_SUPABASE_URL || "no_url_found" + redirect;
+  client.auth.resetPasswordForEmail(email, { redirectTo });
 };

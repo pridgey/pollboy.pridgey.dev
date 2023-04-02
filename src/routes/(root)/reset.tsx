@@ -22,10 +22,6 @@ const validateEmail = (email: unknown) => {
 const Reset = () => {
   const [params] = useSearchParams();
 
-  let currentURL = "";
-
-  onMount(() => (currentURL = window.location.href));
-
   const [submittingForm, { Form }] = createServerAction$(
     async (form: FormData) => {
       // Get all the data from the form
@@ -47,7 +43,7 @@ const Reset = () => {
       }
 
       // Send reset password to supabase
-      triggerPasswordReset(email, `${currentURL}/reset`);
+      triggerPasswordReset(email, "/reset");
     }
   );
 

@@ -44,6 +44,8 @@ export default function Login() {
   const data = useRouteData<typeof routeData>();
   const params = useParams();
 
+  let emailInput: HTMLInputElement | undefined;
+
   const [loggingIn, { Form }] = createServerAction$(async (form: FormData) => {
     // Get all the data from the form
     const email = form.get("email");
@@ -104,6 +106,7 @@ export default function Login() {
           </Show>
           <Input
             Label="Email"
+            ref={emailInput}
             Name="email"
             Placeholder="person@place.biz"
             Type="text"
@@ -120,6 +123,12 @@ export default function Login() {
         </Form>
         <A href="/register" class={styles.loginlink}>
           register
+        </A>
+        <A
+          href={`/reset?email=${emailInput?.value || ""}`}
+          class={styles.loginlink}
+        >
+          reset password
         </A>
       </div>
       <h2 class={styles.pollboytitle}>Pollboy</h2>

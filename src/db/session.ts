@@ -182,3 +182,7 @@ export async function createUserSession(
     },
   });
 }
+
+export const triggerPasswordReset = async (email: string, redirect: string) => {
+  client.auth.resetPasswordForEmail(email, { redirectTo: redirect });
+};

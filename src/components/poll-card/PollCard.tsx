@@ -9,7 +9,14 @@ export type PollCardProps = {
 
 export const PollCard = (props: PollCardProps) => {
   return (
-    <A href={`/poll/${props.Poll.slug}`} class={styles.container}>
+    <A
+      href={`/poll/${props.Poll.slug}`}
+      classList={{
+        [styles.container]: true,
+        [styles.expired]: props.Poll.hasPollExpired,
+      }}
+      class={styles.container}
+    >
       <div class={styles.titles}>
         <h1 class={styles.cardtitle}>{props.Poll.poll_name}</h1>
         <h2 class={styles.cardsubtitle}>{props.Poll.poll_desc}</h2>

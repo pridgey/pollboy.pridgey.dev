@@ -19,8 +19,20 @@ export function routeData() {
     }
 
     const userPolls = await getUserPolls(request);
+    // reorder polls
+    const sortedActivePolls =
+      userPolls
+        ?.filter((poll) => !poll.hasPollExpired)
+        .sort((a, b) => {
+          const a_created = a.created_at || "";
+          const b_created = b.created_at || "";
+          if (a_created > b_created) return 1;
+          if (a_created < b_created) return -1;
+          return 0;
+        }) ?? [];
+    const expiredPolls = userPolls?.filter((poll) => poll.hasPollExpired) ?? [];
 
-    return { user, userPolls };
+    return { user, userPolls: [...sortedActivePolls, ...expiredPolls] };
   });
 }
 

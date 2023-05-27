@@ -88,25 +88,27 @@ export const PollOptionsModal = (props: PollOptionModalProps) => {
         <div class={styles.modal}>
           <Form class={styles.form}>
             <h1 class={styles.title}>{props.ID ? "Modify" : "New"} Option</h1>
-            <input type="hidden" name="option_id" value={props.ID || -1} />
-            <input type="hidden" name="poll_id" value={props.PollID} />
-            <Input
-              Autocomplete="off"
-              DefaultValue={props.OptionName}
-              Type="text"
-              Name="option_name"
-              Label="Option Title"
-              Error={creatingOption?.error?.fieldErrors?.option_name?.error}
-              Placeholder="The Option Title"
-            />
-            <Input
-              Autocomplete="off"
-              DefaultValue={props.OptionDescription}
-              Type="text"
-              Name="option_desc"
-              Label="Option Description"
-              Placeholder="Some Flavor Text"
-            />
+            <div class={styles.form_container}>
+              <input type="hidden" name="option_id" value={props.ID || -1} />
+              <input type="hidden" name="poll_id" value={props.PollID} />
+              <Input
+                Autocomplete="off"
+                DefaultValue={props.OptionName}
+                Type="text"
+                Name="option_name"
+                Label="Option Title"
+                Error={creatingOption?.error?.fieldErrors?.option_name?.error}
+                Placeholder="The Option Title"
+              />
+              <Input
+                Autocomplete="off"
+                DefaultValue={props.OptionDescription}
+                Type="text"
+                Name="option_desc"
+                Label="Option Description"
+                Placeholder="Some Flavor Text"
+              />
+            </div>
             <ButtonBar Split="right-heavy">
               <Button
                 Type="button"

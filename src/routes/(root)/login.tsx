@@ -1,5 +1,5 @@
 import { Show } from "solid-js";
-import { useParams, useRouteData, A } from "solid-start";
+import { useSearchParams, useRouteData, A } from "solid-start";
 import { FormError } from "solid-start/data";
 import { createServerAction$, createServerData$ } from "solid-start/server";
 import { createUserSession, login } from "~/db/session";
@@ -42,7 +42,7 @@ export function routeData() {
 
 export default function Login() {
   const data = useRouteData<typeof routeData>();
-  const params = useParams();
+  const [search] = useSearchParams();
 
   const [loggingIn, { Form }] = createServerAction$(async (form: FormData) => {
     // Get all the data from the form
@@ -95,7 +95,7 @@ export default function Login() {
           <input
             type="hidden"
             name="redirectTo"
-            value={params.redirectTo ?? "/"}
+            value={search.continue ?? "/"}
           />
           <Show when={loggingIn.error}>
             <span role="alert" class={styles.loginerror} id="error-message">

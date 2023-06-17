@@ -5,6 +5,7 @@ import { InfoTip } from "../infotip";
 export type InputProps = {
   Autocomplete?: string | "off";
   DefaultValue?: string;
+  Disabled?: boolean;
   Error?: string;
   Label: string;
   Placeholder?: string;
@@ -23,6 +24,7 @@ export const Input = (props: InputProps) => {
         </Show>
       </div>
       <input
+        disabled={props.Disabled}
         autocomplete={props.Autocomplete}
         id={`${props.Name}-input`}
         type={props.Type}

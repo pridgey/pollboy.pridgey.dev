@@ -103,6 +103,7 @@ export default function Login() {
             </span>
           </Show>
           <Input
+            Disabled={loggingIn.pending}
             Label="Email"
             Name="email"
             Placeholder="person@place.biz"
@@ -110,13 +111,16 @@ export default function Login() {
             Error={loggingIn.error?.fieldErrors?.email}
           />
           <Input
+            Disabled={loggingIn.pending}
             Label="Password"
             Name="password"
             Placeholder="maybe not 'password'"
             Type="password"
             Error={loggingIn.error?.fieldErrors?.password}
           />
-          <Button Type="submit">{data() ? "Login" : ""}</Button>
+          <Button Type="submit">
+            {loggingIn.pending ? "Logging in..." : "Login"}
+          </Button>
         </Form>
         <A href="/register" class={styles.loginlink}>
           register

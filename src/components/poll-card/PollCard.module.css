@@ -14,6 +14,7 @@
 .container:hover,
 .container:focus {
   background-color: rgb(240, 240, 240);
+  border: 1px solid black;
 }
 
 .expired {

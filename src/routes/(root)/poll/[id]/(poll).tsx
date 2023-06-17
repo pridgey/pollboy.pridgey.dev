@@ -37,7 +37,13 @@ export function routeData({ params }: RouteDataArgs) {
       const user = await getUser(request);
 
       if (!user) {
-        throw redirect("/login");
+        let loginRoute = "/login";
+        if (request.url.includes("/poll")) {
+          const url = new URL(request.url);
+          loginRoute += `?continue=${url.pathname}`;
+        }
+
+        throw redirect(loginRoute);
       }
 
       const poll = await getPollBySlug(request, key[0]);
@@ -55,6 +61,8 @@ export function routeData({ params }: RouteDataArgs) {
     }
   );
 }
+
+// poll/61-cowardly-horrendous-insouciant-playground
 
 type DeletePollActionArgs = {
   ID: number;

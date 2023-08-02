@@ -66,7 +66,9 @@ export const PollCard = (props: PollCardProps) => {
             </Match>
           </Switch>
           <span>
-            {props.Poll.isPollOwner ? "Created By You" : "You Voted In This"}
+            {props.Poll.isPollOwner
+              ? "Created By You"
+              : "You Participated In This"}
           </span>
         </div>
         <div

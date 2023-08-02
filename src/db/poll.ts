@@ -156,9 +156,25 @@ export const getUserPolls = async (request: Request) => {
     console.error("Error retrieving Poll IDs User has Voted In", { voteError });
   }
 
-  const votedPollIds: number[] = Array.from(
-    new Set(votedPolls?.map((id) => Number(id.poll_id)) || [])
-  );
+  // Grab Poll IDs of any Poll a user has submitted options for
+  const { data: createdOptions, error: optionError } = await client
+    .from("polloptions")
+    .select("poll_id")
+    .eq("user_id", userID);
+
+  if (optionError) {
+    console.error(
+      "Error retrieving Poll IDs that user has created options for",
+      { optionError }
+    );
+  }
+
+  const combinedPollIds: number[] = [
+    ...(votedPolls?.map((id) => Number(id.poll_id)) || []),
+    ...(createdOptions?.map((op) => Number(op.poll_id)) || []),
+  ];
+
+  const votedPollIds: number[] = Array.from(new Set(combinedPollIds));
 
   // Grab Poll data for any poll the user has made, or has participated in
   const { data, error } = await client

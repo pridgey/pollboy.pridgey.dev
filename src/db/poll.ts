@@ -479,19 +479,50 @@ export const getPollResults = async (request: Request, pollID: number) => {
     });
   }
 
-  const rankedOptions = options?.map((opt) => {
-    // count votes for this option
-    const voteCount =
-      votes?.filter((v) => v.polloption_id === opt.id).length || 0;
+  const rankedOptions =
+    options?.map((opt) => {
+      // count votes for this option
+      const voteCount =
+        votes?.filter((v) => v.polloption_id === opt.id).length || 0;
 
-    return {
-      Name: String(opt.option_name),
-      Votes: voteCount,
-    };
-  });
+      return {
+        Name: String(opt.option_name),
+        Votes: voteCount,
+      };
+    }) ?? [];
 
   // Sort by votes
   rankedOptions?.sort((a, b) => b.Votes - a.Votes);
 
-  return rankedOptions;
+  // Add ranking to sorted votes
+  type CandidateWithRanking = {
+    Name: string;
+    Votes: number;
+    Ranking: number;
+  };
+
+  const optionsWithRanks: CandidateWithRanking[] = [];
+  // Track the last candidate's votes and ranking to handle ties
+  let lastVotes = -1;
+  let lastRanking = 0;
+  let skippedRanks = 0; // To account for ties
+
+  // Assign rankings with tie consideration
+  rankedOptions.forEach((candidate, index) => {
+    if (candidate.Votes === lastVotes) {
+      // This candidate is tied with the previous candidate
+      optionsWithRanks.push({ ...candidate, Ranking: lastRanking });
+      skippedRanks++; // We have an additional tie, so skip the next rank
+    } else {
+      // This candidate is not tied, so give the next appropriate ranking
+      const currentRanking = lastRanking + 1;
+      optionsWithRanks.push({ ...candidate, Ranking: currentRanking });
+      // Update the last votes and ranking, reset skipped ranks
+      lastVotes = candidate.Votes;
+      lastRanking = currentRanking;
+      skippedRanks = 0;
+    }
+  });
+
+  return optionsWithRanks;
 };

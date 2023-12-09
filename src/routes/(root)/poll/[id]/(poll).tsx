@@ -30,7 +30,9 @@ import {
   PollOptionProps,
 } from "~/db/poll";
 import { getUser } from "~/db/session";
+import { useSearchParams } from "solid-start";
 
+// Query for the Poll data and store in route data
 export function routeData({ params }: RouteDataArgs) {
   return createServerData$(
     async (key, { request }) => {
@@ -62,16 +64,20 @@ export function routeData({ params }: RouteDataArgs) {
   );
 }
 
-// poll/61-cowardly-horrendous-insouciant-playground
-
 type DeletePollActionArgs = {
   ID: number;
 };
 
+// The Poll page
 export default function Poll() {
   let pollMenuRef: HTMLButtonElement | undefined;
   const pollData = useRouteData<typeof routeData>();
   const navigate = useNavigate();
+
+  // If search params has "so" then open the stats open
+  const [params] = useSearchParams();
+
+  console.log("Params:", params.so);
 
   // Server action to handle deleting a poll
   const [deleting, handleDeletePoll] = createServerAction$(
@@ -154,6 +160,7 @@ export default function Poll() {
       Icon: "",
       OnClick: () => {
         setShowStats(true);
+        navigate("?so=true", { replace: true });
         setShowPollMenu(false);
       },
     },
@@ -162,7 +169,7 @@ export default function Poll() {
   createEffect(() => {
     if (window.innerWidth < 480) {
       setIsMobile(true);
-      setShowStats(false);
+      setShowStats(!!params.so && isMobile());
     }
   });
 
@@ -184,7 +191,7 @@ export default function Poll() {
   const [showPollMenu, setShowPollMenu] = createSignal(false);
   const [showDeletePoll, setShowDeletePoll] = createSignal(false);
   const [showQR, setShowQR] = createSignal(false);
-  const [showStats, setShowStats] = createSignal(false);
+  const [showStats, setShowStats] = createSignal(!!params.so && isMobile());
 
   return (
     <div
@@ -253,12 +260,14 @@ export default function Poll() {
                 );
               }}
             </For>
-            <Show when={pollData()?.poll?.canUserAddOptions}>
+          </div>
+          <Show when={pollData()?.poll?.canUserAddOptions}>
+            <span style={{ "grid-area": "button" }}>
               <Button Type="button" OnClick={() => setShowNewOptionModal(true)}>
                 Add Option
               </Button>
-            </Show>
-          </div>
+            </span>
+          </Show>
           <Show when={!isMobile()}>
             <div class={styles.results}>
               <PollResults

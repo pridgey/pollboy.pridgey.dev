@@ -1,5 +1,5 @@
 .container {
-  position: fixed;
+  position: absolute;
   top: 0px;
   left: 0px;
   right: 0px;
@@ -9,7 +9,7 @@
   gap: 8px 0px;
   align-items: center;
   justify-content: center;
-  background-image: url("/ai-autumn-wreath.png");
+  background-image: url("/ai-autumn-wreath.svg");
   background-position: center;
   background-repeat: no-repeat;
 }

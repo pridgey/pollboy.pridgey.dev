@@ -4,7 +4,7 @@ import { Show } from "solid-js";
 export type RankingProps = {
   Index: number;
   Name: string;
-  Place?: number;
+  Rank: number;
   VoteCount: number;
 };
 
@@ -12,12 +12,12 @@ export const Ranking = (props: RankingProps) => {
   return (
     <div class={styles.container} style={{ "--delay": `${props.Index / 25}s` }}>
       <div class={styles.trophy}>
-        <Show when={props.Place}>
+        <Show when={props.Rank <= 3}>
           <svg
             classList={{
-              [styles.firstPlace]: props.Place === 1,
-              [styles.secondPlace]: props.Place === 2,
-              [styles.thirdPlace]: props.Place === 3,
+              [styles.firstPlace]: props.Rank === 1,
+              [styles.secondPlace]: props.Rank === 2,
+              [styles.thirdPlace]: props.Rank === 3,
             }}
             stroke="currentColor"
             fill="currentColor"

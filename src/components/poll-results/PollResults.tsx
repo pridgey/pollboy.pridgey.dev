@@ -11,6 +11,7 @@ import {
 export type OptionVotes = {
   Name: string;
   Votes: number;
+  Ranking: number;
 };
 
 export type PollResultsProps = {
@@ -34,32 +35,34 @@ export const PollResults = (props: PollResultsProps) => {
   });
 
   return (
-    <div class={styles.container}>
-      <ul class={styles.list}>
-        <TransitionGroup
-          enter={animateEnter()}
-          exit={animateExit()}
-          move={animateMove()}
-        >
-          <For each={results()}>
-            {(result, index) => (
-              <li>
-                <Ranking
-                  Index={index() + 1}
-                  Place={index() < 3 ? index() + 1 : undefined}
-                  Name={result.Name}
-                  VoteCount={result.Votes}
-                />
-              </li>
-            )}
-          </For>
-        </TransitionGroup>
-      </ul>
+    <>
+      <div class={styles.container}>
+        <ul class={styles.list}>
+          <TransitionGroup
+            enter={animateEnter()}
+            exit={animateExit()}
+            move={animateMove()}
+          >
+            <For each={results()}>
+              {(result, index) => (
+                <li>
+                  <Ranking
+                    Index={index() + 1}
+                    Name={result.Name}
+                    Rank={result.Ranking}
+                    VoteCount={result.Votes}
+                  />
+                </li>
+              )}
+            </For>
+          </TransitionGroup>
+        </ul>
+      </div>
       <Show when={isMobile() && !props.PollExpired}>
         <Button Type="button" OnClick={() => props.OnClose()}>
           Close Results
         </Button>
       </Show>
-    </div>
+    </>
   );
 };

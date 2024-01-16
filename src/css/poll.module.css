@@ -106,6 +106,7 @@ h3 {
 
   .polltitle {
     font-size: 6rem;
+    word-break: break-word;
   }
 
   .pollsubtitle {

@@ -1,13 +1,10 @@
 import { useAction, useSearchParams, useSubmission } from "@solidjs/router";
 import { createSignal, Show } from "solid-js";
 import { Button } from "~/components/Button";
-import { Divider } from "~/components/Divider";
 import { Flex } from "~/components/Flex";
 import { Input } from "~/components/Input";
-import { Modal } from "~/components/Modal";
 import { Text } from "~/components/Text";
 import { forgotPassword, login } from "~/lib/auth";
-import { AccountInfoModal } from "../AccountInfoModal";
 
 /**
  * Composition to display a login card.
@@ -23,8 +20,6 @@ export const LoginCard = () => {
   const [username, setUsername] = createSignal("");
   // Check search params for reset flag informing user their password was reset
   const [searchParams, setSearchParams] = useSearchParams();
-  // State to show the info modal
-  const [showInfoModel, setShowInfoModel] = createSignal(false);
 
   return (
     <>
@@ -100,20 +95,8 @@ export const LoginCard = () => {
               Login
             </Button>
           </Flex>
-          <Divider />
-          <Button
-            FontSize="small"
-            OnClick={() => setShowInfoModel(true)}
-            Padding="small"
-            Variant="text"
-          >
-            Why do I need an account?
-          </Button>
         </Flex>
       </form>
-      <Show when={showInfoModel()}>
-        <AccountInfoModal OnClose={() => setShowInfoModel(false)} />
-      </Show>
     </>
   );
 };

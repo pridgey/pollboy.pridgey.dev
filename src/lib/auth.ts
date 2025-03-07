@@ -8,9 +8,7 @@ import PocketBase from "pocketbase";
 export const getSession = () => {
   "use server";
   return useSession({
-    password:
-      process.env.SESSION_SECRET ??
-      "i4536a45mth45e645m456eg45a45s45upe54r45c45ool45s4ec678r78e67t45t4h67a78tever87y56on45edoes434nt7kn6o45wand4s6h56oul4dn45ev65e56rre56a5l43ly3kn4o5w6but6ia67m67only56t56h4e4defa4u4l56t",
+    password: process.env.SESSION_SECRET ?? "unknown session secret",
   });
 };
 
@@ -184,7 +182,7 @@ export const forgotPassword = action(async (username: string) => {
   "use server";
   console.log("Debug forgot password", { username });
   if (!username) {
-    throw new Error("Username is required");
+    throw new Error("Email is required");
   }
 
   const client = await getPocketBase();

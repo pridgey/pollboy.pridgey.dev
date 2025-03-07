@@ -32,7 +32,7 @@ export const Navbar = () => {
           FontSize="extra-large"
           FontWeight="semibold"
         >
-          Chatplats
+          Pollboy
         </Text>
       </A>
       <Show when={user()?.email}>

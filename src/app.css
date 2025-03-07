@@ -1,21 +1,22 @@
 @font-face {
-  font-family: "Liter";
-  src: url("/fonts/Liter/Liter-regular.ttf") format("truetype");
+  font-family: "Montserrat";
+  src: url("/fonts/Montserrat/Montserrat-VariableFont_wght.ttf")
+    format("truetype");
 }
 
 :root,
 .light-override {
   /* Color Pallete */
-  --color-primary: #1a1a19;
+  --color-primary: #7d59ff;
   --color-secondary: #516e99;
   --color-tertiary: #885fba;
   --color-success: #29751e;
   --color-error: #bd1e44;
-  --color-gray: #858080;
+  --color-gray: #7a7878;
   --color-fullwhite: #ffffff;
-  --color-fullblack: #252525;
+  --color-fullblack: #080808;
   --color-white: #fafafa;
-  --color-black: #030303;
+  --color-black: #0f0f0f;
   --color-transparent-white: rgba(255, 255, 255, 0.6);
   --color-transparent-black: rgba(0, 0, 0, 0.6);
   --color-backdrop: var(--color-transparent-black);
@@ -30,18 +31,19 @@
   --color-lighten: 120%;
   --color-lighten-2: 130%;
   /* Border-Radii (handled by rem) */
-  --border-radius: 1rem;
+  --border-radius: 0.75rem;
   /* Box-Shadow */
   --shadow-color: rgba(0, 0, 0, 0.25);
   --box-shadow-small: 0px 3px 3px 0px var(--shadow-color);
   --box-shadow-medium: 0px 3px 8px 0px var(--shadow-color);
   /* Spacing (handled by rem) */
-  --spacing-mini: 0.75rem;
+  --spacing-mini: 0.5rem;
   --spacing-small: 1rem;
-  --spacing-medium: 1.5rem;
+  --spacing-medium: 2rem;
   --spacing-large: 4rem;
+  --spacing-extra-large: 8rem;
   /* Font Family */
-  --font-family: "Liter", Gordita, Roboto, Oxygen, Ubuntu, Cantarell,
+  --font-family: "Montserrat", Gordita, Roboto, Oxygen, Ubuntu, Cantarell,
     "Open Sans", "Helvetica Neue", sans-serif;
   /* Font Sizes (handled by rem) */
   font-size: 8px;
@@ -61,6 +63,22 @@
   --line-height-small: 1.25em;
   --line-height-medium: 1.5em;
   --line-height-large: 1.75em;
+}
+
+.dark-override {
+  --color-background: var(--color-black);
+  --color-foreground: var(--color-white);
+  --color-fullbackground: var(--color-fullblack);
+  --color-fullforeground: var(--color-fullwhite);
+  --color-backdrop: var(--color-transparent-white);
+  --color-backdrop-invert: var(--color-transparent-black);
+  --color-gray: #625a59;
+  --color-text: var(--color-white);
+  --color-darken: 120%;
+  --color-darken-2: 130%;
+  --color-lighten: 80%;
+  --color-lighten-2: 70%;
+  --shadow-color: rgba(0, 0, 0, 0.75);
 }
 
 /* Dark Theme */

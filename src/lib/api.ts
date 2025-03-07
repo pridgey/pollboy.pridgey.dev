@@ -1,126 +1,53 @@
 import { action, query, reload } from "@solidjs/router";
 import { getPocketBase, getUser } from "./auth";
-import { ForumRecord } from "~/types/pocketbase";
+import { PollRecord } from "~/types/pocketbase";
 import { generateSlug } from "~/utilities/generateSlug";
 
-// #region Forum Actions
+// #region Poll Actions
 
 /**
- * Create Forum
- * Action to create a new forum
+ * Create Poll
+ * Action to create a new poll
  */
-export const createForum = async (forum: ForumRecord) => {
+export const createPoll = async (poll: PollRecord) => {
   "use server";
   try {
     const client = await getPocketBase();
     const user = await getUser();
 
-    const createdForum = await client.collection<ForumRecord>("forum").create({
-      ...forum,
-      user: user?.id,
+    const createdPoll = await client.collection<PollRecord>("poll").create({
+      ...poll,
+      user: user?.id ?? "unknown user",
     });
 
-    return createdForum;
+    return createdPoll;
   } catch (error) {
     console.error(error);
   }
 };
-export const createForumAction = action(createForum);
+export const createForumAction = action(createPoll);
 
 /**
- * Get Default Forum
- * Action to get the default forum
+ * Get relevant polls
+ * Action to get relevant polls for a user - polls the user has made, or has voted in
  */
-export const getDefaultForum = query(async () => {
+export const getRelevantPolls = query(async () => {
   "use server";
   const client = await getPocketBase();
   const user = await getUser();
 
+  // Pocketbase API Rules will automatically only return polls that the user has created, or has a vote record for
   try {
-    const mostRecentForum = await client
-      .collection<ForumRecord>("forum")
-      .getFirstListItem(`user = "${user?.id}"`, { sort: "-created" });
+    const allPolls = await client.collection<PollRecord>("poll").getFullList();
 
-    console.log("mostRecentForum", mostRecentForum);
+    return allPolls;
+  } catch (err) {
+    console.error("Error getting polls:", err);
 
-    return mostRecentForum;
-  } catch (error) {
-    console.log("Error selecting default forum, creating new forum", error);
-    const newSlug = generateSlug();
-    // Create forum
-    const newForum = await createForum({
-      name: "My Forum",
-      open: false,
-      description: "Welcome to your new feedback forum!",
-      slug: newSlug,
-      user: "",
+    throw new Error("Something went wrong during listing polls", {
+      cause: err,
     });
-    return newForum;
   }
-}, "getDefaultForum");
+}, "getRelevantPolls");
 
-/**
- * Regenerate Forum Slug
- * Action to regenerate the forum slug
- */
-export const regenerateForumSlug = action(
-  async (forumId: ForumRecord["id"]) => {
-    "use server";
-    const client = await getPocketBase();
-
-    if (forumId) {
-      const newSlug = generateSlug();
-
-      await client.collection<ForumRecord>("forum").update(forumId, {
-        slug: newSlug,
-      });
-    }
-  }
-);
-
-/**
- * Retrieve Banner Url
- * Query to generate the image url for the banner of a specified forum
- */
-export const retrieveBannerUrl = query(
-  async (forumId: string, fileName: string) => {
-    "use server";
-    console.log("Retrieve Banner URL", { forumId, fileName });
-    const client = await getPocketBase();
-
-    const forumRecord = await client
-      .collection<ForumRecord>("forum")
-      .getOne(forumId);
-
-    const bannerUrl = await client.files.getURL(forumRecord, fileName);
-
-    console.log("Retrieved Banner URL", { bannerUrl });
-    return bannerUrl;
-  },
-  "retrieveBannerUrl"
-);
-
-/**
- * Upload Forum Banner
- * Action to upload a banner to a forum
- */
-export const uploadForumBanner = action(
-  async (forumId: ForumRecord["id"], file: File) => {
-    "use server";
-    console.log("Uploading Forum Banner", { forumId, file });
-    const client = await getPocketBase();
-
-    if (forumId && file) {
-      await client.collection<ForumRecord>("forum").update(forumId, {
-        banner: file,
-      });
-      console.log("Forum record updated with new banner file");
-    }
-
-    console.log("Completed Upload Forum Banner");
-
-    return reload();
-  }
-);
-
-// #endregion Forum Actions
+// #endregion Poll Actions

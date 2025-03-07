@@ -1,12 +1,10 @@
 import { useSearchParams, useSubmission } from "@solidjs/router";
-import { createSignal, Show } from "solid-js";
+import { Show } from "solid-js";
 import { Button } from "~/components/Button";
-import { Divider } from "~/components/Divider";
 import { Flex } from "~/components/Flex";
 import { Input } from "~/components/Input";
 import { Text } from "~/components/Text";
 import { register } from "~/lib/auth";
-import { AccountInfoModal } from "../AccountInfoModal";
 
 /**
  * Composition to display a register card
@@ -14,8 +12,6 @@ import { AccountInfoModal } from "../AccountInfoModal";
 export const RegisterCard = () => {
   // Resource that holds the register submission state
   const registering = useSubmission(register);
-  // State to show the info modal
-  const [showInfoModel, setShowInfoModel] = createSignal(false);
   // Check search params for reset flag informing user their registration is set and needs to verify
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -81,20 +77,8 @@ export const RegisterCard = () => {
               Register
             </Button>
           </Flex>
-          <Divider />
-          <Button
-            FontSize="small"
-            OnClick={() => setShowInfoModel(true)}
-            Padding="small"
-            Variant="text"
-          >
-            Why do I need an account?
-          </Button>
         </Flex>
       </form>
-      <Show when={showInfoModel()}>
-        <AccountInfoModal OnClose={() => setShowInfoModel(false)} />
-      </Show>
     </>
   );
 };

@@ -1,0 +1,19 @@
+.layout {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  padding: 10vh 20vw;
+}
+
+.layout ul {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (max-width: 1000px) {
+  .layout {
+    padding: 10vh 2rem;
+  }
+}

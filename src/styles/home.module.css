@@ -1,0 +1,60 @@
+.container {
+  bottom: 0px;
+  display: flex;
+  flex-direction: column;
+  left: 0px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: fixed;
+  right: 0px;
+  top: 0px;
+}
+
+.landing_container {
+  background-image: url("/images/home_backdrop.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 80vh;
+  min-height: 80vh;
+  width: 100%;
+}
+
+.landing_content {
+  align-items: flex-start;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  height: 100%;
+  min-height: 0px;
+  padding: 20px;
+}
+
+.hero_container {
+  align-self: flex-end;
+  padding-bottom: 10%;
+  padding-left: 10%;
+}
+
+.login_container {
+  padding-right: 10%;
+  padding-top: 8%;
+  align-self: flex-start;
+  width: 800px;
+}
+
+.text_block {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+  justify-content: center;
+  padding: 10% 15%;
+  width: 100%;
+}
+
+.footer {
+  background-color: var(--color-foreground);
+  width: 100%;
+}

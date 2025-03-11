@@ -8,7 +8,7 @@
 .light-override {
   /* Color Pallete */
   --color-primary: #7d59ff;
-  --color-secondary: #516e99;
+  --color-secondary: #2f2932;
   --color-tertiary: #885fba;
   --color-success: #29751e;
   --color-error: #bd1e44;
@@ -32,6 +32,9 @@
   --color-lighten-2: 130%;
   /* Border-Radii (handled by rem) */
   --border-radius: 0.75rem;
+  --border-radius-large: 1rem;
+  --border-radius-huge: 2rem;
+  --border-radius-inset: 0.5rem;
   /* Box-Shadow */
   --shadow-color: rgba(0, 0, 0, 0.25);
   --box-shadow-small: 0px 3px 3px 0px var(--shadow-color);

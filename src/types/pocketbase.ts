@@ -1,3 +1,10 @@
+export type UserRecord = {
+  id: string;
+  email: string;
+  name: string;
+  created: Date;
+};
+
 export type PollRecord = {
   id?: string;
   poll_name: string;

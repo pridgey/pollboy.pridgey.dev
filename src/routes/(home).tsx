@@ -19,7 +19,7 @@ export default function Home() {
   const polls = createAsync(() => getRelevantPolls());
 
   return (
-    <main class={styles.container}>
+    <main>
       <h1>hej</h1>
       <For each={polls()}>{(poll) => <h2>{poll.poll_name}</h2>}</For>
     </main>

@@ -10,7 +10,6 @@ export default function Login(props: RouteSectionProps) {
     <section
       classList={{
         [styles.container]: true,
-        "dark-override": true,
       }}
       class={styles.container}
     >

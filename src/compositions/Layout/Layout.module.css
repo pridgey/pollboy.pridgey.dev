@@ -26,7 +26,10 @@
   height: 100%;
   border-top-left-radius: var(--border-radius-huge);
   border-top-right-radius: var(--border-radius-huge);
-  background: linear-gradient(180deg, #f1f0f2 0%, #d1cbcd 100%);
+  background: url("/images/login-background.png"),
+    linear-gradient(180deg, #f1f0f2 0%, #d1cbcd 100%);
+  background-position: bottom center;
+  background-repeat: no-repeat;
   box-sizing: border-box;
   overflow-y: auto;
   position: relative;

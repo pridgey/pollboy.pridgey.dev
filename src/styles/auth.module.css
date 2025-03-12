@@ -1,8 +1,4 @@
 .container {
-  background-image: url("/images/login-background.png");
-  background-size: contain;
-  background-position: bottom center;
-  background-repeat: no-repeat;
   height: 100%;
   padding: 10vh 30vw;
   width: 100%;

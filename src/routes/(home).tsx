@@ -1,11 +1,13 @@
 import { createAsync, type RouteDefinition } from "@solidjs/router";
-import { For } from "solid-js";
+import { For, Match, Switch } from "solid-js";
 import { Button } from "~/components/Button";
 import { Flex } from "~/components/Flex";
 import { Text } from "~/components/Text";
+import { PollCard } from "~/compositions/PollCard";
 import { getRelevantPolls } from "~/lib/api";
 import { getUser } from "~/lib/auth";
 import styles from "~/styles/home.module.css";
+import { UserRecord } from "~/types/pocketbase";
 
 export const route = {
   preload() {
@@ -19,9 +21,31 @@ export default function Home() {
   const polls = createAsync(() => getRelevantPolls());
 
   return (
-    <main>
-      <h1>hej</h1>
-      <For each={polls()}>{(poll) => <h2>{poll.poll_name}</h2>}</For>
-    </main>
+    <section class={styles.container}>
+      <Switch>
+        <Match when={polls()?.length}>
+          <h1 class={styles.poll_title}>Pollboy</h1>
+          <div class={styles.pollbox}>
+            <For each={polls()}>
+              {(poll) => (
+                <PollCard Poll={poll} User={user() as unknown as UserRecord} />
+              )}
+            </For>
+          </div>
+          <Button Href="new">Create a New Poll</Button>
+        </Match>
+        <Match when={!polls()?.length}>
+          <div class={styles.not_found}>
+            {/* <SVGPark /> */}
+            <h2 class={styles.poll_subtitle}>
+              On a breezy day, not a Poll was found...
+            </h2>
+            <Button Color="secondary" Href="new" Variant="text">
+              Create a New Poll
+            </Button>
+          </div>
+        </Match>
+      </Switch>
+    </section>
   );
 }

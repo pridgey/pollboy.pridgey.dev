@@ -121,6 +121,7 @@ export const register = action(async (formData: FormData) => {
   const email = String(formData.get("email"));
   const password = String(formData.get("password"));
   const confirm = String(formData.get("confirm"));
+  const username = String(formData.get("username"));
 
   if (!email) {
     throw new Error("email is required");
@@ -140,7 +141,12 @@ export const register = action(async (formData: FormData) => {
   try {
     const newUser = await client
       .collection("users")
-      .create({ email: email, password, passwordConfirm: confirm });
+      .create({
+        email: email,
+        password,
+        passwordConfirm: confirm,
+        name: username,
+      });
 
     await setUserInSession({
       userId: newUser?.record?.id,

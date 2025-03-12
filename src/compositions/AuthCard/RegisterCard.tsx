@@ -55,6 +55,7 @@ export const RegisterCard = () => {
             </Text>
           </Show>
           <Input Label="Email" Name="email" Placeholder="Email" />
+          <Input Label="Username" Name="username" Placeholder="Username" />
           <Input
             Label="Password"
             Name="password"

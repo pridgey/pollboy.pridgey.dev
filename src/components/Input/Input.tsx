@@ -22,6 +22,8 @@ export type InputProps = {
 export const Input = (props: InputProps) => {
   const [error, setError] = createSignal(props.Error);
 
+  console.log("Input default value", { defaultValue: props.DefaultValue });
+
   createEffect(() => {
     setError(props.Error);
   });
@@ -65,7 +67,9 @@ export const Input = (props: InputProps) => {
               height: "unset",
             }}
             value={props.DefaultValue}
-          />
+          >
+            {props.DefaultValue}
+          </TextField.TextArea>
         </Match>
         <Match when={!props.Multiline}>
           <TextField.Input
@@ -79,6 +83,7 @@ export const Input = (props: InputProps) => {
               })`,
             }}
             type={props.Type}
+            value={props.DefaultValue}
           />
         </Match>
       </Switch>

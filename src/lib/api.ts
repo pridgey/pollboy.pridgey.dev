@@ -50,4 +50,28 @@ export const getRelevantPolls = query(async () => {
   }
 }, "getRelevantPolls");
 
+/**
+ * Get a specified poll by id
+ * Query to get a single poll
+ */
+export const getPollById = query(async (pollId: string) => {
+  "use server";
+  const client = await getPocketBase();
+
+  console.log("Getting poll...", { pollId });
+
+  // Get poll
+  try {
+    const retrievedPoll = await client
+      .collection<PollRecord>("poll")
+      .getOne(pollId);
+
+    return retrievedPoll;
+  } catch (err) {
+    console.error("Error getting poll by id:", err);
+
+    return null;
+  }
+}, "getPollById");
+
 // #endregion Poll Actions

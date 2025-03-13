@@ -1,9 +1,11 @@
 import { createAsync, type RouteDefinition } from "@solidjs/router";
-import { For, Match, Switch } from "solid-js";
+import { createSignal, For, Match, Show, Switch } from "solid-js";
 import { Button } from "~/components/Button";
 import { Flex } from "~/components/Flex";
+import { Modal } from "~/components/Modal";
 import { Text } from "~/components/Text";
 import { PollCard } from "~/compositions/PollCard";
+import { PollForm } from "~/compositions/PollForm/PollForm";
 import { getRelevantPolls } from "~/lib/api";
 import { getUser } from "~/lib/auth";
 import styles from "~/styles/home.module.css";
@@ -20,6 +22,8 @@ export default function Home() {
   const user = createAsync(() => getUser(true), { deferStream: true });
   const polls = createAsync(() => getRelevantPolls());
 
+  const [showCreatePollModal, setShowCreatePollModal] = createSignal(false);
+
   return (
     <section class={styles.container}>
       <Switch>
@@ -32,7 +36,9 @@ export default function Home() {
               )}
             </For>
           </div>
-          <Button Href="new">Create a New Poll</Button>
+          <Button OnClick={() => setShowCreatePollModal(true)}>
+            Create a New Poll
+          </Button>
         </Match>
         <Match when={!polls()?.length}>
           <div class={styles.not_found}>
@@ -40,12 +46,27 @@ export default function Home() {
             <h2 class={styles.poll_subtitle}>
               On a breezy day, not a Poll was found...
             </h2>
-            <Button Color="secondary" Href="new" Variant="text">
+            <Button
+              Color="secondary"
+              OnClick={() => setShowCreatePollModal(true)}
+              Variant="text"
+            >
               Create a New Poll
             </Button>
           </div>
         </Match>
       </Switch>
+      <Show when={showCreatePollModal()}>
+        <Modal
+          OnClose={() => setShowCreatePollModal(false)}
+          OnSubmit={() => undefined}
+          SubmitLabel="Create Poll"
+          Title="Create New Poll"
+          Width="800px"
+        >
+          <PollForm />
+        </Modal>
+      </Show>
     </section>
   );
 }

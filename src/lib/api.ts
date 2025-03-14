@@ -17,7 +17,7 @@ export const createPoll = async (poll: PollRecord) => {
 
     const createdPoll = await client.collection<PollRecord>("poll").create({
       ...poll,
-      user: user?.id ?? "unknown user",
+      user_id: user?.id ?? "unknown user",
     });
 
     return createdPoll;
@@ -25,7 +25,7 @@ export const createPoll = async (poll: PollRecord) => {
     console.error(error);
   }
 };
-export const createForumAction = action(createPoll);
+export const createPollAction = action(createPoll);
 
 /**
  * Get relevant polls

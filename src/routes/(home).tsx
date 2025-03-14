@@ -1,15 +1,18 @@
-import { createAsync, type RouteDefinition } from "@solidjs/router";
+import {
+  createAsync,
+  useAction,
+  useSubmission,
+  type RouteDefinition,
+} from "@solidjs/router";
 import { createSignal, For, Match, Show, Switch } from "solid-js";
 import { Button } from "~/components/Button";
-import { Flex } from "~/components/Flex";
 import { Modal } from "~/components/Modal";
-import { Text } from "~/components/Text";
 import { PollCard } from "~/compositions/PollCard";
 import { PollForm } from "~/compositions/PollForm/PollForm";
-import { getRelevantPolls } from "~/lib/api";
+import { createPollAction, getRelevantPolls } from "~/lib/api";
 import { getUser } from "~/lib/auth";
 import styles from "~/styles/home.module.css";
-import { UserRecord } from "~/types/pocketbase";
+import { PollRecord, UserRecord } from "~/types/pocketbase";
 
 export const route = {
   preload() {
@@ -21,8 +24,11 @@ export const route = {
 export default function Home() {
   const user = createAsync(() => getUser(true), { deferStream: true });
   const polls = createAsync(() => getRelevantPolls());
+  const createPoll = useAction(createPollAction);
+  const creatingPoll = useSubmission(createPollAction);
 
   const [showCreatePollModal, setShowCreatePollModal] = createSignal(false);
+  const [newPollState, setNewPollState] = createSignal<PollRecord | null>();
 
   return (
     <section class={styles.container}>
@@ -42,7 +48,6 @@ export default function Home() {
         </Match>
         <Match when={!polls()?.length}>
           <div class={styles.not_found}>
-            {/* <SVGPark /> */}
             <h2 class={styles.poll_subtitle}>
               On a breezy day, not a Poll was found...
             </h2>
@@ -59,12 +64,20 @@ export default function Home() {
       <Show when={showCreatePollModal()}>
         <Modal
           OnClose={() => setShowCreatePollModal(false)}
-          OnSubmit={() => undefined}
+          OnSubmit={async () => {
+            if (!!newPollState()) {
+              await createPoll(newPollState() as PollRecord);
+              if (!creatingPoll.error) {
+                setShowCreatePollModal(false);
+              }
+            }
+          }}
+          Pending={creatingPoll.pending}
           SubmitLabel="Create Poll"
           Title="Create New Poll"
           Width="800px"
         >
-          <PollForm />
+          <PollForm OnChange={(poll) => setNewPollState(poll)} />
         </Modal>
       </Show>
     </section>

@@ -110,7 +110,11 @@ export const PollCard = (props: PollCardProps) => {
           class={styles.tag}
           title={`${
             hasPollExpired() ? "Poll expired on" : "Poll will expire on"
-          } ${new Date(props.Poll.expire_at || "").toLocaleDateString()}`}
+          } ${
+            props.Poll.expire_at
+              ? new Date(props.Poll.expire_at || "").toLocaleDateString()
+              : "No Expiration"
+          }`}
         >
           <svg
             stroke="currentColor"
@@ -131,7 +135,9 @@ export const PollCard = (props: PollCardProps) => {
           <span>
             {hasPollExpired()
               ? "Expired"
-              : new Date(props.Poll.expire_at || "").toLocaleDateString()}
+              : props.Poll.expire_at
+              ? new Date(props.Poll.expire_at || "").toLocaleDateString()
+              : "No Expiration"}
           </span>
         </div>
       </div>

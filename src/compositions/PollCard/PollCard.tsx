@@ -14,16 +14,17 @@ export type PollCardProps = {
 export const PollCard = (props: PollCardProps) => {
   const hasPollExpired = createMemo(() => {
     const today = new Date();
-    return props.Poll.expire_at < today;
+    const expireDate = new Date(props.Poll.expire_at);
+    return expireDate < today;
   });
 
   const isPollOwner = createMemo(() => {
-    return props.User.id === props.Poll.user_id;
+    return props.User?.id === props.Poll.user_id;
   });
 
   return (
     <A
-      href={`/poll/${props.Poll.slug}`}
+      href={`/poll/${props.Poll.id ?? ""}/${props.Poll.slug}`}
       classList={{
         [styles.container]: true,
         [styles.expired]: hasPollExpired(),

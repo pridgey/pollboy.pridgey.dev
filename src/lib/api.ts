@@ -15,8 +15,10 @@ export const createPoll = async (poll: PollRecord) => {
     const client = await getPocketBase();
     const user = await getUser();
 
+    // Create the poll
     const createdPoll = await client.collection<PollRecord>("poll").create({
       ...poll,
+      slug: generateSlug(),
       user_id: user?.id ?? "unknown user",
     });
 

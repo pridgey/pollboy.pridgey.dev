@@ -1,0 +1,29 @@
+.container {
+  width: 100%;
+  display: grid;
+  flex-direction: column;
+  gap: var(--spacing-medium);
+  grid-template-areas: "results button";
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr min-content;
+  height: 100%;
+  overflow: hidden;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-medium) 0px;
+  grid-area: results;
+  list-style: none;
+  overflow-y: scroll;
+}
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .list {
+    padding: var(--spacing-medium);
+    justify-content: unset;
+  }
+}

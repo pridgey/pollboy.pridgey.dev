@@ -1,0 +1,118 @@
+.container {
+  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 50% 1fr 50px;
+  grid-template-rows: repeat(3, min-content) 1fr;
+  grid-template-areas: "title title menu" "subtitle subtitle menu" "button nu nu2" "options stats stats";
+  gap: var(--spacing-medium);
+  padding: var(--spacing-extra-large) var(--spacing-large);
+}
+
+.optionscontainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-medium);
+  grid-area: options;
+  padding: var(--spacing-medium) 0px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-family);
+  font-weight: normal;
+}
+
+.polltitle {
+  font-size: var(--font-size-jumbo);
+  grid-area: title;
+}
+
+.pollsubtitle {
+  font-size: var(--font-size-large);
+  grid-area: subtitle;
+}
+
+.menu {
+  grid-area: menu;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius);
+  padding: var(--spacing-small);
+  background-color: transparent;
+  border: 0px;
+  cursor: pointer;
+}
+
+.menu:hover,
+.menu:focus {
+  border: 1px solid var(--color-background);
+}
+
+.menu svg {
+  width: 40px;
+  height: 40px;
+}
+
+.results {
+  grid-area: stats;
+  padding: var(--spacing-medium) 0px;
+}
+
+.buttonrow {
+  display: flex;
+  flex-direction: row;
+  gap: 0px var(--spacing-small);
+  justify-content: space-between;
+  align-content: flex-start;
+}
+
+.expiredbanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-medium) var(--spacing-large);
+  background-color: var(--color-gray);
+  border-radius: var(--border-radius);
+}
+
+.expiredbanner h2 {
+  font-size: var(--font-size-text);
+  font-weight: bold;
+  color: var(--color-text);
+}
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .container {
+    grid-template-columns: 1fr 50px;
+    grid-template-rows: repeat(2, min-content) 1fr min-content;
+    grid-template-areas: "title menu" "subtitle subtitle" "options options" "button button";
+    height: 100%;
+    padding: var(--spacing-large) var(--spacing-medium);
+  }
+
+  .optionscontainer {
+    align-items: center;
+    overflow-y: scroll;
+    padding: 0px;
+    height: 100%;
+  }
+
+  .polltitle {
+    font-size: var(--font-size-extra-large);
+    word-break: break-word;
+  }
+
+  .pollsubtitle {
+    font-size: var(--font-size-large);
+  }
+
+  .results {
+    display: none;
+  }
+}

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@kobalte/core": "^0.13.8",
+    "@otonashixav/solid-flip": "^0.10.5",
     "@solidjs/router": "^0.15.0",
     "@solidjs/start": "^1.0.11",
     "pocketbase": "^0.25.1",

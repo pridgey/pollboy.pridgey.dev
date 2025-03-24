@@ -12,9 +12,10 @@ import {
 import { Button } from "~/components/Button";
 import { DropdownOptions } from "~/components/DropdownOptions";
 import { PollResults } from "~/compositions/PollResults";
-import { getPollById } from "~/lib/api";
+import { getFullPoll } from "~/lib/api";
 import { getUser } from "~/lib/auth";
 import styles from "~/styles/poll.module.css";
+import { PollOptionRecord } from "~/types/pocketbase";
 
 /**
  * Route representing /poll/[id]/[slug]
@@ -22,7 +23,7 @@ import styles from "~/styles/poll.module.css";
  */
 export default function Poll() {
   const params = useParams();
-  const poll = createAsync(() => getPollById(params.id));
+  const poll = createAsync(() => getFullPoll(params.id));
   const user = createAsync(() => getUser());
 
   // State to determine if we show the poll's current votes
@@ -78,7 +79,13 @@ export default function Poll() {
                   <PollResults
                     PollExpired={hasPollExpired() || false}
                     OnClose={() => setShowStats(false)}
-                    Results={[...(pollData()?.results || [])]}
+                    Results={[
+                      ...(poll()?.options.map((option) => ({
+                        Name: option.option_name,
+                        Votes: option.votes,
+                        Ranking: option.ranking,
+                      })) || []),
+                    ]}
                   />
                 </div>
               </Match>
@@ -96,7 +103,7 @@ export default function Poll() {
                     </Show>
                   </Show>
                   <For each={poll()?.options}>
-                    {(polloption: PollOptionProps, index) => {
+                    {(polloption: PollOptionRecord, index) => {
                       return (
                         <PollOption
                           CanModify={!!polloption.can_modify}

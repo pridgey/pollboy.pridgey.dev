@@ -4,12 +4,17 @@ import {
   useSubmission,
   type RouteDefinition,
 } from "@solidjs/router";
-import { createSignal, For, Match, Show, Switch } from "solid-js";
+import { createEffect, createSignal, For, Match, Show, Switch } from "solid-js";
 import { Button } from "~/components/Button";
 import { Modal } from "~/components/Modal";
 import { PollCard } from "~/compositions/PollCard";
 import { PollForm } from "~/compositions/PollForm/PollForm";
-import { createPollAction, getRelevantPolls } from "~/lib/api";
+import {
+  createPollAction,
+  getFullPoll,
+  getPollOptions,
+  getRelevantPolls,
+} from "~/lib/api";
 import { getUser } from "~/lib/auth";
 import styles from "~/styles/home.module.css";
 import { PollRecord, UserRecord } from "~/types/pocketbase";

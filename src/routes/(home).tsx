@@ -26,6 +26,9 @@ export const route = {
   },
 } satisfies RouteDefinition;
 
+/**
+ * Home route for listing out polls
+ */
 export default function Home() {
   const user = createAsync(() => getUser(true), { deferStream: true });
   const polls = createAsync(() => getRelevantPolls());

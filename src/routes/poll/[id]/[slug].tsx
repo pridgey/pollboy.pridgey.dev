@@ -1,5 +1,10 @@
-import { createAsync, useParams } from "@solidjs/router";
-import { CgMenuOreos } from "solid-icons/cg";
+import {
+  createAsync,
+  useAction,
+  useParams,
+  useSubmission,
+} from "@solidjs/router";
+import { BsThreeDotsVertical } from "solid-icons/bs";
 import {
   createMemo,
   createSignal,
@@ -10,12 +15,49 @@ import {
   Switch,
 } from "solid-js";
 import { Button } from "~/components/Button";
-import { DropdownOptions } from "~/components/DropdownOptions";
+import { DropdownOptions, Option } from "~/components/DropdownOptions";
+import { Modal } from "~/components/Modal";
+import { PollForm } from "~/compositions/PollForm/PollForm";
+import { PollOption } from "~/compositions/PollOption";
+import { PollOptionForm } from "~/compositions/PollOptionForm";
 import { PollResults } from "~/compositions/PollResults";
-import { getFullPoll } from "~/lib/api";
+import {
+  createPollOptionAction,
+  deletePollAction,
+  editPollAction,
+  getFullPoll,
+} from "~/lib/api";
 import { getUser } from "~/lib/auth";
 import styles from "~/styles/poll.module.css";
-import { PollOptionRecord } from "~/types/pocketbase";
+import { PollOptionRecord, PollRecord } from "~/types/pocketbase";
+
+/**
+ * Utility function to determine if a poll option should show as disabled
+ * @param multivote Is this poll multi-vote?
+ * @param userHasVotedForThisOption  Has the user voted for this option?
+ * @param userHasVotedForOtherOptions Has the user voted for other options?
+ * @returns boolean
+ */
+const calculateOptionStatus = (
+  multivote: boolean,
+  userHasVotedForThisOption: boolean,
+  userHasVotedForOtherOptions: boolean
+): boolean => {
+  if (multivote) {
+    return false;
+  }
+
+  if (userHasVotedForThisOption) {
+    return false;
+  }
+
+  if (userHasVotedForOtherOptions) {
+    return true;
+  }
+
+  // multivote is off, user has not voted for any options
+  return false;
+};
 
 /**
  * Route representing /poll/[id]/[slug]
@@ -26,12 +68,33 @@ export default function Poll() {
   const poll = createAsync(() => getFullPoll(params.id));
   const user = createAsync(() => getUser());
 
+  // Server action to create a new poll option
+  const [newPollOption, updateNewPollOption] =
+    createSignal<PollOptionRecord | null>();
+  const createPollOption = useAction(createPollOptionAction);
+  const creatingPollOption = useSubmission(createPollOptionAction);
+
+  // Server action to delete a poll
+  const deletePoll = useAction(deletePollAction);
+  const deletingPoll = useSubmission(deletePollAction);
+
+  // Server action to edit a poll
+  const [modifiedPoll, setModifiedPoll] = createSignal<PollRecord | null>();
+  const editPoll = useAction(editPollAction);
+  const editingPoll = useSubmission(editPollAction);
+
   // State to determine if we show the poll's current votes
   const [showStats, setShowStats] = createSignal(false);
   // State that determines if we are on a mobile screen size
   const [isMobile, setIsMobile] = createSignal(false);
   // State to determine if we show the poll's menu
   const [showPollMenu, setShowPollMenu] = createSignal(false);
+  // State to determine if we show a modal for the creation of a new poll
+  const [showNewOptionModal, setShowNewOptionModal] = createSignal(false);
+  // State to determine if we show a modal to delete the poll
+  const [showDeletePoll, setShowDeletePoll] = createSignal(false);
+  // State to determine if we show a modal to edit the poll
+  const [showEditPoll, setShowEditPoll] = createSignal(false);
 
   // Ref for the poll menu button
   let pollMenuRef;
@@ -44,6 +107,62 @@ export default function Poll() {
     const expireDate = new Date(poll()?.expire_at ?? "");
     return today > expireDate;
   });
+
+  // Additional Menu Options
+  const adminMenuOptions: Option[] = [
+    {
+      Label: "Edit Poll",
+      Icon: "",
+      OnClick: () => setShowEditPoll(true),
+    },
+    {
+      Label: "Delete Poll",
+      Icon: "",
+      OnClick: () => {
+        setShowDeletePoll(!showDeletePoll());
+      },
+    },
+    {
+      Label: "Share Link",
+      Icon: "",
+      OnClick: () => {
+        if (navigator.clipboard) {
+          navigator.share({
+            url: window.location.href,
+          });
+        } else if (document) {
+          // No Navigator, use the old method
+          const ele = document.createElement("textarea");
+          document.body.appendChild(ele);
+          ele.value = window.location.href;
+          ele.select();
+          document.execCommand("copy");
+          document.body.removeChild(ele);
+        }
+        setShowPollMenu(false);
+      },
+    },
+    // {
+    //   Label: "Share QR Code",
+    //   Icon: "",
+    //   OnClick: () => {
+    //     setShowQR(!showQR());
+    //     setShowPollMenu(false);
+    //   },
+    // },
+  ];
+
+  const mobileMenuOptions: Option[] = [
+    {
+      Label: "Show Results",
+      Icon: "",
+      OnClick: () => {
+        setShowStats(true);
+        // navigate("?so=true", { replace: true });
+        setShowPollMenu(false);
+      },
+    },
+  ];
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -64,7 +183,7 @@ export default function Poll() {
                 ref={pollMenuRef}
                 onClick={() => setShowPollMenu(!showPollMenu())}
               >
-                <CgMenuOreos />
+                <BsThreeDotsVertical style={{ height: "30px" }} />
               </button>
             </Show>
             <Switch>
@@ -112,9 +231,9 @@ export default function Poll() {
                             !!polloption.user_voted,
                             !!poll()?.options?.some((opt) => opt.user_voted)
                           )}
-                          ID={polloption?.id || 0}
+                          ID={polloption?.id || "unknown poll option Id"}
                           MultiVote={poll()?.multivote || false}
-                          PollID={poll()?.id || 0}
+                          PollID={poll()?.id || "unknown poll Id"}
                           OptionName={polloption?.option_name}
                           OptionDescription={polloption?.option_desc}
                           UserVoted={polloption?.user_voted}
@@ -124,7 +243,11 @@ export default function Poll() {
                     }}
                   </For>
                 </div>
-                <Show when={poll()?.public_can_add}>
+                <Show
+                  when={
+                    poll()?.public_can_add || poll()?.user_id === user()?.id
+                  }
+                >
                   <span style={{ "grid-area": "button" }}>
                     <Button
                       Type="button"
@@ -134,7 +257,7 @@ export default function Poll() {
                     </Button>
                   </span>
                 </Show>
-                <Show when={!isMobile()}>
+                {/* <Show when={!isMobile()}>
                   <div class={styles.results}>
                     <PollResults
                       PollExpired={hasPollExpired() || false}
@@ -142,12 +265,12 @@ export default function Poll() {
                       Results={[...(pollData()?.results || [])]}
                     />
                   </div>
-                </Show>
+                </Show> */}
               </Match>
             </Switch>
 
             {/* The Voting Results for mobile view */}
-            <Show when={showStats() && !hasPollExpired()}>
+            {/* <Show when={showStats() && !hasPollExpired()}>
               <div class={styles.optionscontainer}>
                 <PollResults
                   PollExpired={hasPollExpired() || false}
@@ -155,31 +278,73 @@ export default function Poll() {
                   Results={[...(pollData()?.results || [])]}
                 />
               </div>
-            </Show>
+            </Show> */}
 
             {/* Modals */}
+            {/* Create new Poll Option */}
             <Show when={showNewOptionModal()}>
-              <PollOptionsModal
-                PollID={poll()?.id}
+              <Modal
                 OnClose={() => setShowNewOptionModal(false)}
-              />
-            </Show>
-            <Show when={showDeletePoll()}>
-              <ConfirmDeleteModal
-                Name={`Poll: "${poll().poll_name}"`}
-                OnClose={async (confirm) => {
-                  if (confirm) {
-                    // Delete Poll
-                    handleDeletePoll({ ID: poll().id || 0 });
-                    navigate("/");
-                  }
-                  setShowDeletePoll(false);
+                Title="New Poll Option"
+                OnSubmit={async () => {
+                  createPollOption(newPollOption() as PollOptionRecord);
+                  setShowNewOptionModal(false);
                 }}
-              />
+                Pending={creatingPollOption.pending}
+                SubmitLabel="Create Poll Option"
+              >
+                <PollOptionForm
+                  OnChange={(newPollOption) => {
+                    updateNewPollOption({
+                      ...newPollOption,
+                      poll_id: poll()?.id ?? "",
+                    });
+                  }}
+                />
+              </Modal>
             </Show>
-            <Show when={showQR()}>
+            {/* Confirm poll deletion */}
+            <Show when={showDeletePoll()}>
+              <Modal
+                OnClose={() => setShowDeletePoll(false)}
+                Title="Delete Poll"
+                OnSubmit={async () => {
+                  await deletePoll(poll()?.id ?? "", true);
+                }}
+                Pending={deletingPoll.pending}
+                SubmitColor="danger"
+                SubmitLabel="Delete Poll"
+              >
+                Deleting the Poll {poll()?.poll_name} is irreversable. Continue?
+              </Modal>
+            </Show>
+            {/* Edit poll */}
+            <Show when={showEditPoll()}>
+              <Modal
+                OnClose={() => setShowEditPoll(false)}
+                Title="Modify Poll"
+                OnSubmit={() => {
+                  editPoll(modifiedPoll() as PollRecord);
+                  setShowEditPoll(false);
+                }}
+                SubmitLabel="Edit Poll"
+                Pending={editingPoll.pending}
+                Width="800px"
+              >
+                <PollForm
+                  PollId={poll()?.id ?? ""}
+                  OnChange={(editedPoll) => {
+                    setModifiedPoll({
+                      ...modifiedPoll(),
+                      ...editedPoll,
+                    });
+                  }}
+                />
+              </Modal>
+            </Show>
+            {/* <Show when={showQR()}>
               <SharePollModal OnClose={() => setShowQR(false)} />
-            </Show>
+            </Show> */}
             <Show when={showPollMenu()}>
               <DropdownOptions
                 Options={([] as Option[])

@@ -10,6 +10,7 @@ import {
   createSignal,
   For,
   Match,
+  onMount,
   Show,
   Suspense,
   Switch,
@@ -20,7 +21,7 @@ import { Modal } from "~/components/Modal";
 import { PollForm } from "~/compositions/PollForm/PollForm";
 import { PollOption } from "~/compositions/PollOption";
 import { PollOptionForm } from "~/compositions/PollOptionForm";
-import { PollResults } from "~/compositions/PollResults";
+import { OptionVotes, PollResults } from "~/compositions/PollResults";
 import {
   createPollOptionAction,
   deletePollAction,
@@ -85,8 +86,6 @@ export default function Poll() {
 
   // State to determine if we show the poll's current votes
   const [showStats, setShowStats] = createSignal(false);
-  // State that determines if we are on a mobile screen size
-  const [isMobile, setIsMobile] = createSignal(false);
   // State to determine if we show the poll's menu
   const [showPollMenu, setShowPollMenu] = createSignal(false);
   // State to determine if we show a modal for the creation of a new poll
@@ -95,6 +94,14 @@ export default function Poll() {
   const [showDeletePoll, setShowDeletePoll] = createSignal(false);
   // State to determine if we show a modal to edit the poll
   const [showEditPoll, setShowEditPoll] = createSignal(false);
+  // State that determines if we are on a mobile screen size
+  const [isMobile, setIsMobile] = createSignal(false);
+  onMount(() => {
+    if (window.innerWidth < 480) {
+      setIsMobile(true);
+      setShowStats(!!params.so && isMobile());
+    }
+  });
 
   // Ref for the poll menu button
   let pollMenuRef;
@@ -107,6 +114,32 @@ export default function Poll() {
     const expireDate = new Date(poll()?.expire_at ?? "");
     return today > expireDate;
   });
+
+  /**
+   * Utiltiy function to handle copying
+   */
+  const handleCopy = () => {
+    const shareData = {
+      url: window.location.href,
+    };
+
+    if (
+      !!navigator.canShare &&
+      navigator.canShare(shareData) &&
+      navigator.clipboard
+    ) {
+      navigator.share(shareData);
+    } else if (document) {
+      // No Navigator, use the old method
+      const ele = document.createElement("textarea");
+      document.body.appendChild(ele);
+      ele.value = window.location.href;
+      ele.select();
+      document.execCommand("copy");
+      document.body.removeChild(ele);
+    }
+    setShowPollMenu(false);
+  };
 
   // Additional Menu Options
   const adminMenuOptions: Option[] = [
@@ -123,33 +156,10 @@ export default function Poll() {
       },
     },
     {
-      Label: "Share Link",
+      Label: "Copy Poll Link",
       Icon: "",
-      OnClick: () => {
-        if (navigator.clipboard) {
-          navigator.share({
-            url: window.location.href,
-          });
-        } else if (document) {
-          // No Navigator, use the old method
-          const ele = document.createElement("textarea");
-          document.body.appendChild(ele);
-          ele.value = window.location.href;
-          ele.select();
-          document.execCommand("copy");
-          document.body.removeChild(ele);
-        }
-        setShowPollMenu(false);
-      },
+      OnClick: () => handleCopy(),
     },
-    // {
-    //   Label: "Share QR Code",
-    //   Icon: "",
-    //   OnClick: () => {
-    //     setShowQR(!showQR());
-    //     setShowPollMenu(false);
-    //   },
-    // },
   ];
 
   const mobileMenuOptions: Option[] = [
@@ -168,10 +178,7 @@ export default function Poll() {
     <Suspense fallback={<div>Loading...</div>}>
       <Switch>
         <Match when={poll()?.slug === params.slug}>
-          <div
-            class={styles.container}
-            style={{ overflow: showStats() ? "hidden" : "auto" }}
-          >
+          <div class={styles.container} style={{ overflow: "auto" }}>
             {/* Title Text */}
             <h1 class={styles.polltitle}>{poll()?.poll_name}</h1>
             <h2 class={styles.pollsubtitle}>{poll()?.poll_desc}</h2>
@@ -198,13 +205,7 @@ export default function Poll() {
                   <PollResults
                     PollExpired={hasPollExpired() || false}
                     OnClose={() => setShowStats(false)}
-                    Results={[
-                      ...(poll()?.options.map((option) => ({
-                        Name: option.option_name,
-                        Votes: option.votes,
-                        Ranking: option.ranking,
-                      })) || []),
-                    ]}
+                    Results={poll()?.rankings as OptionVotes[]}
                   />
                 </div>
               </Match>
@@ -257,15 +258,13 @@ export default function Poll() {
                     </Button>
                   </span>
                 </Show>
-                {/* <Show when={!isMobile()}>
-                  <div class={styles.results}>
-                    <PollResults
-                      PollExpired={hasPollExpired() || false}
-                      OnClose={() => setShowStats(false)}
-                      Results={[...(pollData()?.results || [])]}
-                    />
-                  </div>
-                </Show> */}
+                <div class={styles.results}>
+                  <PollResults
+                    PollExpired={hasPollExpired() || false}
+                    OnClose={() => setShowStats(false)}
+                    Results={poll()?.rankings as OptionVotes[]}
+                  />
+                </div>
               </Match>
             </Switch>
 

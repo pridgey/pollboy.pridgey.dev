@@ -17,7 +17,7 @@
   gap: var(--spacing-medium) 0px;
   grid-area: results;
   list-style: none;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 /* Mobile Sizing */

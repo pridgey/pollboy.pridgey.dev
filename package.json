@@ -7,6 +7,7 @@
     "start": "vinxi start"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.16",
     "@types/node": "^20.12.7"
   },
   "dependencies": {
@@ -14,6 +15,7 @@
     "@otonashixav/solid-flip": "^0.10.5",
     "@solidjs/router": "^0.15.0",
     "@solidjs/start": "^1.0.11",
+    "lodash": "^4.17.21",
     "pocketbase": "^0.25.1",
     "solid-icons": "^1.1.0",
     "solid-js": "^1.9.2",

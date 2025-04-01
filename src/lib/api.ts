@@ -6,6 +6,8 @@ import {
   PollVoteRecord,
 } from "~/types/pocketbase";
 import { generateSlug } from "~/utilities/generateSlug";
+import pkg from "lodash";
+const { sortBy } = pkg;
 
 // #region Poll Actions
 
@@ -175,7 +177,12 @@ export const getFullPoll = query(async (pollId: string) => {
 
   return {
     ...poll,
-    options: pollOptionsWithRankings,
+    options: sortBy(pollOptionsWithRankings, "option_name"),
+    rankings: pollOptionsWithRankings.map((option) => ({
+      Name: option.option_name,
+      Votes: option.votes,
+      Ranking: option.ranking,
+    })),
   };
 }, "getFullPoll");
 

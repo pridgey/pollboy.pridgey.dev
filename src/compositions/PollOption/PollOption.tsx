@@ -69,8 +69,8 @@ export const PollOption = (props: PollOptionProps) => {
         class={styles.optioncontents}
         onClick={async () => {
           if (!votingForPollOption.pending) {
+            setSelected(!selected()); // optimistic
             await voteForPollOption(props.ID, props.PollID);
-            setSelected(!selected());
           }
         }}
       >

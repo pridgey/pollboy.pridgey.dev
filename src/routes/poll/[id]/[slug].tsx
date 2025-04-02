@@ -97,7 +97,7 @@ export default function Poll() {
   // State that determines if we are on a mobile screen size
   const [isMobile, setIsMobile] = createSignal(false);
   onMount(() => {
-    if (window.innerWidth < 480) {
+    if (window.innerWidth < 600) {
       setIsMobile(true);
       setShowStats(!!params.so && isMobile());
     }
@@ -269,15 +269,15 @@ export default function Poll() {
             </Switch>
 
             {/* The Voting Results for mobile view */}
-            {/* <Show when={showStats() && !hasPollExpired()}>
+            <Show when={showStats() && !hasPollExpired()}>
               <div class={styles.optionscontainer}>
                 <PollResults
                   PollExpired={hasPollExpired() || false}
                   OnClose={() => setShowStats(false)}
-                  Results={[...(pollData()?.results || [])]}
+                  Results={poll()?.rankings as OptionVotes[]}
                 />
               </div>
-            </Show> */}
+            </Show>
 
             {/* Modals */}
             {/* Create new Poll Option */}

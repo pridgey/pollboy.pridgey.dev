@@ -8,6 +8,7 @@ import {
 } from "@otonashixav/solid-flip";
 import { Button } from "~/components/Button";
 import { Ranking } from "~/components/Ranking";
+import { Text } from "~/components/Text";
 
 export type OptionVotes = {
   Name: string;
@@ -41,6 +42,7 @@ export const PollResults = (props: PollResultsProps) => {
   return (
     <>
       <div class={styles.container}>
+        <Text FontSize="extra-large">Poll Rankings</Text>
         <ul class={styles.list}>
           <TransitionGroup
             enter={animateEnter()}

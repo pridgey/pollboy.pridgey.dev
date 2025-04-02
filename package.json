@@ -3,6 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "vinxi dev",
+    "devhost": "vinxi dev --host",
     "build": "vinxi build",
     "start": "vinxi start"
   },

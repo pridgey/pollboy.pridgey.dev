@@ -13,13 +13,15 @@
   },
   "dependencies": {
     "@kobalte/core": "^0.13.8",
-    "@otonashixav/solid-flip": "^0.10.5",
     "@solidjs/router": "^0.15.0",
     "@solidjs/start": "^1.0.11",
+    "install": "^0.13.0",
     "lodash": "^4.17.21",
+    "npm": "^11.3.0",
     "pocketbase": "^0.25.1",
     "solid-icons": "^1.1.0",
     "solid-js": "^1.9.2",
+    "solid-notifications": "^1.1.3",
     "unstorage": "1.10.2",
     "vinxi": "^0.4.3"
   },

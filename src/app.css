@@ -1,3 +1,6 @@
+/* index.css */
+@import "solid-notifications/index.css";
+
 @font-face {
   font-family: "Montserrat";
   src: url("/fonts/Montserrat/Montserrat-VariableFont_wght.ttf")
@@ -66,6 +69,9 @@
   --line-height-small: 1.25em;
   --line-height-medium: 1.5em;
   --line-height-large: 1.75em;
+  /* Toast Override */
+  --sn-toast-font-size: var(--font-size-tetxt);
+  --sn-dismiss-btn-size: 2rem;
 }
 
 .dark-override {

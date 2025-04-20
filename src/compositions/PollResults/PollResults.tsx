@@ -1,11 +1,5 @@
 import styles from "./PollResults.module.css";
 import { For, createSignal, createEffect, Show } from "solid-js";
-import {
-  TransitionGroup,
-  animateEnter,
-  animateExit,
-  animateMove,
-} from "@otonashixav/solid-flip";
 import { Button } from "~/components/Button";
 import { Ranking } from "~/components/Ranking";
 import { Text } from "~/components/Text";
@@ -44,24 +38,18 @@ export const PollResults = (props: PollResultsProps) => {
       <div class={styles.container}>
         <Text FontSize="extra-large">Poll Rankings</Text>
         <ul class={styles.list}>
-          <TransitionGroup
-            enter={animateEnter()}
-            exit={animateExit()}
-            move={animateMove()}
-          >
-            <For each={results()}>
-              {(result, index) => (
-                <li>
-                  <Ranking
-                    Index={index() + 1}
-                    Name={result.Name}
-                    Rank={result.Ranking}
-                    VoteCount={result.Votes}
-                  />
-                </li>
-              )}
-            </For>
-          </TransitionGroup>
+          <For each={results()}>
+            {(result, index) => (
+              <li>
+                <Ranking
+                  Index={index() + 1}
+                  Name={result.Name}
+                  Rank={result.Ranking}
+                  VoteCount={result.Votes}
+                />
+              </li>
+            )}
+          </For>
         </ul>
       </div>
       <Show when={isMobile() && !props.PollExpired}>

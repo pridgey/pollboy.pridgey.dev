@@ -15,6 +15,7 @@ import {
   Suspense,
   Switch,
 } from "solid-js";
+import { useToast } from "solid-notifications";
 import { Button } from "~/components/Button";
 import { DropdownOptions, Option } from "~/components/DropdownOptions";
 import { Modal } from "~/components/Modal";
@@ -68,6 +69,9 @@ export default function Poll() {
   const params = useParams();
   const poll = createAsync(() => getFullPoll(params.id));
   const user = createAsync(() => getUser());
+
+  // Toast for simple notifications
+  const { notify } = useToast();
 
   // Server action to create a new poll option
   const [newPollOption, updateNewPollOption] =
@@ -138,6 +142,8 @@ export default function Poll() {
       document.execCommand("copy");
       document.body.removeChild(ele);
     }
+
+    notify("Poll URL Copied.");
     setShowPollMenu(false);
   };
 

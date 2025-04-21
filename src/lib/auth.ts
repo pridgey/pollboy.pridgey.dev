@@ -1,6 +1,7 @@
 import { useSession } from "vinxi/http";
 import { action, query, redirect, revalidate } from "@solidjs/router";
 import PocketBase from "pocketbase";
+import { UserRecord } from "~/types/pocketbase";
 
 /**
  * Gets the current session data
@@ -51,7 +52,16 @@ export const getUser = query(async (restrict?: boolean) => {
     const user = client.authStore.record;
 
     if (!user) throw new Error("User not found");
-    return user;
+
+    let avatarUrl = "";
+    if (user.avatar) {
+      avatarUrl = await client.files.getURL(user, user.avatar);
+    }
+
+    return {
+      ...(user as Partial<UserRecord>),
+      avatarUrl,
+    } as UserRecord;
   } catch {
     if (restrict) {
       await logoutSession();
@@ -139,14 +149,12 @@ export const register = action(async (formData: FormData) => {
   const client = await getPocketBase();
 
   try {
-    const newUser = await client
-      .collection("users")
-      .create({
-        email: email,
-        password,
-        passwordConfirm: confirm,
-        name: username,
-      });
+    const newUser = await client.collection("users").create({
+      email: email,
+      password,
+      passwordConfirm: confirm,
+      name: username,
+    });
 
     await setUserInSession({
       userId: newUser?.record?.id,

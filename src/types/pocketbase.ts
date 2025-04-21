@@ -1,4 +1,6 @@
 export type UserRecord = {
+  avatar: string;
+  avatarUrl: string;
   id: string;
   email: string;
   name: string;

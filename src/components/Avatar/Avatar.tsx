@@ -24,17 +24,16 @@ export const Avatar = (props: AvatarProps) => {
       <button
         ref={avatarRef}
         onClick={() => {
-          console.log("Click avatar", props.User);
           if (props.User) {
             setOptionsOpen(!optionsOpen());
           }
         }}
         type="button"
         class={styles.avatarbubble}
-        style={{ "background-image": `url('')` }} // TO-DO: implement avatars, ensure Show boolean below only shows if no avatar
+        style={{ "background-image": `url('${props.User?.avatarUrl}')` }}
       >
         {/* If no avatar image, show the first letter of their username or email */}
-        <Show when={true}>
+        <Show when={!props.User?.avatarUrl}>
           {props.User?.name?.at(0) || props.User?.email?.at(0) || ""}
         </Show>
       </button>

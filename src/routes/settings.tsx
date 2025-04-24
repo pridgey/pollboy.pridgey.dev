@@ -1,7 +1,10 @@
 import { createAsync, type RouteDefinition } from "@solidjs/router";
 import { createMemo, Match, Switch } from "solid-js";
 import { Button } from "~/components/Button";
+import { FileUpload } from "~/components/FileUpload";
+import { Flex } from "~/components/Flex";
 import { Input } from "~/components/Input";
+import { updateUserSettingsAction } from "~/lib/api";
 import { getUser } from "~/lib/auth";
 import styles from "~/styles/settings.module.css";
 
@@ -42,7 +45,7 @@ export default function Settings() {
           <h3 class={styles.profileinfodatum}>{userData()?.email}</h3>
         </div>
         <div class={styles.profileinfogroup}>
-          <h2 class={styles.profileinfolabel}>created</h2>
+          <h2 class={styles.profileinfolabel}>joined</h2>
           <h3 class={styles.profileinfodatum}>
             {userData()?.created
               ? new Date(userData()!.created).toLocaleDateString()
@@ -52,19 +55,51 @@ export default function Settings() {
       </div>
       <div class={styles.profilecard} style={{ "align-items": "flex-start" }}>
         <h1 class={styles.profiletitle}>User Profile</h1>
-        <Input
-          Label="Avatar URL"
-          Name="avatar"
-          Type="text"
-          Placeholder="Paste a URL to an avatar image"
-        />
-        <Input
-          Label="Display Name"
-          Name="username"
-          Type="text"
-          Placeholder="What to call you"
-        />
-        <Button Type="submit">Save Settings</Button>
+        <form
+          action={updateUserSettingsAction}
+          method="post"
+          style={{ width: "100%" }}
+        >
+          <Flex
+            AlignItems="flex-start"
+            Direction="column"
+            Gap="medium"
+            JustifyContent="flex-start"
+            Width="100%"
+          >
+            <Input
+              Label="Display Name"
+              Name="username"
+              Type="text"
+              Placeholder="What to call you"
+              DefaultValue={userData()?.name}
+            />
+            <FileUpload
+              customButton={
+                <Switch>
+                  <Match when={!!userData()?.avatarUrl}>
+                    <img
+                      alt="user profile image"
+                      class={styles.profileimage}
+                      src={userData()!.avatarUrl}
+                    />
+                  </Match>
+                  <Match when={!userData()?.avatarUrl}>
+                    <div class={styles.profileimage}></div>
+                  </Match>
+                </Switch>
+              }
+              label="Change Avatar"
+              name="user-avatar"
+              onFileAccepted={(data) => console.log("data", data)}
+              onFileRejected={(data) => console.log("data", data)}
+              onFileChange={(data) => console.log("data", data)}
+              showFileList={true}
+              buttonOnly={true}
+            />
+            <Button Type="submit">Save Settings</Button>
+          </Flex>
+        </form>
       </div>
     </div>
   );

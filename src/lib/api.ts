@@ -361,3 +361,13 @@ export const voteForOption = async (pollOptionId: string, pollId: string) => {
 export const voteForOptionAction = action(voteForOption);
 
 // #endregion Poll Vote Actions
+
+// #region User Metadata Actions
+export const updateUserSettings = async (formData: FormData) => {
+  "use server";
+  console.log("Update User Settings", { formData });
+
+  return null;
+};
+export const updateUserSettingsAction = action(updateUserSettings);
+// #endreiong User Metadata Actions

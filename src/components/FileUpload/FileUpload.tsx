@@ -1,15 +1,18 @@
 import { FileField } from "@kobalte/core/file-field";
 import { Details, FileRejection } from "@kobalte/core/src/file-field/types.js";
 import styles from "./FileUpload.module.css";
-import { Match, Show, Switch } from "solid-js";
+import { JSX, Match, Show, Switch } from "solid-js";
 import { AiOutlineLoading } from "solid-icons/ai";
 
 type FileUploadProps = {
   buttonOnly?: boolean;
+  customButton?: JSX.Element;
   helperText?: string;
+  existingFile?: string;
   label: string;
   multiFile?: boolean;
   maxFiles?: number;
+  name?: string;
   onFileAccepted?: (file: File[]) => void;
   onFileRejected?: (file: FileRejection[]) => void;
   onFileChange?: (details: Details) => void;
@@ -17,18 +20,23 @@ type FileUploadProps = {
   showFileList?: boolean;
 };
 
+/**
+ * Component to handle File Uploads
+ */
 export const FileUpload = (props: FileUploadProps) => {
   return (
     <FileField
       class={styles.FileField}
       multiple={props.multiFile ?? false}
       maxFiles={props.maxFiles}
+      name={props.name}
       onFileAccept={props.onFileAccepted}
       onFileReject={props.onFileRejected}
       onFileChange={props.onFileChange}
     >
       <Switch>
-        <Match when={!props.buttonOnly}>
+        {/* Standard File Upload UI (Rectangle with dropzone) */}
+        <Match when={!props.buttonOnly && !props.customButton}>
           <FileField.Dropzone class={styles.FileField_dropzone}>
             <FileField.Label class={styles.FileField_label}>
               {props.label}
@@ -40,7 +48,14 @@ export const FileUpload = (props: FileUploadProps) => {
                   class={styles.FileField_trigger}
                   disabled={props.pending}
                 >
-                  Upload File{props.multiFile ? "s" : ""}
+                  <Switch>
+                    <Match when={!!props.existingFile?.length}>
+                      Change File
+                    </Match>
+                    <Match when={!props.existingFile?.length}>
+                      Upload File{props.multiFile ? "s" : ""}
+                    </Match>
+                  </Switch>
                 </FileField.Trigger>
               </Match>
               <Match when={props.pending}>
@@ -50,7 +65,8 @@ export const FileUpload = (props: FileUploadProps) => {
             </Switch>
           </FileField.Dropzone>
         </Match>
-        <Match when={props.buttonOnly}>
+        {/* Just a button to intitiate upload */}
+        <Match when={props.buttonOnly && !props.customButton}>
           <FileField.Trigger
             class={styles.FileField_trigger}
             disabled={props.pending}
@@ -61,8 +77,17 @@ export const FileUpload = (props: FileUploadProps) => {
             </Show>
           </FileField.Trigger>
         </Match>
+        {/* Custom Button */}
+        <Match when={!!props.customButton}>
+          <FileField.Trigger
+            class={styles.FileField_customItemTrigger}
+            disabled={props.pending}
+          >
+            {props.customButton}
+          </FileField.Trigger>
+        </Match>
       </Switch>
-      <FileField.HiddenInput disabled={props.pending} />
+      <FileField.HiddenInput disabled={props.pending} name={props.name} />
       <Show when={props.showFileList}>
         <FileField.ItemList class={styles.FileField_itemList}>
           {(file) => (

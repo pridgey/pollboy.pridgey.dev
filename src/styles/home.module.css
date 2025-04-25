@@ -1,0 +1,73 @@
+.container {
+  width: 100%;
+  bottom: 0px;
+  padding: 64px 20%;
+  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-medium) 0px;
+}
+
+.pollbox {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-medium);
+}
+
+.section {
+  font-size: var(--font-size-large);
+  color: var(--color-text);
+  font-family: var(--font-family);
+}
+
+.not_found {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small) 0px;
+  align-items: center;
+  text-align: center;
+}
+
+.not_found svg {
+  width: 600px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-family);
+  margin: 0px;
+  font-weight: normal;
+}
+
+.poll_title {
+  font-family: var(--font-family);
+  font-size: var(--font-size-jumbo);
+}
+
+.poll_subtitle {
+  font-size: var(--font-size-large);
+}
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  .container {
+    padding: var(--spacing-medium);
+    background-image: unset;
+    height: unset;
+    margin-bottom: var(--spacing-large);
+  }
+
+  .pollbox {
+    grid-template-columns: 1fr;
+  }
+
+  .not_found {
+    width: 100%;
+    padding: var(--spacing-medium);
+  }
+
+  .not_found svg {
+    width: 100%;
+  }
+}

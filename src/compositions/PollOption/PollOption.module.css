@@ -1,0 +1,136 @@
+/* Container of the entire element */
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: 0px var(--spacing-medium);
+  padding: 0px;
+  border-radius: var(--border-radius);
+  align-items: center;
+  justify-content: flex-start;
+  background-color: var(--color-background);
+  cursor: pointer;
+  border: 1px solid transparent;
+  box-shadow: var(--box-shadow-small);
+  width: 100%;
+}
+
+/* Determines if the voting button is hovered or focused
+    but shows outline of the entire component */
+.container:hover:not(.containerdisabled),
+.container:focus-within {
+  border: 1px solid var(--color-foreground);
+}
+
+/* Part of the component users will click on to vote */
+.optioncontents {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  grid-template-rows: repeat(2, min-content);
+  grid-template-areas: "check title" "check desc";
+  align-items: center;
+  justify-items: flex-start;
+  width: 100%;
+  gap: var(--spacing-small) var(--spacing-medium);
+  padding: var(--spacing-medium);
+  border-radius: var(--border-radius);
+  background-color: transparent;
+  border: 0px;
+  cursor: pointer;
+}
+
+.optioncontents:disabled .optioncheck {
+  opacity: 0.3;
+}
+
+/* Checkbox part of the component */
+.optioncheck {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-large);
+  font-weight: bold;
+  font-family: var(--font-family);
+  grid-area: check;
+}
+
+.optioncheck svg {
+  height: 30px;
+  width: 30px;
+}
+
+/* Looks more like a radio button when multivote is off */
+.radio {
+  border-radius: 100%;
+}
+
+/* Standard H1, H2 styling (probably move this up somewhere) */
+h3,
+h4 {
+  margin: 0px;
+  font-family: var(--font-family);
+  text-align: left;
+  font-weight: normal;
+}
+
+/* Main text of the option */
+.optiontitle {
+  font-size: var(--font-size-large);
+  font-weight: normal;
+  grid-area: title;
+  word-break: break-word;
+}
+
+/* Description text for the otpion */
+.optionsubtitle {
+  font-size: var(--font-size-header);
+  grid-area: desc;
+}
+
+/* Container to better position the menu button */
+.menucontainer {
+  height: 100%;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The menu button for editing the option */
+.menu {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius);
+  padding: var(--spacing-small);
+  grid-area: menu;
+  background-color: transparent;
+  border: 0px;
+  cursor: pointer;
+}
+
+.menu:hover,
+.menu:focus {
+  border: 1px solid var(--color-background);
+}
+
+.menu svg {
+  width: 40px;
+  height: 40px;
+}
+
+/* Mobile Sizing */
+@media (max-width: 480px) {
+  /* Main text of the option */
+  .optiontitle {
+    font-size: var(--font-size-large);
+  }
+
+  /* Description text for the otpion */
+  .optionsubtitle {
+    font-size: var(--font-size-header);
+  }
+}

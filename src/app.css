@@ -1,0 +1,153 @@
+/* index.css */
+@import "solid-notifications/index.css";
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("/fonts/Montserrat/Montserrat-VariableFont_wght.ttf")
+    format("truetype");
+}
+
+:root,
+.light-override {
+  /* Color Pallete */
+  --color-primary: #7d59ff;
+  --color-secondary: #2f2932;
+  --color-tertiary: #885fba;
+  --color-success: #29751e;
+  --color-error: #bd1e44;
+  --color-gray: #7a7878;
+  --color-fullwhite: #ffffff;
+  --color-fullblack: #080808;
+  --color-white: #fafafa;
+  --color-black: #0f0f0f;
+  --color-transparent-white: rgba(255, 255, 255, 0.6);
+  --color-transparent-black: rgba(0, 0, 0, 0.6);
+  --color-backdrop: var(--color-transparent-black);
+  --color-backdrop-invert: var(--color-transparent-white);
+  --color-text: var(--color-black);
+  --color-fullbackground: var(--color-fullwhite);
+  --color-fullforeground: var(--color-fullblack);
+  --color-background: var(--color-white);
+  --color-foreground: var(--color-black);
+  --color-darken: 80%;
+  --color-darken-2: 70%;
+  --color-lighten: 120%;
+  --color-lighten-2: 130%;
+  /* Border-Radii (handled by rem) */
+  --border-radius: 0.75rem;
+  --border-radius-large: 1rem;
+  --border-radius-huge: 2rem;
+  --border-radius-inset: 0.5rem;
+  /* Box-Shadow */
+  --shadow-color: rgba(0, 0, 0, 0.25);
+  --box-shadow-small: 0px 3px 3px 0px var(--shadow-color);
+  --box-shadow-medium: 0px 3px 8px 0px var(--shadow-color);
+  /* Spacing (handled by rem) */
+  --spacing-mini: 0.5rem;
+  --spacing-small: 1rem;
+  --spacing-medium: 1.5rem;
+  --spacing-large: 4rem;
+  --spacing-extra-large: 8rem;
+  /* Font Family */
+  --font-family: "Montserrat", Gordita, Roboto, Oxygen, Ubuntu, Cantarell,
+    "Open Sans", "Helvetica Neue", sans-serif;
+  /* Font Sizes (handled by rem) */
+  font-size: 8px;
+  --font-size-mini: 1.5rem; /* 8px */
+  --font-size-small: 1.85rem; /* 12px */
+  --font-size-text: 2rem; /* 16px */
+  --font-size-header: 2.5rem; /* 24px */
+  --font-size-large: 3rem; /* 32px */
+  --font-size-extra-large: 5rem; /* 40px */
+  --font-size-jumbo: 7rem; /* 56px */
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 700;
+  /* Line Heights */
+  --line-height-small: 1.25em;
+  --line-height-medium: 1.5em;
+  --line-height-large: 1.75em;
+  /* Toast Override */
+  --sn-toast-font-size: var(--font-size-tetxt);
+  --sn-dismiss-btn-size: 2rem;
+}
+
+.dark-override {
+  --color-background: var(--color-black);
+  --color-foreground: var(--color-white);
+  --color-fullbackground: var(--color-fullblack);
+  --color-fullforeground: var(--color-fullwhite);
+  --color-backdrop: var(--color-transparent-white);
+  --color-backdrop-invert: var(--color-transparent-black);
+  --color-gray: #625a59;
+  --color-text: var(--color-white);
+  --color-darken: 120%;
+  --color-darken-2: 130%;
+  --color-lighten: 80%;
+  --color-lighten-2: 70%;
+  --shadow-color: rgba(0, 0, 0, 0.75);
+}
+
+/* Dark Theme */
+/* @media (prefers-color-scheme: dark) {
+  :root,
+  .dark-override {
+    --color-background: var(--color-black);
+    --color-foreground: var(--color-white);
+    --color-fullbackground: var(--color-fullblack);
+    --color-fullforeground: var(--color-fullwhite);
+    --color-backdrop: var(--color-transparent-white);
+    --color-backdrop-invert: var(--color-transparent-black);
+    --color-gray: #625a59;
+    --color-text: var(--color-white);
+    --color-darken: 120%;
+    --color-darken-2: 130%;
+    --color-lighten: 80%;
+    --color-lighten-2: 70%;
+    --shadow-color: rgba(0, 0, 0, 0.75);
+  }
+} */
+
+/* Some CSS Reset */
+html,
+body,
+#app {
+  background-color: var(--color-background);
+  bottom: 0px;
+  display: flex;
+  flex-direction: column;
+  left: 0px;
+  margin: 0px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0px;
+  position: fixed;
+  right: 0px;
+  top: 0px;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0px;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}

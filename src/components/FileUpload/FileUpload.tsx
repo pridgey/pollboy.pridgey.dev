@@ -5,6 +5,7 @@ import { JSX, Match, Show, Switch } from "solid-js";
 import { AiOutlineLoading } from "solid-icons/ai";
 
 type FileUploadProps = {
+  accept?: string | string[];
   buttonOnly?: boolean;
   customButton?: JSX.Element;
   helperText?: string;
@@ -26,6 +27,7 @@ type FileUploadProps = {
 export const FileUpload = (props: FileUploadProps) => {
   return (
     <FileField
+      accept={props.accept}
       class={styles.FileField}
       multiple={props.multiFile ?? false}
       maxFiles={props.maxFiles}

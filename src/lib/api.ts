@@ -1,5 +1,5 @@
-import { action, query, reload, redirect } from "@solidjs/router";
-import { getPocketBase, getUser } from "./auth";
+import { action, query, reload, redirect, revalidate } from "@solidjs/router";
+import { getPocketBase, getUser, setUserInSession } from "./auth";
 import {
   PollOptionRecord,
   PollRecord,
@@ -363,11 +363,87 @@ export const voteForOptionAction = action(voteForOption);
 // #endregion Poll Vote Actions
 
 // #region User Metadata Actions
-export const updateUserSettings = async (formData: FormData) => {
-  "use server";
-  console.log("Update User Settings", { formData });
 
-  return null;
+/**
+ * Action to update a user's username (display purposes only)
+ */
+export const updateUsername = async (newUsername: string) => {
+  "use server";
+
+  const client = await getPocketBase();
+  const user = await getUser();
+
+  if (!user?.id) {
+    throw new Error("Unknown User ID");
+  }
+
+  try {
+    await client.collection("users").update(user.id, {
+      name: newUsername,
+    });
+
+    // refresh authstore
+    await client.collection("users").authRefresh();
+    const newAuthStore = await client.authStore.record;
+
+    // Update current cookie
+    if (newAuthStore) {
+      await setUserInSession({
+        userId: newAuthStore.id,
+        email: newAuthStore.email,
+        cookie: client.authStore.exportToCookie(),
+      });
+    }
+
+    console.log("Post auth refresh:", { newAuthStore });
+
+    await revalidate(getUser.key, true);
+
+    return true;
+  } catch (err) {
+    console.error("Error updating username", err);
+  }
 };
-export const updateUserSettingsAction = action(updateUserSettings);
-// #endreiong User Metadata Actions
+export const updateUsernameAction = action(updateUsername);
+
+/**
+ * Action to update a user's avatar
+ */
+export const updateUserAvatar = async (newAvatar: File) => {
+  "use server";
+
+  const client = await getPocketBase();
+  const user = await getUser();
+
+  if (!user?.id) {
+    throw new Error("Unknown User ID");
+  }
+
+  try {
+    await client.collection("users").update(user.id, {
+      avatar: newAvatar,
+    });
+
+    // refresh authstore
+    await client.collection("users").authRefresh();
+    const newAuthStore = await client.authStore.record;
+
+    // Update current cookie
+    if (newAuthStore) {
+      await setUserInSession({
+        userId: newAuthStore.id,
+        email: newAuthStore.email,
+        cookie: client.authStore.exportToCookie(),
+      });
+    }
+
+    await revalidate(getUser.key, true);
+
+    return true;
+  } catch (err) {
+    console.error("Error updating avatar", err);
+  }
+};
+export const updateUserAvatarAction = action(updateUserAvatar);
+
+// #endregion User Metadata Actions

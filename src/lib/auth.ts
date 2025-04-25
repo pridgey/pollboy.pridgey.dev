@@ -51,6 +51,8 @@ export const getUser = query(async (restrict?: boolean) => {
     const client = await getPocketBase();
     const user = client.authStore.record;
 
+    console.log("Get User", { user });
+
     if (!user) throw new Error("User not found");
 
     let avatarUrl = "";
